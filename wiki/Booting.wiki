@@ -1,0 +1,29 @@
+#Booting diskless edge devices
+
+= Introduction =
+
+Configuration for dnsmasq and pxelinux, as well as thoughts for root mounts.
+
+= Details =
+
+== dnsmasq ==
+
+I initially used my home router and configured dnsmasq on it as follows:
+
+dhcp-boot=pxelinux.0,,192.168.2.136
+
+== pxelinux ==
+
+On Debian unstable the tftpd-hpa package installs with defaults for the root directory in
+
+/var/lib/tftpboot
+
+The file /etc/default/tftpd-hpa needs to be edited and /etc/inetd.conf
+
+I put the following in /var/lib/tftpboot:
+
+initrd.img-2.6.26-1-486  memdisk  pxelinux.0  pxelinux.cfg  vmlinuz-2.6.26-1-486
+
+pxelinux.cfg is a directory containing a default config.
+
+All files have world read and all folders world execute.
