@@ -32,6 +32,6 @@ All files have world read and all folders world execute.
 
 Possibilities:
 
-* whole system in the initramfs
-* root mounted over iSCSI
-* root mounted over drbd
+ * whole system in the initramfs
+ * root mounted over iSCSI
+ * root mounted over drbd
