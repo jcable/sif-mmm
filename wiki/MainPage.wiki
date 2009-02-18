@@ -7,6 +7,6 @@ sif-mmm is a project to investigate opportunities in open source broadcast produ
 
 Novel features are:
 
-* Everything managed in a central database
-* all media moved over IP networks
-* No single point of failure
+ * Everything managed in a central database
+ * all media moved over IP networks
+ * No single point of failure
