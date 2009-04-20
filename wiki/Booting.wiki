@@ -53,4 +53,6 @@ LABEL www
         kernel debian-live/i386/vmlinuz-2.6.26-1-486
         append initrd=debian-live/i386/initrd.img-2.6.26-1-486 boot=live locale=en_GB.UTF-8 keyb=uk union=aufs fetch=http://192.168.2.136/filesystem.squashfs
 
+The timeout parameter in the pxelinux can be edited so a keyboard is not needed. This is in 10ths of a second and is in the prompt.cfg file.
+
 It should be possible to sync the cow bit to get persistance.
