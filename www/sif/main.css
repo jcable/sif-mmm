@@ -13,6 +13,7 @@ body {
 	border:0;
 	min-width:800px;
 	font-size:11pt;
+	behavior: url("csshover3.htc");
 	
 }
 
@@ -212,7 +213,7 @@ th.menubutton {
 }
 th.menubutton:hover {
 	cursor: hand;
-	color: black;
+	color: white;
 	background-color: #3366FF;
 }
 th.mymenubutton {

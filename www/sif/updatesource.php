@@ -15,6 +15,8 @@ if (!empty($_REQUEST["originalsource"]))
 	$tabindex=$_REQUEST["tabindex"];
 	$owner=$_REQUEST["owner"];
 	$notes=$_REQUEST["notes"];
+	$device=$_REQUEST["device"];
+	$port=$_REQUEST["port"];
 
 	mysql_query("update source set source_long_name='$sourcelongname' where source='$originalsource'", $connection);
 	mysql_query("update source set active='$active' where source='$originalsource'", $connection);
@@ -26,6 +28,8 @@ if (!empty($_REQUEST["originalsource"]))
 	mysql_query("update source set owner='$owner' where source='$originalsource'", $connection);
 	mysql_query("update source set notes='$notes' where source='$originalsource'", $connection);
 	mysql_query("update source set pharos_index='$pharosindex' where source='$originalsource'", $connection);
+	mysql_query("update source set device='$device' where source='$originalsource'", $connection);
+	mysql_query("update source set port='$port' where source='$originalsource'", $connection);
 	mysql_query("update source set source='$source' where source='$originalsource'", $connection);
 }
 else
