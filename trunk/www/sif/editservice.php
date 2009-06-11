@@ -26,7 +26,7 @@
 		$owner=$row["owner"];
 		$notes=$row["notes"];
 		$pharosindex=$row["pharos_index"];
-
+		$multicastid=$row["multicast_id"];
 		}
 		print "SIF Project - Configure Details for Service '$service'</h3>";
 	}
@@ -54,6 +54,13 @@ Long Name:
 <br />
 <?
 	print "\n<input type=\"text\" size=\"100\" maxlength=\"256\" value=\"{$servicelongname}\" name=\"servicelongname\"/>";
+?>
+</div>
+<div>
+
+
+<?
+	print "\n<b>Multicast ID:&nbsp;{$multicastid}</b><br><br>";
 ?>
 </div>
 <div>

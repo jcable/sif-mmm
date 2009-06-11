@@ -28,7 +28,8 @@
 		$notes=$row["notes"];
 		$pharosindex=$row["pharos_index"];
 		$vlchostname=$row["vlc_hostname"];
-
+		$device=$row["device"];
+		$port=$row["port"];
 		}
 		print "SIF Project - Configure Details for Source '$source'</h3>";
 	}
@@ -84,7 +85,21 @@ Active:<br>
 	}
 ?>
 </div>
-
+<div>
+Device:
+<br />
+<?
+	print "\n<input type=\"text\" size=\"10\" maxlength=\"64\" value=\"{$device}\" name=\"device\"/>";
+?>
+</div>
+<div>
+<div>
+Port:
+<br />
+<?
+	print "\n<input type=\"text\" size=\"10\" maxlength=\"64\" value=\"{$port}\" name=\"port\"/>";
+?>
+</div>
 <div>
 Role:
 <br />

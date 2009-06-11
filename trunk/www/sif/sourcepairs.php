@@ -110,7 +110,7 @@ SIF Project - Source Redundancy Pairs</h3>
 			print "\n<form method=\"post\" action=\"switchpair.php\" name=\"switchpair{$paircount}\">";
 			print "\n<input type=\"hidden\" name=\"pair\" value=\"{$row[redundancy_text]}\">";
 			print "\n<input type=\"hidden\" name=\"pairtab\" value=\"{$pairtab}\">";
-			print "\n<td width=20% class=\"unused\"><table width=100%><tr><td><i><b><font color=blue>Source Pair: {$row[redundancy_text]}</font></b></i><br>";
+			print "\n<td width=20% class=\"unused\"><table border=0 width=100%><tr><td><i><b><font color=blue>Source Pair: {$row[redundancy_text]}</font></b></i><br>";
 			$mainactiveresult=mysql_query("SELECT * FROM source where source='$main' and active='1'", $connection);
 			while($mainactiverow= mysql_fetch_array($mainactiveresult))
 			{
@@ -131,7 +131,7 @@ SIF Project - Source Redundancy Pairs</h3>
 					print "\nReserve: <input type=\"radio\" name=\"active\" value=\"{$reserve}\" checked><b>{$reserve}</b>";
 				}
 			}
-			print "\n</td><td align=right>&nbsp;&nbsp;<input type=submit value=\"Switch\">";
+			print "\n</td><td align=right width=60 valign=center>&nbsp;&nbsp;<input type=submit value=\"Switch\">";
 			print "\n</form></td></tr></table>";
 		}
 		$paircount++;
@@ -163,8 +163,9 @@ SIF Project - Source Redundancy Pairs</h3>
 <th class="raised" height=60 width=10% onClick="history.go()">Refresh</th>
 </tr></table>
 </form>
-<hr>
+
 <div id="footer">
+<hr>
 &copy; 2009, Mark Patrick, BBC WS
 </div>
 </html>

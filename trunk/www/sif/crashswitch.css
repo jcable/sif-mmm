@@ -22,18 +22,55 @@ textarea {
 	font-size:11pt;
 }
 
+input {
+	font-family:"calibri", "trebuchet ms", "trebuchet", "verdana", sans-serif;
+	font-size:11pt;
+}
+
 
 table {table-layout: fixed;}
 
+#sourcebuttons {
+	position: absolute; 
+	overflow:auto; 
+	top:100px; 
+	left:0; 
+	right:0; 
+	margin:8; 
+}
+
+#destbuttons {
+	position: absolute; 
+	overflow:auto; 
+	top:450px; 
+	left:0; 
+	right:0; 
+	margin:8; 
+}
 
 
 
+#takebuttons {
+	position: absolute; 
+	overflow:auto; 
+	top:750px; 
+	left:0; 
+	right:0; 
+	margin:8; 
+}
 
 
-div #footer p {
-	margin:0;
+
+#footer {
+	position: absolute; 
+	overflow:auto; 
+	top:816px; 
+	left:0; 
+	right:0;
+	margin:8;
 	padding:0;
 	text-align:center;
+	font-size:8pt;
 }
 
 
@@ -88,6 +125,16 @@ th.unused {
 	padding: 1px 4px 1px 4px;
 	line-height: 1.4em;
 }
+th.unprimed {
+	border-style: outset;
+	border-width: 1px;
+	border-color: #CCCCCC;
+	color: black;
+	background-color: #F3F3EE;
+	-moz-border-radius: 5px;
+	padding: 1px 4px 1px 4px;
+	line-height: 1.4em;
+}
 th.raised:hover {
 	color: black;
 	cursor: hand;
@@ -106,7 +153,6 @@ td.depressed {
 }
 td.raised {
 	border-style: outset;
-	height: 50px;
 	border-width: 1px;
 	border-color: #CCCCCC;
 	color: black;
