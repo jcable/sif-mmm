@@ -94,14 +94,14 @@ function servicepopup()
 </SCRIPT>
 <body>
 <table border=0 width=100%><tr><th width=80px><img src="wslogo.jpg" alt=""></th>
-<th height=50 class="menubutton" onclick="location.href='index.html';">Main Menu</th>
-<th height=50 class="menubutton" onclick="location.href='showserviceschedule.php';">Service Schedules</th>
-<th height=50 class="menubutton" onclick="location.href='showlistenerschedule.php';">Listener Schedules</th>
-<th height=50 class="menubutton" onclick="location.href='showmaterial.php';">Material Info</th>
-<th height=50 class="menubutton" onclick="location.href='servicecrashswitch.php?sourcetab=1&servicetab=1';">Crash Services</th>
-<th height=50 class="mymenubutton">Crash Listeners</th>
-<th height=50 class="menubutton" onclick="location.href='monitor.php';">Monitoring</th>
-<th height=50 class="menubutton" onclick="location.href='sourcepairs.php';">Redundant Sources</th>
+<th height=40 class="menubutton" onclick="location.href='index.html';">Main Menu</th>
+<th height=40 class="menubutton" onclick="location.href='showserviceschedule.php';">Service Schedules</th>
+<th height=40 class="menubutton" onclick="location.href='showlistenerschedule.php';">Listener Schedules</th>
+<th height=40 class="menubutton" onclick="location.href='showmaterial.php';">Material Info</th>
+<th height=40 class="menubutton" onclick="location.href='servicecrashswitch.php?sourcetab=1&servicetab=1';">Crash Services</th>
+<th height=40 class="mymenubutton">Crash Listeners</th>
+<th height=40 class="menubutton" onclick="location.href='monitor.php';">Monitoring</th>
+<th height=40 class="menubutton" onclick="location.href='sourcepairs.php';">Redundant Sources</th>
 </tr><tr>
 <td></table>
 <h3>
@@ -133,11 +133,11 @@ SIF Project - Listener Crash Switching</h3>
 	{
 		if ($servicetab==$row[tab_index])
 		{
-			print "\n<th height=50 width=20% class=\"depressed\" colspan=2>{$row[tab_text]}</th>";
+			print "\n<th height=40 width=20% class=\"depressed\" colspan=2>{$row[tab_text]}</th>";
 		}
 		else
 		{
-			print "\n<th height=50 width=20% class=\"raised\" colspan=2 onclick=\"location.href='listenercrashswitch.php?servicetab={$row[tab_index]}&listenertab={$listenertab}';\">{$row[tab_text]}</th>";
+			print "\n<th height=40 width=20% class=\"raised\" colspan=2 onclick=\"location.href='listenercrashswitch.php?servicetab={$row[tab_index]}&listenertab={$listenertab}';\">{$row[tab_text]}</th>";
 		}
 		$servicetabcount++;
 		if ($servicetabcount % 5 == 0)
@@ -151,7 +151,7 @@ SIF Project - Listener Crash Switching</h3>
 		{
 			while($emptyslotsinrow > 0)
 			{
-				print "<th height=50 width=20%  class=\"unused\" colspan=2>&nbsp;</td>";
+				print "<th height=40 width=20%  class=\"unused\" colspan=2>&nbsp;</td>";
 				$emptyslotsinrow--;
 			}
 	}
@@ -161,7 +161,7 @@ SIF Project - Listener Crash Switching</h3>
 	$result=mysql_query("SELECT * FROM service where tab_index='$servicetab' and enabled=1 order by service asc", $connection);
 	while($row= mysql_fetch_array($result))
 	{
-		print "\n<td height=50 width=10% id=\"service{$servicecount}\" class=\"raised\" onclick=\"toggleButton(this, /service/i);setservice('{$row[service]}');\"><b>{$row[service]}</b></td>";
+		print "\n<td height=40 width=10% id=\"service{$servicecount}\" class=\"raised\" onclick=\"toggleButton(this, /service/i);setservice('{$row[service]}');\"><b>{$row[service]}</b></td>";
 		$servicecount++;
 		if ($servicecount % 10 == 0)
 		{
@@ -174,7 +174,7 @@ SIF Project - Listener Crash Switching</h3>
 	{
 		while($emptyslotsinrow > 0)
 		{
-			print "\n<td height=50 width=10% class=\"unused\">&nbsp;</td>";
+			print "\n<td height=40 width=10% class=\"unused\">&nbsp;</td>";
 			$emptyslotsinrow--;
 		}
 	}
@@ -198,11 +198,11 @@ SIF Project - Listener Crash Switching</h3>
 	{
 		if ($listenertab==$row[tab_index])
 		{
-				print "\n<th height=50 width=20% class=\"depressed\" colspan=2>{$row[tab_text]}</th>";
+				print "\n<th height=40 width=20% class=\"depressed\" colspan=2>{$row[tab_text]}</th>";
 				}
 				else
 				{
-					print "\n<th height=50 width=20% class=\"raised\" colspan=2 onclick=\"location.href='listenercrashswitch.php?listenertab={$row[tab_index]}&servicetab={$servicetab}';\">{$row[tab_text]}</th>";
+					print "\n<th height=40 width=20% class=\"raised\" colspan=2 onclick=\"location.href='listenercrashswitch.php?listenertab={$row[tab_index]}&servicetab={$servicetab}';\">{$row[tab_text]}</th>";
 				}
 				$listenertabcount++;
 				if ($listenertabcount % 5 == 0)
@@ -216,7 +216,7 @@ SIF Project - Listener Crash Switching</h3>
 	{
 		while($emptyslotsinrow > 0)
 		{
-			print "<th height=50 width=20% class=\"unused\" colspan=2>&nbsp;</td>";
+			print "<th height=40 width=20% class=\"unused\" colspan=2>&nbsp;</td>";
 			$emptyslotsinrow--;
 		}
 	}
@@ -235,7 +235,7 @@ SIF Project - Listener Crash Switching</h3>
 			$currentservice= $currentservice."&nbsp;<b><font color=red>*H*</font></b>";
 		}
 
-		print "\n<td height=50 width=10% id=\"listener{$listenercount}\" class=\"raised\" onclick=\"toggleButton(this, /listener/i);setlistener('{$row[listener]}');\"><b>{$row[listener]}</b><br><i>{$currentservice}</i></td>";
+		print "\n<td height=40 width=10% id=\"listener{$listenercount}\" class=\"raised\" onclick=\"toggleButton(this, /listener/i);setlistener('{$row[listener]}');\"><b>{$row[listener]}</b><br><i>{$currentservice}</i></td>";
 		$listenercount++;
 		if ($listenercount % 10 == 0)
 		{
@@ -248,7 +248,7 @@ SIF Project - Listener Crash Switching</h3>
 	{
 		while($emptyslotsinrow > 0)
 		{
-			print "<td height=50 width=10%>&nbsp;</td>";
+			print "<td height=40 width=10%>&nbsp;</td>";
 			$emptyslotsinrow--;
 		}
 	}
@@ -261,15 +261,15 @@ SIF Project - Listener Crash Switching</h3>
 <tr>
 <?
 	$servicecount++;
-	print "<td align=center height=50 width=10% id=\"service{$servicecount}\" class=\"depressed\" onclick=\"toggleButton(this, /service/i);setservice('OFF');\"><b>OFF</b></td>";
+	print "<td align=center height=40 width=10% id=\"service{$servicecount}\" class=\"depressed\" onclick=\"toggleButton(this, /service/i);setservice('OFF');\"><b>OFF</b></td>";
 ?>
 <th width=10%>&nbsp;</th>
-<th class="raised" id="holdbutton" height=60 width=10% onclick="toggleprime(this);">Prime</th>
-<th class="unprimed" id="take" height=50 width=10% onclick="crashswitch();">Take</th>
-<th class="raised" id="holdbutton" height=50 width=10% onclick="togglehold(this);">Hold</th>
+<th class="raised" id="holdbutton" height=40 width=10% onclick="toggleprime(this);">Prime</th>
+<th class="unprimed" id="take" height=40 width=10% onclick="crashswitch();">Take</th>
+<th class="raised" id="holdbutton" height=40 width=10% onclick="togglehold(this);">Hold</th>
 <th width=30%>&nbsp;</th>
-<th class="raised" height=50 width=10% onClick="servicepopup();">Service Routing</th>
-<th class="raised" height=50 width=10% onClick="history.go();">Refresh</th>
+<th class="raised" height=40 width=10% onClick="servicepopup();">Service Routing</th>
+<th class="raised" height=40 width=10% onClick="history.go();">Refresh</th>
 </tr></table>
 </form>
 </div>

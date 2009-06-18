@@ -12,23 +12,26 @@ body {
 	margin:8; 
 	border:0;
 	min-width:800px;
-	font-size:11pt;
+	font-size:9pt;
 	behavior: url("csshover3.htc");
 	
 }
 
 textarea {
 	font-family:"calibri", "trebuchet ms", "trebuchet", "verdana", sans-serif;
-	font-size:11pt;
+	font-size:9pt;
 }
 
 input {
 	font-family:"calibri", "trebuchet ms", "trebuchet", "verdana", sans-serif;
-	font-size:11pt;
+	font-size:9pt;
 }
 
-
-table {table-layout: fixed;}
+table {
+	font-family:"calibri", "trebuchet ms", "trebuchet", "verdana", sans-serif;
+	font-size:9pt;
+	table-layout: fixed;
+}
 
 #sourcebuttons {
 	position: absolute; 
@@ -42,7 +45,7 @@ table {table-layout: fixed;}
 #destbuttons {
 	position: absolute; 
 	overflow:auto; 
-	top:450px; 
+	top:360px; 
 	left:0; 
 	right:0; 
 	margin:8; 
@@ -53,7 +56,7 @@ table {table-layout: fixed;}
 #takebuttons {
 	position: absolute; 
 	overflow:auto; 
-	top:750px; 
+	top:590px; 
 	left:0; 
 	right:0; 
 	margin:8; 
@@ -64,7 +67,7 @@ table {table-layout: fixed;}
 #footer {
 	position: absolute; 
 	overflow:auto; 
-	top:816px; 
+	top:640px; 
 	left:0; 
 	right:0;
 	margin:8;
