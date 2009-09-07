@@ -18,17 +18,9 @@ dhcp-boot=pxelinux.0
 
 == tftp ==
 
-I tried to use the dnsmasq tftp server but it didn't work so I used tftpd-hpa.
+using the tftp server in dnsmasq
 
-On Debian unstable the tftpd-hpa package installs with defaults for the root directory in
-
-/var/lib/tftpboot
-
-The file /etc/default/tftpd-hpa needs to be edited to enable the server.
-
-I put the following in /var/lib/tftpboot:
-
-copy the contents of the tftpboot directory created by lh_build to /var/lib/tftpboot.
+copy the contents of the tftpboot directory created by lh_build to /var/ftpd.
 
 = root partitions =
 
@@ -51,7 +43,7 @@ Here is the pxelinux stanza:
 LABEL www
         MENU LABEL Start Debian Live using webserver
         kernel debian-live/i386/vmlinuz-2.6.26-1-486
-        append initrd=debian-live/i386/initrd.img-2.6.26-1-486 boot=live locale=en_GB.UTF-8 keyb=uk union=aufs fetch=http://192.168.2.136/filesystem.squashfs
+        append initrd=debian-live/i386/initrd.img-2.6.26-1-486 boot=live locale=en_GB.UTF-8 keyb=uk union=aufs fetch=http://192.168.11.1/filesystem.squashfs
 
 The timeout parameter in the pxelinux can be edited so a keyboard is not needed. This is in 10ths of a second and is in the prompt.cfg file.
 
