@@ -48,6 +48,7 @@ pcm.adat {
         ttable.7.7 1
         slave.pcm hdsp
 }
+
 pcm.digital {
     type plug
     ttable.0.8 1
