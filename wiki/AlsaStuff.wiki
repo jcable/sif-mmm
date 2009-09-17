@@ -12,16 +12,22 @@ We need names for VLC to be able to access our sound card. We currently use the 
 
 The RME HDSP 9632 has 32 mono channels, 16 in and 16 out. The channels are allocated as follows:
 
-* 0-7 are the ADAT channels
-* 8-9 is spdif or AES/EBU
-* 10-11 are the onboard analog pair
-* 12-15 are the analog channels on the optional daughter boards.
+  0-7 are the ADAT channels
+
+  8-9 is spdif or AES/EBU
+
+  10-11 are the onboard analog pair
+
+  12-15 are the analog channels on the optional daughter boards.
 
 We want to be able to access channels as individual stereo pairs. We don't currently have any need for the ADAT channels so we will name our stereo pairs:
 
   digital
+
   analog
+
   analog2
+
   analog3
 
 Here is the asoundrc file for this:
