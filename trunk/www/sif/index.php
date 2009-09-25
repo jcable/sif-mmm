@@ -1,6 +1,8 @@
 <?php
 	require_once("header.php");
-	sif_header("Introduction");
+	$page = "Introduction";
+	sif_header($page, "main.css");
+	sif_buttons($page);
 ?>
 Please use the buttons at the top to access the various parts of the SIF control system.
 <p>
@@ -18,8 +20,6 @@ SIF was a Norwegian Goddess, some might say we have named the project after her 
 <a href="http://code.google.com/p/sif-mmm/" target="_new">Project Documentation (Google Code Page)</a>
 </td>
 <td valign=top><img src="sif.jpg" alt="" border=2></td></tr></table>
-<hr>
-<div id="footer">
-&copy; 2009, Mark Patrick, BBC WS
-</div>
-</html>
+<?php
+	sif_footer();
+?>

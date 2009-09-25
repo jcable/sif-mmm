@@ -37,16 +37,15 @@ function sif_buttons($titleword)
 	print "<h3>SIF Project - $titleword</h3>\n";
 }
 
-function sif_header($titleword)
+function sif_header($titleword, $stylesheet)
 {
 ?>
 <html>
 <head>
 <title>SIF Project <?php print $titleword; ?></title>
 </head>
-<link rel="stylesheet" type="text/css" href="main.css" media="screen,print">
+<link rel="stylesheet" type="text/css" href="<?php print $stylesheet; ?>" media="screen,print">
 <link rel="stylesheet" type="text/css" href="table.css" media="all">
-<link rel="stylesheet" type="text/css" href="crashswitch.css" media="screen,print">
 <script type="text/javascript" src="crashswitch.js"></script>
 <script type="text/javascript" src="table.js"></script>
 <script type="text/javascript" src="findonpage.js"></script>
@@ -63,6 +62,14 @@ else
 // -->
 </script>
 <?php
-	sif_buttons($titleword);
+}
+
+function sif_footer()
+{
+	print "<hr>\n";
+	print "<div id='footer'>\n";
+	print "&copy; 2009, British Broadcasting Corporation\n";
+	print "</div>\n";
+	print "</html>\n";
 }
 ?>

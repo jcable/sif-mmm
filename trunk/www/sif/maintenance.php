@@ -1,6 +1,8 @@
 <?php
 	require_once("header.php");
-	sif_header("Maintenance");
+	$page = "Maintenance";
+	sif_header($page, "main.css");
+	sif_buttons($page);
 ?>
 <ul>
 <li><a href="managesources.php">Manage Sources</a>
@@ -13,11 +15,11 @@
 <li><a href="managetabs.php?type=listener">Manage Listener Tabs</a>
 <li><a href="managetabs.php?type=redundancy">Manage Redundancy Tabs</a>
 <p>
-<li><a href="../../phpmyadmin" target="_new">MySQL Administration</a>
+<li><a href="taskmanager.php">Task Manager</a>
+<p>
+<li><a href="/phpmyadmin" target="_new">MySQL Administration</a>
 <li><a href="phpinfo.php" target="_new">PHP Server Info</a>
 </ul>
-<hr>
-<div id="footer">
-&copy; 2009, Mark Patrick, BBC WS
-</div>
-</html>
+<?php
+	sif_footer();
+?>

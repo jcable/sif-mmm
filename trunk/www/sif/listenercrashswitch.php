@@ -1,8 +1,8 @@
-<html>
-<head>
-<title>SIF Project - listener Switching</title>
-</head>
-<link rel="stylesheet" type="text/css" href="crashswitch.css" media="screen,print">
+<?php
+	require_once("header.php");
+	$page = "Crash Listeners";
+	sif_header($page, "crashswitch.css");
+?>
 <SCRIPT TYPE="text/javascript">
 <!--
 // toggle a button to simulate radio type buttons
@@ -92,21 +92,8 @@ function servicepopup()
 }
 //-->
 </SCRIPT>
-<body>
-<table border=0 width=100%><tr><th width=80px><img src="wslogo.jpg" alt=""></th>
-<th height=40 class="menubutton" onclick="location.href='index.php';">Main Menu</th>
-<th height=40 class="menubutton" onclick="location.href='showserviceschedule.php';">Service Schedules</th>
-<th height=40 class="menubutton" onclick="location.href='showlistenerschedule.php';">Listener Schedules</th>
-<th height=40 class="menubutton" onclick="location.href='showmaterial.php';">Material Info</th>
-<th height=40 class="menubutton" onclick="location.href='servicecrashswitch.php?sourcetab=1&servicetab=1';">Crash Services</th>
-<th height=40 class="mymenubutton">Crash Listeners</th>
-<th height=40 class="menubutton" onclick="location.href='monitor.php';">Monitoring</th>
-<th height=40 class="menubutton" onclick="location.href='sourcepairs.php';">Redundant Sources</th>
-</tr><tr>
-<td></table>
-<h3>
-SIF Project - Listener Crash Switching</h3>
 <?php
+	sif_buttons($page);
 	if (!empty($_REQUEST["servicetab"]) &&
 	!empty($_REQUEST["listenertab"]))
 	{
@@ -279,11 +266,6 @@ else
 {
 	echo "Error - Required tabs not defined<br>";
 }
+	sif_footer();
 ?>
-
-<div id="footer">
-<hr>
-&copy; 2009, Mark Patrick, BBC WS
-</div>
-</html>
 
