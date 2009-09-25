@@ -10,3 +10,12 @@ Novel features are:
  * Everything managed in a central database
  * all media moved over IP networks
  * No single point of failure
+
+We current have the following sub-pages:
+
+  * [SIF_Concept_Notes]
+  * BiosSettings
+  * [Booting]
+  * [Discovery]
+  * AlsaStuff
+  * [VLC]
