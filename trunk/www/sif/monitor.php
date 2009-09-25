@@ -1,3 +1,6 @@
+<?php
+	require_once("header.php");
+?>
 <html>
 <head>
 <title>SIF Project - Monitoring</title>
@@ -33,21 +36,8 @@ function crashswitchmon(mondest)
 }
 //-->
 </SCRIPT>
-<body>
-<table border=0 width=100%><tr><th width=80px><img src="wslogo.jpg" alt=""></th>
-<th height=40 class="menubutton" onclick="location.href='index.html';">Main Menu</th>
-<th height=40 class="menubutton" onclick="location.href='showserviceschedule.php';">Service Schedules</th>
-<th height=40 class="menubutton" onclick="location.href='showlistenerschedule.php';">Listener Schedules</th>
-<th height=40 class="menubutton" onclick="location.href='showmaterial.php';">Material Info</th>
-<th height=40 class="menubutton" onclick="location.href='servicecrashswitch.php?servicetab=1&sourcetab=1';">Crash Services</th>
-<th height=40 class="menubutton" onclick="location.href='listenercrashswitch.php?servicetab=1&listenertab=1';">Crash Listeners</th>
-<th height=40 class="mymenubutton">Monitoring</th>
-<th height=40 class="menubutton" onclick="location.href='sourcepairs.php';">Redundant Sources</th>
-</tr><tr>
-<td></table>
-<h3>
-SIF Project - Monitoring</h3>
 <?php
+	sif_buttons("Monitoring");
 	if (empty($_REQUEST["sourcetab"]))
 	{
 		$sourcetab=1;

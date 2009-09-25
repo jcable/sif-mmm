@@ -99,7 +99,7 @@ function servicepopup()
 </SCRIPT>
 <body>
 <table border=0 width=100%><tr><th width=80px><img src="wslogo.jpg" alt=""></th>
-<th height=40 class="menubutton" onclick="location.href='index.html';">Main Menu</th>
+<th height=40 class="menubutton" onclick="location.href='index.php';">Main Menu</th>
 <th height=40 class="menubutton" onclick="location.href='showserviceschedule.php';">Service Schedules</th>
 <th height=40 class="menubutton" onclick="location.href='showlistenerschedule.php';">Listener Schedules</th>
 <th height=40 class="menubutton" onclick="location.href='showmaterial.php';">Material Info</th>

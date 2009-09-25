@@ -1,6 +1,6 @@
 <?php
-	$titleword = "Maintenance";
 	require_once("header.php");
+	sif_header("Maintenance");
 ?>
 <ul>
 <li><a href="managesources.php">Manage Sources</a>

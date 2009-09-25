@@ -1,38 +1,7 @@
-<html>
-<head>
-<title>SIF Project - Listener Schedule</title>
-</head>
-<link rel="stylesheet" type="text/css" href="main.css" media="screen,print">
-<link rel="stylesheet" type="text/css" href="table.css" media="all">
-
-<script type="text/javascript" src="table.js"></script>
-<script type="text/javascript" src="findonpage.js"></script>
-<script LANGUAGE="JavaScript">
-<!--
-function confirmSubmit()
-{
-var agree=confirm("Are you sure you wish to delete this line of schedule?");
-if (agree)
-	return true ;
-else
-	return false ;
-}
-// -->
-</script>
-<body>
-<table border=0 width=100%><tr><th width=80px><img src="wslogo.jpg" alt=""></th>
-<th class="menubutton" onclick="location.href='index.html';">Main Menu</th>
-<th class="menubutton" onclick="location.href='showserviceschedule.php';">Service Schedules</th>
-<th class="mymenubutton">Listener Schedules</th>
-<th class="menubutton" onclick="location.href='showmaterial.php';">Material Info</th>
-<th class="menubutton" onclick="location.href='servicecrashswitch.php?sourcetab=1&servicetab=1';">Crash Services</th>
-<th class="menubutton"onclick="location.href='listenercrashswitch.php?servicetab=1&listenertab=1';">Crash Listeners</th>
-<th class="menubutton" onclick="location.href='monitor.php';">Monitoring</th>
-<th class="menubutton" onclick="location.href='sourcepairs.php';">Redundant Sources</th>
-</tr><tr>
-<td></table>
-<h3>
-SIF Project - Listener Schedule</h3>
+<?php
+	require_once("header.php");
+	sif_header("Listener Schedules");
+?>
 <p><form name="form1" onSubmit="search(document.form1, frametosearch); return false"><input type="text" name="findthis" size="15" title="Press 'ALT s' after clicking find button to repeatedly search page"> <input type="submit" value="Find in Page" ACCESSKEY="s"></form>
 <p>
 <div id="plaincontent">
