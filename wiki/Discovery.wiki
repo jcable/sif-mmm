@@ -25,13 +25,9 @@ dnsmasq avoids some of the need for edge device scripting but not all. If we ass
 The edge device script goes something like:
 
   # discover database using dns-sd
-
   # look up mac address in device table - should have a column to indicate if fully configured or not.
-
   # if not fully configured, supply cpu and pci info (ram ? writeable storage ?) and trigger server to configure the db (and pxe) for this edge device.
-
   # fetch the config data and deploy it
-
   # run the edge device application (maybe this is done by init.d)
 
 = Admin Task =
