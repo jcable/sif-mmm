@@ -1,6 +1,9 @@
+<?php
+	require_once("header.php");
+?>
 <html>
 <head>
-<title>SIF Project - Monitoring</title>
+<title>SIF Project - Redundant Sources</title>
 </head>
 <link rel="stylesheet" type="text/css" href="crashswitch.css" media="screen,print">
 <SCRIPT TYPE="text/javascript">
@@ -30,21 +33,8 @@ function crashswitchmon(mondest)
 }
 //-->
 </SCRIPT>
-<body>
-<table border=0 width=100%><tr><th width=80px><img src="wslogo.jpg" alt=""></th>
-<th class="menubutton" onclick="location.href='index.html';">Main Menu</th>
-<th class="menubutton" onclick="location.href='showserviceschedule.php';">Service Schedules</th>
-<th class="menubutton" onclick="location.href='showlistenerschedule.php';">Listener Schedules</th>
-<th class="menubutton" onclick="location.href='showmaterial.php';">Material Info</th>
-<th class="menubutton" onclick="location.href='servicecrashswitch.php?servicetab=1&sourcetab=1';">Crash Services</th>
-<th class="menubutton" onclick="location.href='listenercrashswitch.php?servicetab=1&listenertab=1';">Crash Listeners</th>
-<th class="menubutton" onclick="location.href='monitor.php';">Monitoring</th>
-<th class="mymenubutton">Redundant Sources</th>
-</tr><tr>
-<td></table>
-<h3>
-SIF Project - Source Redundancy Pairs</h3>
 <?php
+	sif_buttons("Redundant Sources");
 	if (empty($_REQUEST["pairtab"]))
 	{
 		$pairtab=1;
