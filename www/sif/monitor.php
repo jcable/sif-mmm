@@ -1,11 +1,8 @@
 <?php
 	require_once("header.php");
+	$page = "Monitoring";
+	sif_header($page, "crashswitch.css");
 ?>
-<html>
-<head>
-<title>SIF Project - Monitoring</title>
-</head>
-<link rel="stylesheet" type="text/css" href="crashswitch.css" media="screen,print">
 <SCRIPT TYPE="text/javascript">
 <!--
 // toggle a button to simulate radio type buttons
@@ -37,7 +34,7 @@ function crashswitchmon(mondest)
 //-->
 </SCRIPT>
 <?php
-	sif_buttons("Monitoring");
+	sif_buttons($page);
 	if (empty($_REQUEST["sourcetab"]))
 	{
 		$sourcetab=1;
@@ -237,8 +234,6 @@ function crashswitchmon(mondest)
 </tr></table>
 </form>
 </div>
-<div id="footer">
-<hr>
-&copy; 2009, Mark Patrick, BBC WS
-</div>
-</html>
+<?php
+	sif_footer();
+?>

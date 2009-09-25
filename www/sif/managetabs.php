@@ -39,7 +39,7 @@ else
 
 <body>
 <table border=0 width=100%><tr><th width=80px><img src="wslogo.jpg" alt=""></th>
-<th class="menubutton" onclick="location.href='maintenance.htm';">Maintenance</th>
+<th class="menubutton" onclick="location.href='maintenance.php';">Maintenance</th>
 <th class="menubutton" onclick="location.href='showserviceschedule.php';">Service Schedules</th>
 <th class="menubutton" onclick="location.href='showlistenerschedule.php';">Listener Schedules</th>
 <th class="menubutton" onclick="location.href='showmaterial.php';">Material Info</th>

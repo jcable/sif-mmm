@@ -1,6 +1,8 @@
 <?php
 	require_once("header.php");
-	sif_header("Listener Schedules");
+	$page = "Listener Schedules";
+	sif_header($page, "main.css");
+	sif_buttons($page);
 ?>
 <p><form name="form1" onSubmit="search(document.form1, frametosearch); return false"><input type="text" name="findthis" size="15" title="Press 'ALT s' after clicking find button to repeatedly search page"> <input type="submit" value="Find in Page" ACCESSKEY="s"></form>
 <p>

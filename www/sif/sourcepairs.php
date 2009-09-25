@@ -1,11 +1,8 @@
 <?php
 	require_once("header.php");
+	$page = "Redundant Sources";
+	sif_header($page, "crashswitch.css");
 ?>
-<html>
-<head>
-<title>SIF Project - Redundant Sources</title>
-</head>
-<link rel="stylesheet" type="text/css" href="crashswitch.css" media="screen,print">
 <SCRIPT TYPE="text/javascript">
 <!--
 // toggle a button to simulate radio type buttons
@@ -34,7 +31,7 @@ function crashswitchmon(mondest)
 //-->
 </SCRIPT>
 <?php
-	sif_buttons("Redundant Sources");
+	sif_buttons($page);
 	if (empty($_REQUEST["pairtab"]))
 	{
 		$pairtab=1;

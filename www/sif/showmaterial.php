@@ -1,6 +1,8 @@
 <?php
 	require_once("header.php");
-	sif_header("Material Info");
+	$page = "Material Info";
+	sif_header($page, "main.css");
+	sif_buttons($page);
 ?>
 <script type="text/javascript" src="table.js"></script>
 <script type="text/javascript" src="findonpage.js"></script>
