@@ -32,95 +32,120 @@ function crashswitchmon(mondest)
 </SCRIPT>
 <?php
 	sif_buttons($page);
-	if (empty($_REQUEST["pairtab"]))
+	if (isset($_REQUEST["pairtab"]))
 	{
-		$pairtab=1;
+		$pairtab=$_REQUEST["pairtab"];
 	}
 	else
 	{
-		$pairtab=$_REQUEST["pairtab"];
+		$pairtab=1;
 	}
 	require 'connect.php';
 ?>
 
 <table width=100% height=600 border-0><tr><tr><td valign=top>
-
 <table width=100% border=0>
 <tr>
-<?
-	print "\n<input type=\"hidden\" name=\"pairtab\" value=\"{$pairtab}\">";
+<input type="hidden" name="pairtab" value="<?php print $pairtab;?>">
+<?php
 	$sourcetabcount=0;
-	$result=mysql_query("SELECT * FROM redundancy_tabs left join redundancy on redundancy_tabs.tab_index=redundancy.tab_index where enabled='1' and redundancy_type='SOURCE' order by redundancy.tab_index asc", $connection);
+	$result=mysql_query("SELECT DISTINCT tab_text, r.tab_index, id FROM redundancy_tabs t left join redundancy r on t.tab_index=r.tab_index where enabled=1 and redundancy_type='SOURCE' order by t.tab_index asc", $connection);
 	while($row= mysql_fetch_array($result))
 	{
+		print "\n<th width=20% ";
 		if ($pairtab==$row[tab_index])
 		{
-			print "\n<th width=20% class=\"depressed\">{$row[tab_text]}</th>";
+			print "class=\"depressed\"";
 		}
 		else
 		{
-			print "\n<th width=20% class=\"raised\" onclick=\"location.href='sourcepairs.php?pairtab={$row[tab_index]}';\">{$row[tab_text]}</th>";
+			print "class=\"raised\" ";
+			print "onclick=\"location.href='sourcepairs.php?pairtab=".$row["tab_index"]."\"";
 		}
+		print ">".$row["tab_text"]."</th>";
 		$pairtabcount++;
 		if ($pairtabcount % 5 == 0)
-				{
-					print "</tr><tr>";
+		{
+			print "</tr><tr>";
 		}
 	}
 	$emptyslotsinrow=(5-($pairtabcount % 5));
-		// this will pad out any remaining slots so the table formats correctly
-		if ($emptyslotsinrow < 5)
+	// this will pad out any remaining slots so the table formats correctly
+	if ($emptyslotsinrow < 5)
+	{
+		while($emptyslotsinrow > 0)
 		{
-			while($emptyslotsinrow > 0)
-			{
-				print "\n<th width=20%  class=\"unused\">&nbsp;</td>";
-				$emptyslotsinrow--;
-			}
+			print "\n<th width=20%  class=\"unused\">&nbsp;</td>";
+			$emptyslotsinrow--;
+		}
 	}
 	print "</tr><tr>";
 	$paircount=0;
 	// now do the actual redundancy pairs
-	$result=mysql_query("SELECT * FROM redundancy where tab_index='$pairtab' order by redundancy_text asc", $connection);
+	$result=mysql_query("SELECT * FROM redundancy where tab_index='$pairtab' order by id asc", $connection);
+	$sources = array();
+	$listeners = array();
 	while($row= mysql_fetch_array($result))
 	{
-		$main=$row[main];
-		$reserve=$row[reserve];
+		$id=$row["id"];
+		$p = array(device => $row["device"], active => $row["active"]);
 		if ($row[redundancy_type]=="LISTENER")
-		// this shows listener pairs, so this should never be seen, but just in case it is ever needed...
 		{
-			print "\n<td width=20% class=\"unused\"><i><b>Listener Pair: {$row[redundancy_text]}</b></i><br>";
-			print "\nMain: {$main}<br>";
-			print "\nReserve: {$reserve}</td>";
+			if(isset($listeners[$id]))
+			{
+				$listeners[$id][] = $p;
+			}
+			else
+			{
+				$listeners[$id] = array($p);
+			}
 		}
 		else
 		{
-			print "\n<form method=\"post\" action=\"switchpair.php\" name=\"switchpair{$paircount}\">";
-			print "\n<input type=\"hidden\" name=\"pair\" value=\"{$row[redundancy_text]}\">";
-			print "\n<input type=\"hidden\" name=\"pairtab\" value=\"{$pairtab}\">";
-			print "\n<td width=20% class=\"unused\"><table border=0 width=100%><tr><td><i><b><font color=blue>Source Pair: {$row[redundancy_text]}</font></b></i><br>";
-			$mainactiveresult=mysql_query("SELECT * FROM source where source='$main' and active='1'", $connection);
-			while($mainactiverow= mysql_fetch_array($mainactiveresult))
+			if(isset($sources[$id]))
 			{
-				// echo $mainactiverow[source];
-				if ($mainactiverow[source]==$main)
-				{
-					print "\nMain: <input type=\"radio\" name=\"active\" value=\"{$main}\" checked><b>{$main}</b><br>";
-					print "\nReserve: <input type=\"radio\" name=\"active\" value=\"{$reserve}\">{$reserve}";
-				}
+				$sources[$id][] = $p;
 			}
-			$resactiveresult=mysql_query("SELECT * FROM source where source='$reserve'and active='1'", $connection);
-			while($resactiverow= mysql_fetch_array($resactiveresult))
+			else
 			{
-				// echo $resactiverow[source];
-				if ($resactiverow[source]==$reserve)
-				{
-					print "\nMain: <input type=\"radio\" name=\"active\" value=\"{$main}\">{$main}<br>";
-					print "\nReserve: <input type=\"radio\" name=\"active\" value=\"{$reserve}\" checked><b>{$reserve}</b>";
-				}
+				$sources[$id] = array($p);
 			}
-			print "\n</td><td align=right width=60 valign=center>&nbsp;&nbsp;<input type=submit value=\"Switch\">";
-			print "\n</form></td></tr></table>";
 		}
+	}
+	// this shows listener pairs, so this should never be seen, but just in case it is ever needed...
+	foreach($listeners as $p)
+	{
+		print "\n<td width=20% class=\"unused\"><i><b>Listener Pair: $id</b></i><br>";
+		print "\nMain: $main<br>";
+		print "\nReserve: $reserve</td>";
+	}
+	foreach($sources as $p)
+	{
+		print "\n<td width=20% class=\"unused\">";
+
+		print "\n<form method=\"post\" action=\"setactive.php\" name=\"switchpair$paircount\">";
+		print "\n<input type=\"hidden\" name=\"source\" value=\"$id\">";
+		print "\n<input type=\"hidden\" name=\"tab\" value=\"$pairtab\">";
+
+		print "<table border=0 width=100%><tr>";
+		print "<td><i><b><font color=blue>Source: $id</font></b></i><br>";
+		foreach($p as $d)
+		{
+			$device = $d["device"];
+			$active = $d["active"];
+			print "\n<input type=\"radio\" name=\"device\" value=\"$device\"";
+			if ($active)
+			{
+				print " checked";
+			}
+			print ">$device<br/>";
+		}
+		print "</td>";
+		print "<td align=right width=60 valign=center>&nbsp;&nbsp;<input type=submit value=\"Update\">";
+		print "</td></tr>";
+		print "</table>";
+		print "</form>";
+
 		$paircount++;
 		if ($paircount % 5 == 0)
 		{
@@ -142,17 +167,9 @@ function crashswitchmon(mondest)
 	?>
 </table>
 </td></tr></table>
-
 <p>
-<table width=100%>
-<tr>
+<table width=100%><tr>
 <th width=90%>&nbsp;</th>
 <th class="raised" height=60 width=10% onClick="history.go()">Refresh</th>
 </tr></table>
-</form>
-
-<div id="footer">
-<hr>
-&copy; 2009, Mark Patrick, BBC WS
-</div>
-</html>
+<?php sif_footer(); ?>

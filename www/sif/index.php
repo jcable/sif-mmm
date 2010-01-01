@@ -20,6 +20,4 @@ SIF was a Norwegian Goddess, some might say we have named the project after her 
 <a href="http://code.google.com/p/sif-mmm/" target="_new">Project Documentation (Google Code Page)</a>
 </td>
 <td valign=top><img src="sif.jpg" alt="" border=2></td></tr></table>
-<?php
-	sif_footer();
-?>
+<?php sif_footer(); ?>

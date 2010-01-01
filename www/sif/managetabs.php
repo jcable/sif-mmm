@@ -1,22 +1,7 @@
-<html>
-<head>
-<title>SIF Project - Tab Maintenance</title>
-</head>
-<link rel="stylesheet" type="text/css" href="main.css" media="screen,print">
-
-
-<script LANGUAGE="JavaScript">
-<!--
-function confirmSubmit()
-{
-var agree=confirm("Are you sure you wish to delete this tab?");
-if (agree)
-	return true ;
-else
-	return false ;
-}
-// -->
-</script>
+<?php
+	require_once("header.php");
+	require 'connect.php';
+?>
 <SCRIPT TYPE="text/javascript">
 <!--
 function submitenter(myfield,e)
@@ -36,47 +21,34 @@ else
 }
 //-->
 </SCRIPT>
-
-<body>
-<table border=0 width=100%><tr><th width=80px><img src="wslogo.jpg" alt=""></th>
-<th class="menubutton" onclick="location.href='maintenance.php';">Maintenance</th>
-<th class="menubutton" onclick="location.href='showserviceschedule.php';">Service Schedules</th>
-<th class="menubutton" onclick="location.href='showlistenerschedule.php';">Listener Schedules</th>
-<th class="menubutton" onclick="location.href='showmaterial.php';">Material Info</th>
-<th class="menubutton" onclick="location.href='servicecrashswitch.php?sourcetab=1&servicetab=1';">Crash Services</th>
-<th class="menubutton"onclick="location.href='listenercrashswitch.php?servicetab=1&listenertab=1';">Crash Listeners</th>
-<th class="menubutton" onclick="location.href='monitor.php';">Monitoring</th>
-<th class="menubutton" onclick="location.href='sourcepairs.php';">Redundant Sources</th>
-</tr><tr>
-<td></table>
-<h3>
 <?php
 	if (!empty($_REQUEST["type"]))
 	{
 	$type=$_REQUEST["type"];
-	require 'connect.php';
 	switch ($type)	{
 		case "source":
 			$result=mysql_query("SELECT * FROM source_tabs order by tab_index asc", $connection);
-			print "SIF Project - Manage Source Tabs</h3>";
+			$page = "Manage Source Tabs";
 			break;
 		case "services":
 			$result=mysql_query("SELECT * FROM services_tabs order by tab_index asc", $connection);
-			print "SIF Project - Manage Services Tabs</h3>";
+			$page = "Manage Services Tabs";
 			break;
 		case "listener":
 			$result=mysql_query("SELECT * FROM listener_tabs order by tab_index asc", $connection);
-			print "SIF Project - Manage Listener Tabs</h3>";
+			$page = "Manage Listener Tabs";
 			break;
 		case "redundancy":
 			$result=mysql_query("SELECT * FROM redundancy_tabs order by tab_index asc", $connection);
-			print "SIF Project - Manage Redundancy Tabs</h3>";
+			$page = "Manage Redundancy Tabs";
 			break;
 		default:
 			// default to source tabs if something stupid requested
 			$result=mysql_query("SELECT * FROM source_tabs order by tab_index asc", $connection);
-			print "SIF Project - IP Media Router<br>Manage Source Tabs</h3>";
+			$page = "IP Media Router<br>Manage Source Tabs";
 	}
+	sif_header($page, "main.css");
+	sif_buttons($page);
 	print "<form method=\"post\" action=\"addtab.php\" name=\"addtab\">";
 	print "\n<input type=\"hidden\" name=\"type\" value=\"{$type}\">";
 	print "<table border=1 cellspacing=0 cellpadding=4>";
@@ -110,9 +82,4 @@ else
 }
 ?>
 </table>
-<hr>
-
-<div id="footer">
-&copy; 2009, Mark Patrick, BBC WS
-</div>
-</html>
+<?php sif_footer(); ?>

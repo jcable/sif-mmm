@@ -7,27 +7,26 @@
 
 <body>
 <?php
+	require 'connect.php';
+	$devices = array();
 	if (!empty($_REQUEST["text"]))
 	{
-
-		// Connect database.
-		require 'connect.php';
-		$gettext=$_REQUEST["text"];
-		$result=mysql_query("select * from redundancy where redundancy_text='$gettext'", $connection);
+		$text=$_REQUEST["text"];
+		$result=mysql_query("select * from redundancy where id='$text'", $connection);
 
 		while($row= mysql_fetch_array($result))
 		{
-		$text=$row["redundancy_text"];
-		$type=$row["redundancy_type"];
-		$main=$row["main"];
-		$reserve=$row["reserve"];
-		$tabindex=$row["tab_index"];
+			$type = $row["redundancy_type"];
+			$devices[$row["device"]] = array( type => $type,
+						active => $row["active"],
+						tabindex => $row["tab_index"]);
 		}
 		print "SIF Project - Configure Details for ".ucfirst(strtolower($type))." Pairing '$text'</h3>";
 	}
 	else
 	{
-		print "Error - Pairing Not Defined</h3>";
+		print "Pairing Not Defined Yet</h3>";
+		$type = "SOURCE";
 	}
 
 ?>
@@ -37,82 +36,21 @@
 <?
 	print "\n<input type=\"hidden\" name=\"text\" value=\"{$text}\">";
 ?>
-Main:
+Devices (2 or more):
 <br />
-<select name="main">
+<select multiple name="device">
 <?
-	require 'connect.php';
-	if ($type=="LISTENER")
-	{
-		$mresult=mysql_query("select * from listener order by listener asc", $connection);
+		$mresult=mysql_query("select id from logicaldevices where type='$type' order by id asc", $connection);
 		while($mrow= mysql_fetch_array($mresult))
 		{
-			if ($main == $mrow["listener"])
+			print "\n<option value=\"{$mrow["id"]}\"";
+			if (isset($devices[$mrow["id"]]))
 			{
-				print "\n<option value=\"{$mrow["listener"]}\" selected>{$mrow["listener"]}</option>";
+				print " selected";
 			}
-			else
-			{
-				print "\n<option value=\"{$mrow["listener"]}\">{$mrow["listener"]}</option>";
-			}
+			print ">{$mrow["listener"]}</option>";
 		}
 	}
-	else
-	{
-		$mresult=mysql_query("select * from source order by source asc", $connection);
-		while($mrow= mysql_fetch_array($mresult))
-		{
-			if ($main == $mrow["source"])
-			{
-				print "\n<option value=\"{$mrow["source"]}\" selected>{$mrow["source"]}</option>";
-			}
-			else
-			{
-				print "\n<option value=\"{$mrow["source"]}\">{$mrow["source"]}</option>";
-			}
-		}
-	}
-
-?>
-</select>
-</div>
-<div>
-Reserve:
-<br />
-<select name="reserve">
-<?
-	require 'connect.php';
-	if ($type=="LISTENER")
-	{
-		$rresult=mysql_query("select * from listener order by listener asc", $connection);
-		while($rrow= mysql_fetch_array($rresult))
-		{
-			if ($reserve == $rrow["listener"])
-			{
-				print "\n<option value=\"{$rrow["listener"]}\" selected>{$rrow["listener"]}</option>";
-			}
-			else
-			{
-				print "\n<option value=\"{$rrow["listener"]}\">{$rrow["listener"]}</option>";
-			}
-		}
-	}
-	else
-	{
-		$mresult=mysql_query("select * from source order by source asc", $connection);
-		while($rrow= mysql_fetch_array($mresult))
-		{
-			if ($reserve == $rrow["source"])
-			{
-				print "\n<option value=\"{$rrow["source"]}\" selected>{$rrow["source"]}</option>";
-			}
-			else
-			{
-				print "\n<option value=\"{$rrow["source"]}\">{$rrow["source"]}</option>";
-			}
-		}
-	}
-
 ?>
 </select>
 </div>
@@ -142,9 +80,4 @@ Tab:
 <input type=submit value="Save Changes">&nbsp<input type=reset value="Clear Changes">&nbsp;
 </form>
 </div>
-<hr>
-<a href="manageredundancy.php">Manage Redundancy Pairs</a><p>
-<div id="footer">
-&copy; 2009, Mark Patrick, BBC WS
-</div>
-</html>
+<?php sif_footer(); ?>

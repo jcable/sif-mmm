@@ -96,10 +96,11 @@ function crashswitchmon(mondest)
 	print "</tr><tr>";
 	$sourcecount=0;
 
-	$result=mysql_query("SELECT * FROM source where tab_index='$sourcetab' order by source asc", $connection);
+	$result=mysql_query("SELECT * FROM source where tab_index='$sourcetab' order by id asc", $connection);
 	while($row= mysql_fetch_array($result))
 	{
-		print "\n<td height=40 width=10% id=\"source{$sourcecount}\" class=\"raised\" onclick=\"toggleButton(this, /source/i);setmonsource('{$row[source]}');setsourcemon('yes');\"><b>{$row[source]}</b></td>";
+		$id = $row["id"];
+		print "\n<td height=40 width=10% id=\"source{$sourcecount}\" class=\"raised\" onclick=\"toggleButton(this, /source/i);setmonsource('{$id}');setsourcemon('yes');\"><b>{$id}</b></td>";
 		$sourcecount++;
 		if ($sourcecount % 10 == 0)
 		{
@@ -164,7 +165,7 @@ function crashswitchmon(mondest)
 	$result=mysql_query("SELECT * FROM service where tab_index='$servicetab' order by service asc", $connection);
 	while($row= mysql_fetch_array($result))
 	{
-		print "\n<td height=40 width=10% id=\"source{$sourcecount}\" class=\"raised\" onclick=\"toggleButton(this, /source/i);setmonsource('{$row[service]}');;setsourcemon('no')\"><b>{$row[service]}</b></td>";
+		print "\n<td height=40 width=10% id=\"source{$sourcecount}\" class=\"raised\" onclick=\"toggleButton(this, /source/i);setmonsource('{$row[service]}');setsourcemon('no')\"><b>{$row[service]}</b></td>";
 		$servicecount++;
 		$sourcecount++;
 		if ($servicecount % 10 == 0)
@@ -193,7 +194,7 @@ function crashswitchmon(mondest)
 	print "<td align=center height=40 width=10% id=\"source{$sourcecount}\" class=\"depressed\" onclick=\"toggleButton(this, /source/i);setmonsource('{$row[source]}');\"><b>OFF</b></td><td colspan=2>&nbsp;</td>";
 	print "<td height=40 width=10% height=60>&nbsp;</td>";
 	$moncount=0;
-	$result=mysql_query("SELECT * FROM listener left join service on service.service=listener.listener where role='MONITOR' order by listener asc", $connection);
+	$result=mysql_query("SELECT * FROM listener left join service on service.service=listener.id where role='MONITOR' order by listener.id asc", $connection);
 	while($row= mysql_fetch_array($result))
 	{
 

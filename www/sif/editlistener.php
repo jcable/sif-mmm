@@ -13,11 +13,11 @@
 		// Connect database.
 		require 'connect.php';
 		$getlistener=$_REQUEST["listener"];
-		$result=mysql_query("select * from listener where listener='$getlistener'", $connection);
+		$result=mysql_query("select * from listener where id='$getlistener'", $connection);
 
 		while($row= mysql_fetch_array($result))
 		{
-		$listener=$row["listener"];
+		$listener=$row["id"];
 		$listenerlongname=$row["listener_long_name"];
 		$enabled=$row["enabled"];
 		$locked=$row["locked"];
@@ -29,7 +29,6 @@
 		$owner=$row["owner"];
 		$notes=$row["notes"];
 		$pharosindex=$row["pharos_index"];
-		$vlchostname=$row["vlc_hostname"];
 
 		}
 		print "SIF Project - Configure Details for listener '$listener'</h3>";
@@ -132,14 +131,8 @@ Pharos Index:
 	print "\n<input type=\"text\" size=\"10\" maxlength=\"4\" value=\"{$pharosindex}\" name=\"pharosindex\"/>";
 ?>
 </div>
-<div>
-VLC Hostname:
-<br />
-<?
-	print "\n<input type=\"text\" size=\"100\" maxlength=\"256\" value=\"{$vlchostname}\" name=\"vlchostname\"/>";
-?>
-</div>
 
+<div>
 <div>
 Icon:
 <br />

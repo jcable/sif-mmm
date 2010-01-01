@@ -149,10 +149,11 @@ function servicepopup()
 	print "</tr><tr>";
 	$sourcecount=0;
 
-	$result=mysql_query("SELECT * FROM source where tab_index='$sourcetab' and enabled=1 and active=1 order by source asc", $connection);
+	$result=mysql_query("SELECT * FROM source where tab_index='$sourcetab' and enabled=1 and active=1 order by id asc", $connection);
 	while($row= mysql_fetch_array($result))
 	{
-		print "\n<td height=40 width=10% id=\"source{$sourcecount}\" class=\"raised\" onclick=\"toggleButton(this, /source/i);setsource('{$row[source]}');\"><b>{$row[source]}</b></td>";
+		$id = $row["id"];
+		print "\n<td height=40 width=10% id=\"source{$sourcecount}\" class=\"raised\" onclick=\"toggleButton(this, /source/i);setsource('{$id}');\"><b>{$id}</b></td>";
 		$sourcecount++;
 		if ($sourcecount % 10 == 0)
 		{

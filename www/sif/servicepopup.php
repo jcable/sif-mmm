@@ -25,7 +25,7 @@ while($row= mysql_fetch_array($result))
 	print "\nThe source for '{$service}' is '{$source}'";
 }
 print "\n<p>";
-$result=mysql_query("SELECT * FROM listener where current_service='$service' order by listener asc", $connection);
+$result=mysql_query("SELECT * FROM listener where current_service='$service' order by id asc", $connection);
 $numRows = mysql_num_rows($result);
 if($numRows==0)
 {
@@ -35,9 +35,9 @@ else
 {
 	print "\nService '{$service}' is currently routed to:";
 	print "\n<ul>";
-	while($row= mysql_fetch_array($result))
+	while($row=mysql_fetch_array($result))
 	{
-		print "\n<li>{$row[listener]}";
+		print "\n<li>{".$row["id"]."}";
 	}
 	print "\n</ul>";
 }

@@ -6,7 +6,7 @@ if (!empty($_REQUEST["source"]))
 	require 'connect.php';
 	$source=$_REQUEST["source"];
 	$enabled=intval($_REQUEST["enabled"]);
-	mysql_query("insert into source (source,enabled) values ('$source','$enabled')", $connection);
+	mysql_query("insert into source (id,enabled) values ('$source','$enabled')", $connection);
 }
 else
 {
