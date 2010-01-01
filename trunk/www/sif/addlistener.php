@@ -6,7 +6,7 @@ if (!empty($_REQUEST["listener"]))
 	require 'connect.php';
 	$listener=$_REQUEST["listener"];
 	$enabled=intval($_REQUEST["enabled"]);
-	mysql_query("insert into listener (listener,enabled) values ('$listener','$enabled')", $connection);
+	mysql_query("insert into listener (id,enabled) values ('$listener','$enabled')", $connection);
 }
 else
 {

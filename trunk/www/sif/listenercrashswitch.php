@@ -209,15 +209,14 @@ function servicepopup()
 	}
 	print "</tr><tr>";
 	$listenercount=0;
-	$result=mysql_query("SELECT * FROM listener where tab_index='$listenertab' and enabled=1 order by listener asc", $connection);
+	$result=mysql_query("SELECT * FROM listener where tab_index='$listenertab' and enabled=1 order by id asc", $connection);
 	while($row= mysql_fetch_array($result))
 	{
-		$currentservice="<font color=blue>(".$row[current_service].")</font>";
-		if ($currentservice == "<font color=blue>()</font>")
-		{
-			$currentservice="<font color=blue>(OFF)</font>";
-		}
-		if ($row[locked] ==1)
+		$cs = $row["current_service"];
+		if($cs == "")
+			$cs = "OFF";
+		$currentservice="<font color=blue>(".$cs.")</font>";
+		if ($row["locked"] == 1)
 		{
 			$currentservice= $currentservice."&nbsp;<b><font color=red>*H*</font></b>";
 		}

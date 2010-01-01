@@ -5,6 +5,8 @@
 	sif_buttons($page);
 ?>
 <ul>
+<li><a href="managephysicaldevices.php">Manage Physical Devices</a>
+<li><a href="managelogicaldevices.php">Manage Logical Devices</a>
 <li><a href="managesources.php">Manage Sources</a>
 <li><a href="manageservices.php">Manage Services</a>
 <li><a href="managelisteners.php">Manage Listeners</a>

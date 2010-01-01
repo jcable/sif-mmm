@@ -69,8 +69,4 @@ while($row= mysql_fetch_array($result))
 print "\n</table></div><p>";
 print "{$count} material entries in database";
 ?>
-<hr>
-<div id="footer">
-&copy; 2009, Mark Patrick, BBC WS
-</div>
-</html>
+<?php sif_footer(); ?>

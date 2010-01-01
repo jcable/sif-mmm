@@ -6,7 +6,7 @@ if (!empty($_REQUEST["text"]))
 	require 'connect.php';
 	$text=$_REQUEST["text"];
 	$type=$_REQUEST["type"];
-	mysql_query("insert into redundancy (redundancy_text,redundancy_type) values ('$text','$type')", $connection);
+	mysql_query("insert into redundancy (id,redundancy_type) values ('$text','$type')", $connection);
 }
 else
 {

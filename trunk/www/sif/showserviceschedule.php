@@ -78,8 +78,4 @@ while($row= mysql_fetch_array($result))
 print "\n</table></div>";
 print "\n<p>{$count} service event entries in database";
 ?>
-<hr>
-<div id="footer">
-&copy; 2009, Mark Patrick, BBC WS
-</div>
-</html>
+<?php sif_footer(); ?>

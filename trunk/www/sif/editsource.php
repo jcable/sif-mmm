@@ -1,35 +1,28 @@
-<html>
-<head>
-<title>SIF Project - Source Maintenance</title>
-</head>
-<link rel="stylesheet" type="text/css" href="main.css" media="screen,print">
-<h3><img src="wslogo.jpg" alt=""><br>
-
-<body>
 <?php
+if (isset($_REQUEST["edit"]))
+{
+	require_once("header.php");
+	$page = "Source Maintenance";
+	sif_header($page, "main.css");
 	if (!empty($_REQUEST["source"]))
 	{
 
 		// Connect database.
 		require 'connect.php';
 		$getsource=$_REQUEST["source"];
-		$result=mysql_query("select * from source where source='$getsource'", $connection);
+		$result=mysql_query("select * from source where id='$getsource'", $connection);
 
 		while($row= mysql_fetch_array($result))
 		{
-		$source=$row["source"];
-		$sourcelongname=$row["source_long_name"];
+		$source=$row["id"];
+		$sourcelongname=$row["long_name"];
 		$enabled=$row["enabled"];
-		$active=$row["active"];
 		$role=$row["role"];
 		$icon=$row["icon"];
 		$tabindex=$row["tab_index"];
 		$owner=$row["owner"];
 		$notes=$row["notes"];
 		$pharosindex=$row["pharos_index"];
-		$vlchostname=$row["vlc_hostname"];
-		$device=$row["device"];
-		$port=$row["port"];
 		}
 		print "SIF Project - Configure Details for Source '$source'</h3>";
 	}
@@ -42,62 +35,25 @@
 
 <div>
 <form method="post" action="updatesource.php" name="updatesource">
-<?
-	print "\n<input type=\"hidden\" name=\"originalsource\" value=\"{$source}\">";
-?>
+<input type="hidden" name="originalsource" value="<?php print $source;?>"/>
 <div>
 Source:
 <br />
-<?
-	print "\n<input type=\"text\" size=\"100\" maxlength=\"10\" value=\"{$source}\" name=\"source\"/>";
-?>
+<input type="text" size="100" maxlength="10" value="<?php print $source;?>" name="source"/>
 </div>
 <div>
 Long Name:
 <br />
-<?
-	print "\n<input type=\"text\" size=\"100\" maxlength=\"256\" value=\"{$sourcelongname}\" name=\"sourcelongname\"/>";
-?>
+<input type="text" size="100" maxlength="256" value="<?php print $sourcelongname?>" name="sourcelongname"/>
 </div>
 <div>
-Enabled:<br>
+Enabled:<br/>
+<input type="checkbox" name="enabled" value="1"
 <?
 	if(intval($enabled)==1)
 	{
-		print "\n<input type=\"checkbox\" name=\"enabled\" checked=\"checked\" value=\"1\">";
+		print "checked";
 	}
-	else
-	{
-		print "\n<input type=\"checkbox\" name=\"enabled\" value=\"1\">";
-	}
-?>
-</div>
-<div>
-Active:<br>
-<?
-	if(intval($active)==1)
-	{
-		print "\n<input type=\"checkbox\" name=\"active\" checked=\"checked\" value=\"1\">";
-	}
-	else
-	{
-		print "\n<input type=\"checkbox\" name=\"active\" value=\"1\">";
-	}
-?>
-</div>
-<div>
-Device:
-<br />
-<?
-	print "\n<input type=\"text\" size=\"10\" maxlength=\"64\" value=\"{$device}\" name=\"device\"/>";
-?>
-</div>
-<div>
-<div>
-Port:
-<br />
-<?
-	print "\n<input type=\"text\" size=\"10\" maxlength=\"64\" value=\"{$port}\" name=\"port\"/>";
 ?>
 </div>
 <div>
@@ -123,13 +79,6 @@ Pharos Index:
 <br />
 <?
 	print "\n<input type=\"text\" size=\"10\" maxlength=\"4\" value=\"{$pharosindex}\" name=\"pharosindex\"/>";
-?>
-</div>
-<div>
-VLC Hostname:
-<br />
-<?
-	print "\n<input type=\"text\" size=\"100\" maxlength=\"256\" value=\"{$vlchostname}\" name=\"vlchostname\"/>";
 ?>
 </div>
 
@@ -182,9 +131,21 @@ Notes:
 <input type=submit value="Save Changes">&nbsp<input type=reset value="Clear Changes">&nbsp;
 </form>
 </div>
-<hr>
-<a href="managesources.php">Manage sources</a><p>
-<div id="footer">
-&copy; 2009, Mark Patrick, BBC WS
-</div>
-</html>
+<?
+	sif_footer();
+}
+if (isset($_REQUEST["delete"]))
+{
+	if (!empty($_REQUEST["source"]))
+	{
+		header("location: managesources.php");
+		require 'connect.php';
+		$source=$_REQUEST["source"];
+		mysql_query("delete from source where id='$source'", $connection);
+	}
+	else
+	{
+		echo "Error - Missing source - please go back and check the data.";
+	}
+}
+?>

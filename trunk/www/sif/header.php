@@ -53,7 +53,7 @@ function sif_header($titleword, $stylesheet)
 <!--
 function confirmSubmit()
 {
-var agree=confirm("Are you sure you wish to delete this line of schedule?");
+var agree=confirm("Are you sure you wish to delete this entry?");
 if (agree)
 	return true ;
 else
