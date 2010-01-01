@@ -37,7 +37,7 @@ Defines parameters for all services.
 ||tab_index	||int(11)	||Holding tab for crash panels||
 ||owner	||varchar(64)||	Defines which users can use this source||
 ||notes	||text	||Placeholder for general notes||
-||pharos_index	||int(11)	||
+||pharos_index	||int(11)	||Pharos index for compatability with puffin messages||
 
 
 == Listener Table ==
