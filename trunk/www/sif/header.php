@@ -31,7 +31,7 @@ function sif_buttons($titleword)
 	sif_button($titleword, "servicecrashswitch.php?sourcetab=1&servicetab=1", "Crash Services");
 	sif_button($titleword, "listenercrashswitch.php?listenertab=1&servicetab=1", "Crash Listeners");
 	sif_button($titleword, "monitor.php", "Monitoring");
-	sif_button($titleword, "sourcepairs.php", "Redundant Sources");
+	sif_button($titleword, "sourcepairs.php", "Redundancy Switching");
 	print "</tr>";
 	print "</table>\n";
 	print "<h3>SIF Project - $titleword</h3>\n";

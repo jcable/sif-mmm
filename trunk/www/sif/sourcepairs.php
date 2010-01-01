@@ -1,6 +1,6 @@
 <?php
 	require_once("header.php");
-	$page = "Redundant Sources";
+	$page = "Redundancy Switching";
 	sif_header($page, "crashswitch.css");
 ?>
 <SCRIPT TYPE="text/javascript">
@@ -32,13 +32,13 @@ function crashswitchmon(mondest)
 </SCRIPT>
 <?php
 	sif_buttons($page);
-	if (isset($_REQUEST["pairtab"]))
+	if (isset($_REQUEST["tab"]))
 	{
-		$pairtab=$_REQUEST["pairtab"];
+		$tab=$_REQUEST["tab"];
 	}
 	else
 	{
-		$pairtab=1;
+		$tab=1;
 	}
 	require 'connect.php';
 ?>
@@ -46,21 +46,20 @@ function crashswitchmon(mondest)
 <table width=100% height=600 border-0><tr><tr><td valign=top>
 <table width=100% border=0>
 <tr>
-<input type="hidden" name="pairtab" value="<?php print $pairtab;?>">
 <?php
 	$sourcetabcount=0;
-	$result=mysql_query("SELECT DISTINCT tab_text, r.tab_index, id FROM redundancy_tabs t left join redundancy r on t.tab_index=r.tab_index where enabled=1 and redundancy_type='SOURCE' order by t.tab_index asc", $connection);
+	$result=mysql_query("SELECT DISTINCT tab_text, r.tab_index, id FROM redundancy_tabs t left join redundancy r on t.tab_index=r.tab_index where enabled=1 and type='SOURCE' order by t.tab_index asc", $connection);
 	while($row= mysql_fetch_array($result))
 	{
 		print "\n<th width=20% ";
-		if ($pairtab==$row[tab_index])
+		if ($tab==$row[tab_index])
 		{
 			print "class=\"depressed\"";
 		}
 		else
 		{
 			print "class=\"raised\" ";
-			print "onclick=\"location.href='sourcepairs.php?pairtab=".$row["tab_index"]."\"";
+			print "onclick=\"location.href='sourcepairs.php?tab=".$row["tab_index"]."\"";
 		}
 		print ">".$row["tab_text"]."</th>";
 		$pairtabcount++;
@@ -79,61 +78,54 @@ function crashswitchmon(mondest)
 			$emptyslotsinrow--;
 		}
 	}
-	print "</tr><tr>";
-	$paircount=0;
+	print "</tr>";
 	// now do the actual redundancy pairs
-	$result=mysql_query("SELECT * FROM redundancy where tab_index='$pairtab' order by id asc", $connection);
+	$result=mysql_query("SELECT * FROM redundancy where tab_index='$tab' order by id asc", $connection);
 	$sources = array();
 	$listeners = array();
-	while($row= mysql_fetch_array($result))
+	while($row = mysql_fetch_array($result))
 	{
-		$id=$row["id"];
-		$p = array(device => $row["device"], active => $row["active"]);
-		if ($row[redundancy_type]=="LISTENER")
+		$id = $row["id"];
+		if ($row["type"]=="LISTENER")
 		{
-			if(isset($listeners[$id]))
-			{
-				$listeners[$id][] = $p;
-			}
-			else
-			{
-				$listeners[$id] = array($p);
-			}
+			if(!isset($listeners[$id]))
+				$listeners[$id] = array();
+			$listeners[$id][] = $row;
 		}
 		else
 		{
-			if(isset($sources[$id]))
-			{
-				$sources[$id][] = $p;
-			}
-			else
-			{
-				$sources[$id] = array($p);
-			}
+			if(!isset($sources[$id]))
+				$sources[$id] = array();
+			$sources[$id][] = $row;
 		}
 	}
-	// this shows listener pairs, so this should never be seen, but just in case it is ever needed...
+	// this shows listeners - we expect listeners to be always both active so we omit them
+	/*
 	foreach($listeners as $p)
 	{
 		print "\n<td width=20% class=\"unused\"><i><b>Listener Pair: $id</b></i><br>";
 		print "\nMain: $main<br>";
 		print "\nReserve: $reserve</td>";
 	}
-	foreach($sources as $p)
+	*/
+	print "\n<tr>";
+	$i = 0;
+	foreach($sources as $id => $devices)
 	{
 		print "\n<td width=20% class=\"unused\">";
 
-		print "\n<form method=\"post\" action=\"setactive.php\" name=\"switchpair$paircount\">";
-		print "\n<input type=\"hidden\" name=\"source\" value=\"$id\">";
-		print "\n<input type=\"hidden\" name=\"tab\" value=\"$pairtab\">";
+		print "\n<form method=\"post\" action=\"setactive.php\" name=\"source$i\">";
+		print "\n<input type=\"hidden\" name=\"id\" value=\"$id\">";
+		print "\n<input type=\"hidden\" name=\"tab\" value=\"$tab\">";
 
 		print "<table border=0 width=100%><tr>";
-		print "<td><i><b><font color=blue>Source: $id</font></b></i><br>";
-		foreach($p as $d)
+		print "<td><i><b><font color=\"blue\">Source: $id</font></b></i><br>";
+		foreach($devices as $d)
 		{
 			$device = $d["device"];
+			$idx = $d["idx"];
 			$active = $d["active"];
-			print "\n<input type=\"radio\" name=\"device\" value=\"$device\"";
+			print "\n<input type=\"radio\" name=\"idx\" value=\"$idx\"";
 			if ($active)
 			{
 				print " checked";

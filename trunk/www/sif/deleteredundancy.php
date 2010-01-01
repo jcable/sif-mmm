@@ -1,10 +1,11 @@
 <?
-if (!empty($_REQUEST["text"]))
+if (isset($_REQUEST["id"]) && isset($_REQUEST["idx"]))
 {
 	header("location: manageredundancy.php");
 	require 'connect.php';
-	$text=$_REQUEST["text"];
-	mysql_query("delete from redundancy where id='$text'", $connection);
+	$id=$_REQUEST["id"];
+	$idx=$_REQUEST["idx"];
+	mysql_query("delete from redundancy where id='$id' and idx=$idx", $connection);
 }
 else
 {

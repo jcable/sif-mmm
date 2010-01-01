@@ -149,7 +149,7 @@ function servicepopup()
 	print "</tr><tr>";
 	$sourcecount=0;
 
-	$result=mysql_query("SELECT * FROM source where tab_index='$sourcetab' and enabled=1 and active=1 order by id asc", $connection);
+	$result=mysql_query("SELECT * FROM source where tab_index='$sourcetab' and enabled=1 order by id asc", $connection);
 	while($row= mysql_fetch_array($result))
 	{
 		$id = $row["id"];

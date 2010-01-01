@@ -94,11 +94,16 @@ function servicepopup()
 </SCRIPT>
 <?php
 	sif_buttons($page);
-	if (!empty($_REQUEST["servicetab"]) &&
-	!empty($_REQUEST["listenertab"]))
+	if (isset($_REQUEST["servicetab"]) && isset($_REQUEST["listenertab"]))
 	{
-	$servicetab=$_REQUEST["servicetab"];
-	$listenertab=$_REQUEST["listenertab"];
+		$servicetab=$_REQUEST["servicetab"];
+		$listenertab=$_REQUEST["listenertab"];
+	}
+	else
+	{
+		$servicetab=1;
+		$listenertab=1;
+	}
 	require 'connect.php';
 ?>
 <form method="post" action="crashlistener.php" name="crashlistener">
@@ -111,7 +116,7 @@ function servicepopup()
 
 <table width=100% border=0><tr><th bgcolor="#CCCCFF" colspan=10>Services:</th></tr>
 <tr>
-<?
+<?php
 	print "\n<input type=\"hidden\" name=\"servicetab\" value=\"{$servicetab}\">";
 	print "\n<input type=\"hidden\" name=\"listenertab\" value=\"{$listenertab}\">";
 	$servicetabcount=0;
@@ -128,19 +133,19 @@ function servicepopup()
 		}
 		$servicetabcount++;
 		if ($servicetabcount % 5 == 0)
-				{
+		{
 					print "</tr><tr>";
 		}
 	}
 	$emptyslotsinrow=(5-($servicetabcount % 5));
-		// this will pad out any remaining slots so the table formats correctly
-		if ($emptyslotsinrow < 5)
+	// this will pad out any remaining slots so the table formats correctly
+	if ($emptyslotsinrow < 5)
+	{
+		while($emptyslotsinrow > 0)
 		{
-			while($emptyslotsinrow > 0)
-			{
-				print "<th height=40 width=20%  class=\"unused\" colspan=2>&nbsp;</td>";
-				$emptyslotsinrow--;
-			}
+			print "<th height=40 width=20%  class=\"unused\" colspan=2>&nbsp;</td>";
+			$emptyslotsinrow--;
+		}
 	}
 	print "</tr><tr>";
 	$servicecount=0;
@@ -167,7 +172,7 @@ function servicepopup()
 	}
 	$servicecount++;
 	print "</tr>";
-	?>
+?>
 </table>
 </td></tr></table>
 </div>
@@ -178,7 +183,7 @@ function servicepopup()
 <table width=100% border=0><tr><th bgcolor="#CCCCFF" colspan=10>Listeners:</th></tr>
 
 <tr>
-<?
+<?php
 	$listenertabcount=0;
 	$result=mysql_query("SELECT * FROM listener_tabs where enabled=1 order by tab_index asc", $connection);
 	while($row= mysql_fetch_array($result))
@@ -212,16 +217,18 @@ function servicepopup()
 	$result=mysql_query("SELECT * FROM listener where tab_index='$listenertab' and enabled=1 order by id asc", $connection);
 	while($row= mysql_fetch_array($result))
 	{
+		$id = $row["id"];
 		$cs = $row["current_service"];
 		if($cs == "")
 			$cs = "OFF";
-		$currentservice="<font color=blue>(".$cs.")</font>";
+		$currentservice="<font color=\"blue\">($cs)</font>";
 		if ($row["locked"] == 1)
 		{
-			$currentservice= $currentservice."&nbsp;<b><font color=red>*H*</font></b>";
+			$currentservice .= '&nbsp;<b><font color="red">*H*</font></b>';
 		}
 
-		print "\n<td height=40 width=10% id=\"listener{$listenercount}\" class=\"raised\" onclick=\"toggleButton(this, /listener/i);setlistener('{$row[listener]}');\"><b>{$row[listener]}</b><br><i>{$currentservice}</i></td>";
+
+		print "\n<td height=40 width=10% id=\"listener{$listenercount}\" class=\"raised\" onclick=\"toggleButton(this, /listener/i);setlistener('$id');\"><b>$id</b><br><i>$currentservice</i></td>";
 		$listenercount++;
 		if ($listenercount % 10 == 0)
 		{
@@ -245,7 +252,7 @@ function servicepopup()
 <div id="takebuttons">
 <table width=100%>
 <tr>
-<?
+<?php
 	$servicecount++;
 	print "<td align=center height=40 width=10% id=\"service{$servicecount}\" class=\"depressed\" onclick=\"toggleButton(this, /service/i);setservice('OFF');\"><b>OFF</b></td>";
 ?>
@@ -259,12 +266,4 @@ function servicepopup()
 </tr></table>
 </form>
 </div>
-<?
-}
-else
-{
-	echo "Error - Required tabs not defined<br>";
-}
-	sif_footer();
-?>
-
+<?php sif_footer(); ?>

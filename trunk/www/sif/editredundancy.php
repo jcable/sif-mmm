@@ -1,58 +1,60 @@
-<html>
-<head>
-<title>SIF Project - Redundancy Maintenance</title>
-</head>
-<link rel="stylesheet" type="text/css" href="main.css" media="screen,print">
-<h3><img src="wslogo.jpg" alt=""><br>
-
-<body>
 <?php
+	require_once("header.php");
+	$page = "Redundancy Maintenance";
+	sif_header($page, "main.css");
+	sif_buttons($page);
 	require 'connect.php';
-	$devices = array();
-	if (!empty($_REQUEST["text"]))
+	if (isset($_REQUEST["id"]) && isset($_REQUEST["idx"]))
 	{
-		$text=$_REQUEST["text"];
-		$result=mysql_query("select * from redundancy where id='$text'", $connection);
+		$id=$_REQUEST["id"];
+		$idx=$_REQUEST["idx"];
+		$result=mysql_query("select * from redundancy where id='$id' and idx=$idx", $connection);
 
 		while($row= mysql_fetch_array($result))
 		{
-			$type = $row["redundancy_type"];
-			$devices[$row["device"]] = array( type => $type,
-						active => $row["active"],
-						tabindex => $row["tab_index"]);
+			$type = $row["type"];
+			$device = $row;
 		}
-		print "SIF Project - Configure Details for ".ucfirst(strtolower($type))." Pairing '$text'</h3>";
+		print "SIF Project - Configure Details for ".ucfirst(strtolower($type))." '$id'</h3>";
 	}
 	else
 	{
-		print "Pairing Not Defined Yet</h3>";
 		$type = "SOURCE";
+		$device = array(type => $type, pcm => "", active => 0, tabindex => 1);
 	}
 
 ?>
 
 <div>
 <form method="post" action="updateredundancy.php" name="updatesource">
-<?
-	print "\n<input type=\"hidden\" name=\"text\" value=\"{$text}\">";
-?>
-Devices (2 or more):
-<br />
-<select multiple name="device">
-<?
-		$mresult=mysql_query("select id from logicaldevices where type='$type' order by id asc", $connection);
-		while($mrow= mysql_fetch_array($mresult))
+<?php
+	print "\n<input type=\"hidden\" name=\"id\" value=\"$id\">";
+	print "\n<input type=\"hidden\" name=\"idx\" value=\"$idx\">";
+	$result=mysql_query("select id from physicaldevices order by id asc", $connection);
+	print "\n<br/>Device ";
+	print "<select name=\"device\">";
+	$sel = false;
+	while($row = mysql_fetch_array($result))
+	{
+		$id = $row["id"];
+		print "\n<option value=\"$id\"";
+		if ($id == $device["device"])
 		{
-			print "\n<option value=\"{$mrow["id"]}\"";
-			if (isset($devices[$mrow["id"]]))
-			{
-				print " selected";
-			}
-			print ">{$mrow["listener"]}</option>";
+			print " selected=\"selected\"";
+			$sel = true;
 		}
+		print ">$id</option>";
 	}
+	print '<option';
+	if (!$sel)
+	{
+		print " selected=\"selected\"";
+	}
+	print ' value="">None</option>';
+	print '</select>';
+	print " PCM ";
+	print "<input name=\"pcm$i\"/>";
 ?>
-</select>
 </div>
 <div>
 Tab:
