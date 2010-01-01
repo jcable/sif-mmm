@@ -84,7 +84,7 @@ There are two instances for now - an active instance and a planning instance.
 ||source||	varchar(10)||	Source Index||
 ||first_date||	timestamp	||First date event is valid on||
 ||last_date	||timestamp	||Last date event is valid on||
-||days	||varchar(7)||	SMTWTFS (replace with _ if not used)||
+||days	||varchar(7)||	SMTWTFS (replace with __ if not used)||
 ||start_time||	time	||Start time for event||
 ||duration	||time	||Duration of event||
 ||start_mode	||varchar(1)||	F=Fixed (default), V=Variable (for future expansion)||
@@ -119,7 +119,7 @@ There are two instances for now - an active instance and a planning instance.
 
 This holds additional data about material used for playout and ROT. It closely follows the Pharos Playtime design for ease of compatibility with CSS or possible future integration into Pharos Mediator.
 
-||FIELD NAME	||TYPE	DESCRIPTION||
+||FIELD NAME	||TYPE||	DESCRIPTION||
 ||material_id	||varchar(20)||	The unique material identifier||
 ||duration	||time	||The duration of the material||
 ||delete_after	||date	||Date after which material can be deleted||
