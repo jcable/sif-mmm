@@ -78,22 +78,22 @@ This is the main table for scheduling sources to services. It is closely based o
 
 There are two instances for now - an active instance and a planning instance.
 
-FIELD NAME	TYPE	DESCRIPTION
-service_event_id	bigint(20)	The unique event identifier
-service	varchar(10)	Destination Service
-source	varchar(10)	Source Index
-first_date	timestamp	First date event is valid on
-last_date	timestamp	Last date event is valid on
-days	varchar(7)	SMTWTFS (replace with _ if not used)
-start_time	time	Start time for event
-duration	time	Duration of event
-start_mode	varchar(1)	F=Fixed (default), V=Variable (for future expansion)
-name	text	Event name from CSS
-material_id	text	Link to Material table for material to play out if source is a playout source
-rot	tinyint(1)	Defines this event must be recorded if true,using details referenced by Material_ID
-ptt	varchar(1)	F=Full, D=Display, otherwise None
-ptt_time	int(11)	PTT Alarm Time (1-10 minutes)
-owner	varchar(64)	Ownership data for this package
+||FIELD NAME	||TYPE	||DESCRIPTION||
+||service_event_id	||bigint(20)	||The unique event identifier||
+||service||	varchar(10)||	Destination Service||
+||source||	varchar(10)||	Source Index||
+||first_date||	timestamp	||First date event is valid on||
+||last_date	||timestamp	||Last date event is valid on||
+||days	||varchar(7)||	SMTWTFS (replace with _ if not used)||
+||start_time||	time	Start time for event||
+||duration	||time	Duration of event||
+||start_mode	||varchar(1)||	F=Fixed (default), V=Variable (for future expansion)||
+||name	||text	||Event name from CSS||
+||material_id	||text	Link to Material table for material to play out if source is a playout source||
+||rot	||tinyint(1)||	Defines this event must be recorded if true,using details referenced by Material_ID||
+||ptt	||varchar(1)	||F=Full, D=Display, otherwise None||
+||ptt_time||	int(11)||	PTT Alarm Time (1-10 minutes)||
+||owner||	varchar(64)||	Ownership data for this package||
 
 
 == Listener Schedule ==
