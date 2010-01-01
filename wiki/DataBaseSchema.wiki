@@ -1,4 +1,4 @@
-#Documents the database
+#summary Documents the database
  
 = Architecture Description =
 
@@ -12,19 +12,17 @@ The routeing tables are persistent across a total system restart – it comes ba
 = Tables =
 == Source Table ==
 Defines parameters for all sources
-FIELD NAME	TYPE	DESCRITION
-source	varchar(10)	The actual unique source name
-schedule_source	varchar(10)	The source name referenced in the service schedule table. This need not be unique where there are dual sources defined
-source_long_name	text	Verbose source name
-enabled	tinyint(1)	If false then source not available
-active	tinyint(1)	Defaults to true, can be false when source is part of a redundant group.
-role	varchar(8)	PLAYOUT or CAPTURE
-pharos_index	int(11)	Pharos index for compatability with puffin messages
-vlc_hostname	varchar(64)	Identifier for VLC 
-icon	text	Link to icon file used on crash panels
-tab_index	int(11)	Holding tab for crash panels
-owner	varchar(64)	Defines which users can use this source
-notes	text	Placeholder for general notes
+||FIELD NAME||	TYPE||	DESCRIPTION||
+||source	||varchar(10)	||The actual unique source name||
+||source_long_name	||text||	Verbose source name||
+||enabled||	tinyint(1)	||If false then source not available||
+||role	||varchar(8)	||PLAYOUT or CAPTURE||
+||pharos_index||	int(11)||	Pharos index for compatability with puffin messages||
+||vlc_hostname||	varchar(64)	||Identifier for VLC ||
+||icon	||text	||Link to icon file used on crash panels||
+||tab_index	int(11)	||Holding tab for crash panels||
+||owner||	varchar(64)	||Defines which users can use this source||
+||notes	||text||	Placeholder for general notes||
 
 == Service Table ==
 Defines parameters for all services. 
@@ -52,8 +50,8 @@ Defines parameters for all destinations
 ||default_service||	varchar(10)||	If this is populated and there is nothing in Current_Service then link to this service.||
 ||auto_service	||tinyint(4)	||If true then a service is automatically created for this listener.||
 ||role	||varchar(8)	||Can be OUTPUT, RECORD or MONITOR. If MONITOR then Auto_Service must be true||
-||pharos_index||	||int(11)	Pharos index for compatability with puffin messages||
-||vlc_hostname	||varchar(64)	Assumes each host only handles one listener||
+||pharos_index	||int(11)||	Pharos index for compatability with puffin messages||
+||vlc_hostname	||varchar(64)||	Assumes each host only handles one listener||
 ||icon	||text	||Link to icon file used on crash panels||
 ||tab_index||	int(11)||	Holding tab for crash panels||
 ||owner	||varchar(64)	||Defines which users can use this source||
