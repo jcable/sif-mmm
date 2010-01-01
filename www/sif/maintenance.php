@@ -6,11 +6,10 @@
 ?>
 <ul>
 <li><a href="managephysicaldevices.php">Manage Physical Devices</a>
-<li><a href="managelogicaldevices.php">Manage Logical Devices</a>
 <li><a href="managesources.php">Manage Sources</a>
 <li><a href="manageservices.php">Manage Services</a>
 <li><a href="managelisteners.php">Manage Listeners</a>
-<li><a href="manageredundancy.php">Manage Redundancy Pairs</a>
+<li><a href="manageredundancy.php">Manage Logical to Physical Device Mapping &amp; Redundancy</a>
 <p>
 <li><a href="managetabs.php?type=source">Manage Source Tabs</a>
 <li><a href="managetabs.php?type=services">Manage Services Tabs</a>

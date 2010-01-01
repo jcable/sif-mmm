@@ -1,16 +1,16 @@
 <?php
-if (!empty($_REQUEST["pair"]))
+if (isset($_REQUEST["id"]) && isset($_REQUEST["idx"]))
 {
-	header("location: sourcepairs.php?pairtab=".$_REQUEST["pairtab"]);
+	header("location: sourcepairs.php?tab=".$_REQUEST["tab"]);
 	require 'connect.php';
-	$id=$_REQUEST["pair"];
-	$device=$_REQUEST["device"];
-	mysql_query("update redundancy set active=0 where id='$id' and device!='device'", $connection);
-	mysql_query("update redundancy set active=1 where id='$id' and device='device'", $connection);
+	$id=$_REQUEST["id"];
+	$idx=$_REQUEST["idx"];
+	mysql_query("update redundancy set active=0 where id='$id' and idx!=$idx", $connection);
+	mysql_query("update redundancy set active=1 where id='$id' and idx=$idx", $connection);
 }
 else
 {
-	header("location: pairtab.php?pairtab=1");
+	header("location: sourcepairs.php?tab=1");
 	echo "Error - no pair defined";
 }
 ?>

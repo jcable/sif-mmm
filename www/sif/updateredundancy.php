@@ -1,15 +1,21 @@
 <?
-if (!empty($_REQUEST["text"]))
+if (isset($_REQUEST["id"]))
 {
-phpinfo();
 	header("location: manageredundancy.php");
 	require 'connect.php';
-	$text=$_REQUEST["text"];
-	$main=$_REQUEST["device"];
+	$id=$_REQUEST["id"];
+	$idx=$_REQUEST["idx"];
 	$tabindex=$_REQUEST["tabindex"];
-	mysql_query("update redundancy set main='$main' where redundancy_text='$text'", $connection);
-	mysql_query("update redundancy set reserve='$reserve' where redundancy_text='$text'", $connection);
-	mysql_query("update redundancy set tab_index='$tabindex' where redundancy_text='$text'", $connection);
+	$device = $_REQUEST["device"];
+	$pcm = $_REQUEST["pcm"];
+	mysql_query(<<<EOT
+		insert into redundancy
+			(id, idx, device, pcm, tab_index)
+			values('$id', $idx, '$device', '$pcm', $tabindex)
+		on duplicate key update
+		device = '$device', pcm = '$pcm', tab_index = $tabindex
+EOT
+, $connection);
 }
 else
 {
