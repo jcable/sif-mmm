@@ -25,7 +25,9 @@ Defines parameters for all sources
 ||notes	||text||	Placeholder for general notes||
 
 == Service Table ==
+
 Defines parameters for all services. 
+
 ||FIELD NAME||	TYPE	||DESCRIPTION||
 ||service	||varchar(10)	||The actual service name||
 ||service_long_name||	text	||Verbose service name||
@@ -38,7 +40,9 @@ Defines parameters for all services.
 ||pharos_index	||int(11)	||||
  
 == Listener Table ==
+
 Defines parameters for all destinations
+
 ||FIELD NAME	||TYPE||	DESCRIPTION||
 ||listener	||varchar(10)	||The actual listener name||
 ||schedule_listener||	varchar(10)	||The listener name referenced in the listener schedule||
@@ -59,12 +63,13 @@ Defines parameters for all destinations
 == Redundancy Table ==
 
 Defines redundancy pairs. Assumes at present that redundancy is pairs, could be expanded for larger redundancy groups.
-FIELD NAME	TYPE	DESCRITION
-redundancy_text	varchar(10)	Name for redundancy pair
-redundancy_type	varchar(8)	Can be SOURCE or LISTENER
-main	varchar(10)	Source or Listener 1
-reserve	varchar(10)	Source or Listener 2
-tab_index	int(11)	The tab on which this pair is held
+
+||FIELD NAME	TYPE	DESCRITION
+||id	||varchar(64)||	id of the SOURCE or LISTENER||
+||type	||varchar(8)	||Can be SOURCE or LISTENER||
+||device|| varchar(64)	||physical device the source/listener is hosted on||
+||pcm ||varchar(64)	||alsa pcm||
+||tab_index||	int(11)	||The tab on which this pair is held||
 
 == Service Schedule ==
 
