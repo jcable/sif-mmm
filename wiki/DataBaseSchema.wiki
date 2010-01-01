@@ -85,11 +85,11 @@ There are two instances for now - an active instance and a planning instance.
 ||first_date||	timestamp	||First date event is valid on||
 ||last_date	||timestamp	||Last date event is valid on||
 ||days	||varchar(7)||	SMTWTFS (replace with _ if not used)||
-||start_time||	time	Start time for event||
-||duration	||time	Duration of event||
+||start_time||	time	||Start time for event||
+||duration	||time	||Duration of event||
 ||start_mode	||varchar(1)||	F=Fixed (default), V=Variable (for future expansion)||
 ||name	||text	||Event name from CSS||
-||material_id	||text	Link to Material table for material to play out if source is a playout source||
+||material_id	||text	||Link to Material table for material to play out if source is a playout source||
 ||rot	||tinyint(1)||	Defines this event must be recorded if true,using details referenced by Material_ID||
 ||ptt	||varchar(1)	||F=Full, D=Display, otherwise None||
 ||ptt_time||	int(11)||	PTT Alarm Time (1-10 minutes)||
