@@ -20,23 +20,22 @@ Defines parameters for all sources
 ||pharos_index||	int(11)||	Pharos index for compatability with puffin messages||
 ||vlc_hostname||	varchar(64)	||Identifier for VLC ||
 ||icon	||text	||Link to icon file used on crash panels||
-||tab_index	int(11)	||Holding tab for crash panels||
+||tab_index	||int(11)	||Holding tab for crash panels||
 ||owner||	varchar(64)	||Defines which users can use this source||
 ||notes	||text||	Placeholder for general notes||
 
 == Service Table ==
 Defines parameters for all services. 
-FIELD NAME	TYPE	DESCRITION
-service	varchar(10)	The actual service name
-service_long_name	text	Verbose service name
-enabled	tinyint(1)	If false then service not available
-locked	tinyint(1)	If true then routeing to this service is locked
-current_source	varchar(10)	The current source routed to this service. Used to recover after power up and for tallies.
-icon	text	Link to icon file used on crash panels
-tab_index	int(11)	Holding tab for crash panels
-owner	varchar(64)	Defines which users can use this source
-notes	text	Placeholder for general notes
-pharos_index	int(11)	
+||FIELD NAME||	TYPE	||DESCRIPTION||
+||service	||varchar(10)	||The actual service name||
+||service_long_name||	text	||Verbose service name||
+||enabled	||tinyint(1)	||If false then service not available||
+||locked	||tinyint(1)	||If true then routeing to this service is locked||
+||current_source||	varchar(10)||	The current source routed to this service. Used to recover after power up and for tallies.||
+||tab_index	||int(11)	||Holding tab for crash panels||
+||owner	||varchar(64)||	Defines which users can use this source||
+||notes	||text	||Placeholder for general notes||
+||pharos_index	||int(11)	||||
  
 == Listener Table ==
 Defines parameters for all destinations
