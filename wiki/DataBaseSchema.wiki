@@ -84,7 +84,7 @@ There are two instances for now - an active instance and a planning instance.
 ||source||	varchar(10)||	Source Index||
 ||first_date||	timestamp	||First date event is valid on||
 ||last_date	||timestamp	||Last date event is valid on||
-||days	||varchar(7)||	SMTWTFS (replace with __ if not used)||
+||days	||varchar(7)||	SMTWTFS (replace with `_` if not used)||
 ||start_time||	time	||Start time for event||
 ||duration	||time	||Duration of event||
 ||start_mode	||varchar(1)||	F=Fixed (default), V=Variable (for future expansion)||
@@ -108,12 +108,12 @@ There are two instances for now - an active instance and a planning instance.
 ||service||	varchar(10)	||Source Index||
 ||first_date||	timestamp	||First date event is valid on||
 ||last_date	||timestamp||	Last date event is valid on||
-||days||	varchar(7)||	SMTWTFS (replace with __ if not used)||
+||days||	varchar(7)||	SMTWTFS (replace with `_` if not used)||
 ||start_time	||time	||Start time for event||
 ||duration	||time	||Duration of event||
 ||start_mode	||varchar(1)||	F=Fixed (default), V=Variable (for future expansion)||
-||name	text	||Event name from CSS||
-||owner	varchar(64)	||Ownership data for this package||
+||name	||text	||Event name from CSS||
+||owner	||varchar(64)	||Ownership data for this package||
  
 == Material Table ==
 
