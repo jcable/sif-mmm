@@ -132,6 +132,7 @@ This holds additional data about material used for playout and ROT. It closely f
 
 
 == Asrun Table (or Log) ==
+
 A very basic log of switching derived from the schedules and added to at each transition. Could equally well be written to log files rather than the database.
 
 ||FIELD NAME	||TYPE||	DESCRIPTION||
