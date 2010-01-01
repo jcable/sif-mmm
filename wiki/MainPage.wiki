@@ -19,3 +19,4 @@ We current have the following sub-pages:
   * [Discovery]
   * AlsaStuff
   * [VLC]
+  * DatabaseSchema
