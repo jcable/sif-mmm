@@ -1,6 +1,12 @@
 
 using System;
+using System.Text;
+using System.Xml;
+using System.Web;
+using System.Net;
 using System.Net.NetworkInformation;
+using System.Web.Services;
+using System.IO;
 using Mono.Zeroconf;
 
 public class SifClient
@@ -65,11 +71,68 @@ public class SifClient
             if (adapter.Description.CompareTo("eth0")==0)
                 address = adapter.GetPhysicalAddress();
         }
-        url += "/register?mac=" + address.ToString();
-        Console.WriteLine(url);
+        url += "/register.php";
+
+        HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
+        request.Method = "POST";
+        string parameter = "";
+
+        parameter += "mac=" + address.ToString();
+        //parameter += "testing=testing1&";
+        //parameter += "demo=demo1";
+
+        byte[] byteArray = Encoding.UTF8.GetBytes(parameter);
+
+        request.ContentType = "application/x-www-form-urlencoded";
+        request.ContentLength = byteArray.Length;
+        Stream dataStream = request.GetRequestStream();
+        dataStream.Write(byteArray, 0, byteArray.Length);
+        dataStream.Close();
+
+
+        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+        StreamReader reader = new StreamReader(response.GetResponseStream());
+        string r = reader.ReadToEnd();
+
+        Console.WriteLine(r);
+
+        XmlDocument xd = new XmlDocument();
+        xd.LoadXml(r);
+        parseRegisterResponse(xd);
         done = true;
     }
 
+    private static void parseRegisterResponse(XmlDocument xd)
+    {
+        XmlNodeList xn = xd.GetElementsByTagName("response");
 
+        string result = xn[0].InnerText;
+        Console.WriteLine(result);
+	xn = null;
+
+        xn = xd.GetElementsByTagName("edge");
+        foreach (XmlNode node in xn)
+        {
+            XmlNodeList childNodes = node.ChildNodes;
+
+	    string type, id, pcm;
+		bool active;
+
+            //And walk through them
+            foreach (XmlNode child in childNodes)
+            {
+		switch(child.Name)
+		{
+		case "id":
+		case "type":
+		case "pcm":
+		case "active":
+		}
+            }
+            childNodes = null;
+        }
+	xn = null;
+
+    }
 }
-
