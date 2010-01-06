@@ -7,7 +7,6 @@ if (!empty($_REQUEST["originallistener"]))
 	$listener=$_REQUEST["listener"];
 	$listenerlongname=$_REQUEST["listenerlongname"];
 	$enabled=intval($_REQUEST["enabled"]);
-	$locked=intval($_REQUEST["locked"]);
 	$defaultservice=$_REQUEST["defaultservice"];
 	$autoservice=intval($_REQUEST["autoservice"]);
 	$role=$_REQUEST["role"];
@@ -23,7 +22,6 @@ if (!empty($_REQUEST["originallistener"]))
 		$tabindex=0;
 	}
 	mysql_query("update listener set listener_long_name='$listenerlongname' where id='$originallistener'", $connection);
-	mysql_query("update listener set locked='$locked' where id='$originallistener'", $connection);
 	mysql_query("update listener set default_service='$defaultservice' where id='$originallistener'", $connection);
 	mysql_query("update listener set auto_service='$autoservice' where id='$originallistener'", $connection);
 	mysql_query("update listener set enabled='$enabled' where id='$originallistener'", $connection);

@@ -7,7 +7,6 @@ if (!empty($_REQUEST["originalservice"]))
 	$service=$_REQUEST["service"];
 	$servicelongname=$_REQUEST["servicelongname"];
 	$enabled=intval($_REQUEST["enabled"]);
-	$locked=intval($_REQUEST["locked"]);
 	$icon=$_REQUEST["icon"];
 	$tabindex=$_REQUEST["tabindex"];
 	$owner=$_REQUEST["owner"];
@@ -15,7 +14,6 @@ if (!empty($_REQUEST["originalservice"]))
 	$pharosindex=$_REQUEST["pharosindex"];
 	mysql_query("update service set service_long_name='$servicelongname' where service='$originalservice'", $connection);
 	mysql_query("update service set enabled='$enabled' where service='$originalservice'", $connection);
-	mysql_query("update service set locked='$locked' where service='$originalservice'", $connection);
 	mysql_query("update service set icon='$icon' where service='$originalservice'", $connection);
 	mysql_query("update service set tab_index='$tabindex' where service='$originalservice'", $connection);
 	mysql_query("update service set owner='$owner' where service='$originalservice'", $connection);
