@@ -1,12 +1,13 @@
 <?
 if (!empty($_REQUEST["text"]))
 {
-
 	header("location: manageredundancy.php");
 	require 'connect.php';
 	$text=$_REQUEST["text"];
-	$type=$_REQUEST["type"];
-	mysql_query("insert into redundancy (id,type) values ('$text','$type')", $connection);
+	if($_REQUEST["type"] == "SOURCE")
+		mysql_query("insert into source2device (id) values ('$text')", $connection);
+	else
+		mysql_query("insert into listener2device (id) values ('$text')", $connection);
 }
 else
 {

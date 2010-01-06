@@ -99,11 +99,15 @@ function servicepopup()
 </SCRIPT>
 <?php
 	sif_buttons($page);
-	if (!empty($_REQUEST["sourcetab"]) &&
-	!empty($_REQUEST["servicetab"]))
-	{
-	$sourcetab=$_REQUEST["sourcetab"];
-	$servicetab=$_REQUEST["servicetab"];
+	if (isset($_REQUEST["sourcetab"]))
+		$sourcetab=$_REQUEST["sourcetab"];
+	else
+		$sourcetab=1;
+	
+	if(isset($_REQUEST["servicetab"]))
+		$servicetab=$_REQUEST["servicetab"];
+	else
+		$servicetab=1;
 	require 'connect.php';
 ?>
 <form method="post" action="crashservice.php" name="crashservice">
@@ -115,7 +119,7 @@ function servicepopup()
 <table width=100% height=240 border-0><tr><tr><td valign=top>
 <table width=100% border=0><tr><th bgcolor="#CCCCFF" colspan=10>Sources:</th></tr>
 <tr>
-<?
+<?php
 	print "\n<input type=\"hidden\" name=\"sourcetab\" value=\"{$sourcetab}\">";
 	print "\n<input type=\"hidden\" name=\"servicetab\" value=\"{$servicetab}\">";
 	$sourcetabcount=0;
@@ -181,7 +185,7 @@ function servicepopup()
 <table width=100% border=0><tr><th bgcolor="#CCCCFF" colspan=10>Services:</th></tr>
 
 <tr>
-<?
+<?php
 	$servicetabcount=0;
 	$result=mysql_query("SELECT * FROM services_tabs where enabled=1 order by tab_index asc", $connection);
 	while($row= mysql_fetch_array($result))
@@ -249,7 +253,7 @@ function servicepopup()
 <div id="takebuttons">
 <table width=100%>
 <tr>
-<?
+<?php
 	$sourcecount++;
 	print "<td align=center height=40 width=10% id=\"source{$sourcecount}\" class=\"depressed\" onclick=\"toggleButton(this, /source/i);setsource('OFF');\"><b>OFF</b></td>";
 ?>
@@ -264,13 +268,6 @@ function servicepopup()
 </tr></table>
 </form>
 </div>
-<?
-}
-else
-{
-	echo "Error - Required tabs not defined<br>";
-	echo $sourcetab;
-	echo $servicetab;
-}
+<?php
 	sif_footer();
 ?>

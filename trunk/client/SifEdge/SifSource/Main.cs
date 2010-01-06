@@ -6,7 +6,7 @@ namespace SifSource
 	{
 		public static void Main(string[] args)
 		{
-			Console.WriteLine("Hello World!");
+            Source source = new Source("http://localhost/sif", "Player 1", "sif-03", "analog2", false);
 		}
 	}
 }

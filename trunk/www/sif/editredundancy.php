@@ -8,11 +8,15 @@
 	{
 		$id=$_REQUEST["id"];
 		$idx=$_REQUEST["idx"];
-		$result=mysql_query("select * from redundancy where id='$id' and idx=$idx", $connection);
+		$type=$_REQUEST["type"];
+		if($type=="SOURCE")
+			$table = "source2device";
+		else
+			$table = "listener2device";
+		$result=mysql_query("select * from $table where id='$id' and idx=$idx", $connection);
 
 		while($row= mysql_fetch_array($result))
 		{
-			$type = $row["type"];
 			$device = $row;
 		}
 		print "SIF Project - Configure Details for ".ucfirst(strtolower($type))." '$id'</h3>";
@@ -20,7 +24,8 @@
 	else
 	{
 		$type = "SOURCE";
-		$device = array(type => $type, pcm => "", active => 0, tabindex => 1);
+		$table = "source2device";
+		$device = array(pcm => "", active => 0, tabindex => 1);
 	}
 
 ?>
@@ -61,8 +66,7 @@ Tab:
 <br />
 <select name="tabindex">
 <?
-	require 'connect.php';
-	$tabresult=mysql_query("select * from redundancy_tabs order by tab_index asc", $connection);
+	$tabresult=mysql_query("select * from ${table}_tabs order by tab_index asc", $connection);
 	while($tabrow= mysql_fetch_array($tabresult))
 	{
 		if ($tabindex == $tabrow["tab_index"])

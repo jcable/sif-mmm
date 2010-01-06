@@ -28,8 +28,8 @@ function sif_buttons($titleword)
 	sif_button($titleword, "showserviceschedule.php", "Service Schedules");
 	sif_button($titleword, "showlistenerschedule.php", "Listener Schedules");
 	sif_button($titleword, "showmaterial.php", "Material Info");
-	sif_button($titleword, "servicecrashswitch.php?sourcetab=1&servicetab=1", "Crash Services");
-	sif_button($titleword, "listenercrashswitch.php?listenertab=1&servicetab=1", "Crash Listeners");
+	sif_button($titleword, "servicecrashswitch.php", "Crash Services");
+	sif_button($titleword, "listenercrashswitch.php", "Crash Listeners");
 	sif_button($titleword, "monitor.php", "Monitoring");
 	sif_button($titleword, "sourcepairs.php", "Redundancy Switching");
 	print "</tr>";
