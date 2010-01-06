@@ -58,29 +58,30 @@ function crashswitchmon(mondest)
 <input type="hidden" name="mon" value="NULL">
 <input type="hidden" name="sourcemon" value="yes">
 <div id="sourcebuttons">
-<table width=100% height=240 border-0><tr><tr><td valign=top>
-
-<table width=100% border=0><tr><th bgcolor="#CCCCFF" colspan=10>Sources:</th></tr>
+<table width="100%" height="240" border="0"><tr><tr><td valign=top">
+<table width="100%" border="0"><tr><th bgcolor="#CCCCFF" colspan="10">Sources:</th></tr>
 <tr>
-<?
-	print "\n<input type=\"hidden\" name=\"sourcetab\" value=\"{$sourcetab}\">";
-	print "\n<input type=\"hidden\" name=\"servicetab\" value=\"{$servicetab}\">";
+<?php
+	print "\n<input type=\"hidden\" name=\"sourcetab\" value=\"$sourcetab\">";
+	print "\n<input type=\"hidden\" name=\"servicetab\" value=\"$servicetab\">";
 	$sourcetabcount=0;
 	$result=mysql_query("SELECT * FROM source_tabs where enabled=1 order by tab_index asc", $connection);
 	while($row= mysql_fetch_array($result))
 	{
 		if ($sourcetab==$row[tab_index])
 		{
-			print "\n<th height=40 width=20% class=\"depressed\" colspan=2>{$row[tab_text]}</th>";
+			print "\n<th height=\"40\" width=\"20%\" class=\"depressed\" colspan=\"2\">".$row[tab_text]."</th>";
 		}
 		else
 		{
-			print "\n<th height=40 width=20% class=\"raised\" colspan=2 onclick=\"location.href='monitor.php?sourcetab={$row[tab_index]}&servicetab={$servicetab}';\">{$row[tab_text]}</th>";
+			$url = "monitor.php?sourcetab=".$row[tab_index]."&servicetab=$servicetab";
+			print "\n<th height=\"40\" width=\"20%\" class=\"raised\" colspan=\"2\"";
+			print " onclick=\"location.href='$url';\">".$row[tab_text]."</th>";
 		}
 		$sourcetabcount++;
 		if ($sourcetabcount % 5 == 0)
-				{
-					print "</tr><tr>";
+		{
+			print "</tr><tr>";
 		}
 	}
 	$emptyslotsinrow=(5-($sourcetabcount % 5));
@@ -89,7 +90,7 @@ function crashswitchmon(mondest)
 		{
 			while($emptyslotsinrow > 0)
 			{
-				print "<th height=40 width=20%  class=\"unused\" colspan=2>&nbsp;</td>";
+				print "<th height=40 width=20% class=\"unused\" colspan=2>&nbsp;</td>";
 				$emptyslotsinrow--;
 			}
 	}
@@ -130,23 +131,23 @@ function crashswitchmon(mondest)
 <table width=100% border=0><tr><th bgcolor="#CCCCFF" colspan=10>Services:</th></tr>
 
 <tr>
-<?
+<?php
 	$servicetabcount=0;
 	$result=mysql_query("SELECT * FROM services_tabs where enabled=1 order by tab_index asc", $connection);
 	while($row= mysql_fetch_array($result))
 	{
 		if ($servicetab==$row[tab_index])
 		{
-				print "\n<th height=40 width=20% class=\"depressed\" colspan=2>{$row[tab_text]}</th>";
-				}
-				else
-				{
-					print "\n<th height=40 width=20% class=\"raised\" colspan=2 onclick=\"location.href='monitor.php?servicetab={$row[tab_index]}&sourcetab={$sourcetab}';\">{$row[tab_text]}</th>";
-				}
-				$servicetabcount++;
-				if ($servicetabcount % 5 == 0)
-						{
-							print "</tr><tr>";
+			print "\n<th height=40 width=20% class=\"depressed\" colspan=2>{$row[tab_text]}</th>";
+		}
+		else
+		{
+			print "\n<th height=40 width=20% class=\"raised\" colspan=2 onclick=\"location.href='monitor.php?servicetab={$row[tab_index]}&sourcetab={$sourcetab}';\">{$row[tab_text]}</th>";
+		}
+		$servicetabcount++;
+		if ($servicetabcount % 5 == 0)
+		{
+			print "</tr><tr>";
 		}
 	}
 	$emptyslotsinrow=(5-($servicetabcount % 5));

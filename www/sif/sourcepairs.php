@@ -48,7 +48,7 @@ function crashswitchmon(mondest)
 <tr>
 <?php
 	$sourcetabcount=0;
-	$result=mysql_query("SELECT DISTINCT tab_text, r.tab_index, id FROM redundancy_tabs t left join redundancy r on t.tab_index=r.tab_index where enabled=1 and type='SOURCE' order by t.tab_index asc", $connection);
+	$result=mysql_query("SELECT DISTINCT tab_text, r.tab_index, id FROM source2device_tabs t left join source2device r on t.tab_index=r.tab_index where enabled=1 order by t.tab_index asc", $connection);
 	while($row= mysql_fetch_array($result))
 	{
 		print "\n<th width=20% ";
@@ -80,27 +80,26 @@ function crashswitchmon(mondest)
 	}
 	print "</tr>";
 	// now do the actual redundancy pairs
-	$result=mysql_query("SELECT * FROM redundancy where tab_index='$tab' order by id asc", $connection);
+	$result=mysql_query("SELECT * FROM source2device where tab_index='$tab' order by id asc", $connection);
 	$sources = array();
+	while($row = mysql_fetch_array($result))
+	{
+		$id = $row["id"];
+		if(!isset($sources[$id]))
+			$sources[$id] = array();
+		$sources[$id][] = $row;
+	}
+	// this shows listeners - we expect listeners to be always both active so we omit them
+	/*
+	$result=mysql_query("SELECT * FROM listener2device where tab_index='$tab' order by id asc", $connection);
 	$listeners = array();
 	while($row = mysql_fetch_array($result))
 	{
 		$id = $row["id"];
-		if ($row["type"]=="LISTENER")
-		{
-			if(!isset($listeners[$id]))
-				$listeners[$id] = array();
-			$listeners[$id][] = $row;
-		}
-		else
-		{
-			if(!isset($sources[$id]))
-				$sources[$id] = array();
-			$sources[$id][] = $row;
-		}
+		if(!isset($listeners[$id]))
+			$listeners[$id] = array();
+		$listeners[$id][] = $row;
 	}
-	// this shows listeners - we expect listeners to be always both active so we omit them
-	/*
 	foreach($listeners as $p)
 	{
 		print "\n<td width=20% class=\"unused\"><i><b>Listener Pair: $id</b></i><br>";

@@ -1,4 +1,4 @@
-<?
+<?php
 if (isset($_REQUEST["id"]))
 {
 	header("location: manageredundancy.php");
@@ -9,7 +9,7 @@ if (isset($_REQUEST["id"]))
 	$device = $_REQUEST["device"];
 	$pcm = $_REQUEST["pcm"];
 	mysql_query(<<<EOT
-		insert into redundancy
+		insert into source2device
 			(id, idx, device, pcm, tab_index)
 			values('$id', $idx, '$device', '$pcm', $tabindex)
 		on duplicate key update
