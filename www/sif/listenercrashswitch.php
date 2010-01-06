@@ -222,11 +222,6 @@ function servicepopup()
 		if($cs == "")
 			$cs = "OFF";
 		$currentservice="<font color=\"blue\">($cs)</font>";
-		if ($row["locked"] == 1)
-		{
-			$currentservice .= '&nbsp;<b><font color="red">*H*</font></b>';
-		}
-
 
 		print "\n<td height=40 width=10% id=\"listener{$listenercount}\" class=\"raised\" onclick=\"toggleButton(this, /listener/i);setlistener('$id');\"><b>$id</b><br><i>$currentservice</i></td>";
 		$listenercount++;

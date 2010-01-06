@@ -20,7 +20,6 @@
 		$service=$row["service"];
 		$servicelongname=$row["service_long_name"];
 		$enabled=$row["enabled"];
-		$locked=$row["locked"];
 		$icon=$row["icon"];
 		$tabindex=$row["tab_index"];
 		$owner=$row["owner"];
@@ -73,19 +72,6 @@ Enabled:<br>
 	else
 	{
 		print "\n<input type=\"checkbox\" name=\"enabled\" value=\"1\">";
-	}
-?>
-</div>
-<div>
-Locked:<br>
-<?
-	if(intval($locked)==1)
-	{
-		print "\n<input type=\"checkbox\" name=\"locked\" checked=\"checked\" value=\"1\">";
-	}
-	else
-	{
-		print "\n<input type=\"checkbox\" name=\"locked\" value=\"1\">";
 	}
 ?>
 </div>

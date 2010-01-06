@@ -224,10 +224,6 @@ function servicepopup()
 		{
 			$currentsource="<font color=blue>(OFF)</font>";
 		}
-		if ($row[locked] ==1)
-		{
-			$currentsource= $currentsource."&nbsp;<b><font color=red>*H*</font></b>";
-		}
 
 		print "\n<td height=40 width=10% id=\"service{$servicecount}\" class=\"raised\" onclick=\"toggleButton(this, /service/i);setservice('{$row[service]}');\"><b>{$row[service]}</b><br><i>{$currentsource}</i></td>";
 		$servicecount++;
