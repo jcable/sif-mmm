@@ -14,7 +14,9 @@ print "<x>";
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	foreach ($rows as $rs)
 	{
+		print "<row>";
 		foreach ($rs as $k => $v) { print "<$k>$v</$k>\n"; }
+		print "</row>";
 	}
 print "</x>";
 ?>
