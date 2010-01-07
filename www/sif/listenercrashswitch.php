@@ -218,7 +218,7 @@ function servicepopup()
 	while($row= mysql_fetch_array($result))
 	{
 		$id = $row["id"];
-		$sql = "SELECT event_time, service, listener FROM event";
+		$sql = "SELECT event_time, service, listener FROM listener_events";
 		$sql .= " WHERE listener = '$id'";
 		$sql .= " AND event_time < now() ORDER BY event_time DESC LIMIT 1";
 		$r=mysql_query($sql, $connection);

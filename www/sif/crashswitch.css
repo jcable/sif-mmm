@@ -42,7 +42,7 @@ table {
 	font-style: italic
 }
 
-.sourcebuttons {
+#sourcebuttons {
 	position: absolute; 
 	overflow:auto; 
 	top:100px; 
@@ -59,8 +59,6 @@ table {
 	right:0; 
 	margin:8; 
 }
-
-
 
 #takebuttons {
 	position: absolute; 

@@ -43,6 +43,7 @@ ALSO we should have a priority field in the schedule which would allow it to wor
 
 	$sender = new Sender();
 	$sender->send($_REQUEST["service"], "refresh");
+	$sender->send($_REQUEST["previous_source"], "refresh");
 	$sender->send($_REQUEST["source"], "refresh");
 	$sender->close();
 

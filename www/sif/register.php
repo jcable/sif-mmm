@@ -32,8 +32,7 @@ print "<physical>";
          }
 print "</physical>";
 }
-$stmt = $dbh->prepare("SELECT * FROM redundancy WHERE device=?");
-
+$stmt = $dbh->prepare("SELECT * FROM source2device WHERE device=?");
 	$stmt->bindParam(1, $id);
         $stmt->execute();
        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -45,6 +44,19 @@ print "<source>";
        foreach ($rs as $k => $v) { print "<$k>$v</$k>\n"; }
          }
 print "</source>";
+}
+$stmt = $dbh->prepare("SELECT * FROM listener2device WHERE device=?");
+	$stmt->bindParam(1, $id);
+        $stmt->execute();
+       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+if(count($rows)>0)
+{
+print "<listener>";
+       foreach ($rows as $rs)
+    {
+       foreach ($rs as $k => $v) { print "<$k>$v</$k>\n"; }
+         }
+print "</listener>";
 }
 print "<response>OK + $mac</response>";
 print "</x>";
