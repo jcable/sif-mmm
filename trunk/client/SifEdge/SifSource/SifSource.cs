@@ -22,6 +22,35 @@ using SimplePublishSubscribe;
 
 namespace SifSource
 {
+    class MediaEvent
+    {
+        public MediaEvent(XmlNode node)
+        {
+            XmlNodeList childNodes = node.ChildNodes;
+            foreach (XmlNode child in childNodes)
+            {
+                Console.WriteLine(child.Name+" "+child.InnerXml);
+            }
+            childNodes = null;
+        }
+    }
+
+    class MediaEventSchedule
+    {
+        public MediaEvent[] schedule;
+
+        public MediaEventSchedule(XmlDocument xd)
+        {
+            XmlNodeList xn = xd.GetElementsByTagName("row");
+            schedule = new MediaEvent[xn.Count];
+            int i = 0;
+            foreach (XmlNode n in xn)
+            {
+                schedule[i++] = new MediaEvent(n);
+            }
+        }
+    }
+
 	class ScheduleRecord
 	{
         public ScheduleRecord(XmlNode node)
@@ -60,12 +89,31 @@ namespace SifSource
             childNodes = null;
         }
 
-        private string service;
+        public override string ToString()
+        {
+            DateTime d=new DateTime();
+            string s = "{ " + service;
+            if (first_date != d)
+                s += ", "+first_date.ToString();
+            if (last_date != d)
+                s += ", "+last_date.ToString();
+            if (days != "")
+                s += ", "+days;
+            s += ", "+start.ToString() + ", " + duration.ToString();
+            if (material_id != "")
+                s += ", "+material_id;
+            if(rot)
+                s += ", rot";
+            s+="}";
+            return s;
+        }
+
+        public string service;
         private DateTime first_date, last_date;
         private string days;
-        private DateTime start;
+        public DateTime start;
         private TimeSpan duration;
-        private string material_id;
+        public string material_id;
         private bool rot;
     }
 
@@ -86,6 +134,23 @@ namespace SifSource
 
 	}
 
+    class EventBasedSchedule
+    {
+        public ScheduleRecord[] schedule;
+
+        public EventBasedSchedule(XmlDocument xd)
+        {
+            XmlNodeList xn = xd.GetElementsByTagName("row");
+            schedule = new ScheduleRecord[xn.Count];
+            int i = 0;
+            foreach (XmlNode n in xn)
+            {
+                schedule[i++] = new ScheduleRecord(n);
+            }
+        }
+
+    }
+
 	class Source
 	{
 		private string url;
@@ -93,6 +158,8 @@ namespace SifSource
 		private string device, pcm;
 		private bool active;
 		private RecordBasedSchedule rsched;
+        private EventBasedSchedule esched;
+        private MediaEventSchedule msched;
 		              
 		public Source(string url, string id, string device, string pcm, bool active)
 		{
@@ -100,35 +167,73 @@ namespace SifSource
 			this.id = id;
             this.device = device;
             this.pcm = pcm;
-			fetchSchedule();
-			writeSchedule();
-			runEncoder();
+            refresh();
 			subscribe();
 			if(active)
 				setactive();
 			else
 				setinactive();
 		}
-		
-		private void fetchSchedule()
+
+        private void refresh()
+        {
+            fetchSchedule();
+            writeSchedule();
+            runEncoder();
+        }
+
+        private XmlDocument fetch(string url)
+        {
+            WebClient myClient = new WebClient();
+            Stream response = myClient.OpenRead(url);
+            StreamReader reader = new StreamReader(response);
+            string r = reader.ReadToEnd();
+            XmlDocument xd = new XmlDocument();
+            xd.LoadXml(r);
+            response.Close();
+            return xd;
+        }
+
+        private void fetchSchedule()
+        {
+            Console.WriteLine("fetching schedule");
+            esched = new EventBasedSchedule(fetch(url + "/serviceeventschedule.php?source=" + id));
+        }
+
+        private void fetchParams(string service)
+        {
+            Console.WriteLine("fetching params for "+service);
+            msched = new MediaEventSchedule(fetch(url + "/serviceparams.php?service=" + service));
+        }
+
+        private void fetchRSchedule()
 		{
             Console.WriteLine("fetching schedule");
-            WebClient myClient = new WebClient();
-			Stream response = myClient.OpenRead(url+"/serviceschedule.php?source="+id);
-	        StreamReader reader = new StreamReader(response);
-	        string r = reader.ReadToEnd();	
-	        XmlDocument xd = new XmlDocument();
-	        xd.LoadXml(r);
-			rsched = new RecordBasedSchedule(xd);
-			response.Close();
+            rsched = new RecordBasedSchedule(fetch(url + "/serviceschedule.php?source=" + id));
 		}
-		private void writeSchedule()
+
+        private void writeSchedule()
 		{
-		}
+            DateTime now = System.DateTime.Now;
+            ScheduleRecord current = null;
+            foreach (ScheduleRecord s in esched.schedule)
+            {
+                Console.WriteLine(s.ToString());
+                if(current==null)
+                    current = s;
+                if (s.start <= now && s.start > current.start)
+                    current = s;
+            }
+            if (current != null)
+            {
+                fetchParams(current.service);
+            }
+        }
 		private void runEncoder()
 		{
 		}
-		private void subscribe()
+
+        private void subscribe()
 		{
 			// TODO get MQ host from zeroconf or web server
             string hostName = "dev.rabbitmq.com";
@@ -171,7 +276,7 @@ namespace SifSource
                         setinactive();
                     break;
                 case "refresh":
-                    fetchSchedule();
+                    refresh();
                     break;
             }
         }
