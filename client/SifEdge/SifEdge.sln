@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C# Express 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SifSource", "SifSource\SifSource.csproj", "{20AB1975-D48A-4C52-BAAD-8D2F6C65C9CE}"
 EndProject
 Global
@@ -13,6 +13,9 @@ Global
 		{20AB1975-D48A-4C52-BAAD-8D2F6C65C9CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20AB1975-D48A-4C52-BAAD-8D2F6C65C9CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20AB1975-D48A-4C52-BAAD-8D2F6C65C9CE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = SifSource\SifSource.csproj
