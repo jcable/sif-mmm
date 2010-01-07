@@ -221,7 +221,7 @@ function servicepopup()
 	$result=mysql_query("SELECT * FROM service where tab_index='$servicetab' and enabled=1 order by service asc", $connection);
 	while($row= mysql_fetch_array($result))
 	{
-		$sql = "SELECT event_time, service, source FROM event";
+		$sql = "SELECT event_time, service, source FROM service_events";
 		$sql .= " WHERE service = '".$row["service"]."'";
 		$sql .= " AND event_time < now() AND source IS NOT NULL ORDER BY event_time DESC LIMIT 1";
 		$r=mysql_query($sql, $connection);
