@@ -131,11 +131,11 @@ namespace SifSource
 		private void subscribe()
 		{
 			// TODO get MQ host from zeroconf or web server
-            string hostName = "localhost";
+            string hostName = "dev.rabbitmq.com";
             int portNumber = 5672;
             string exchangeName = "sif";
             string routingKey = id;
-			string queueName = "some guid";
+			string queueName = System.Guid.NewGuid().ToString();
             Listener listener = new Listener(exchangeName, hostName, portNumber, routingKey, queueName);
             listener.MessageReceived += new MessageHandler(DoMessage);
             listener.listen();

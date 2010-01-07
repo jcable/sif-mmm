@@ -6,7 +6,8 @@ namespace SifSource
 	{
 		public static void Main(string[] args)
 		{
-            Source source = new Source("http://localhost/sif", "Player 1", "sif-03", "analog2", false);
+            Source source = new Source("http://ws12.dyndns.ws/sif", "Player 1", "sif-03", "analog2", false);
+			Console.WriteLine(source.ToString());
 		}
 	}
 }
