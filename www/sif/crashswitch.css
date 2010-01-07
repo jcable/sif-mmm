@@ -33,7 +33,16 @@ table {
 	table-layout: fixed;
 }
 
-#sourcebuttons {
+.servicelabel {
+	font-weight: bold
+}
+
+.sourcelabel {
+	color: blue;
+	font-style: italic
+}
+
+.sourcebuttons {
 	position: absolute; 
 	overflow:auto; 
 	top:100px; 

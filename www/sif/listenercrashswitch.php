@@ -218,12 +218,19 @@ function servicepopup()
 	while($row= mysql_fetch_array($result))
 	{
 		$id = $row["id"];
-		$cs = $row["current_service"];
+		$sql = "SELECT event_time, service, listener FROM event";
+		$sql .= " WHERE listener = '$id'";
+		$sql .= " AND event_time < now() ORDER BY event_time DESC LIMIT 1";
+		$r=mysql_query($sql, $connection);
+		$ev = mysql_fetch_array($r);
+		$cs = $ev["service"];
 		if($cs == "")
 			$cs = "OFF";
-		$currentservice="<font color=\"blue\">($cs)</font>";
-
-		print "\n<td height=40 width=10% id=\"listener{$listenercount}\" class=\"raised\" onclick=\"toggleButton(this, /listener/i);setlistener('$id');\"><b>$id</b><br><i>$currentservice</i></td>";
+		print "\n<td height=40 width=10% id=\"listener{$listenercount}\" class=\"raised\" onclick=\"toggleButton(this, /listener/i);setlistener('$id');\">";
+		print "<span class=\"servicelabel\">$id</span>";
+		print "<br>";
+		print "<span class=\"sourcelabel\">($cs)</span>";
+		print "</td>";
 		$listenercount++;
 		if ($listenercount % 10 == 0)
 		{
