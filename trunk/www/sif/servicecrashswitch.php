@@ -23,8 +23,9 @@ function setsource(source) {
 	document.crashservice.source.value = source;
 }
 // set service variable
-function setservice(service) {
+function setservice(service,currentsource) {
 	document.crashservice.service.value = service;
+	document.crashservice.previous_source.value = currentsource;
 }
 // toggles hold button and variable
 function togglehold(elementObj)
@@ -111,6 +112,7 @@ function servicepopup()
 	require 'connect.php';
 ?>
 <form method="post" action="crashservice.php" name="crashservice">
+<input type="hidden" name="previous_source" value="OFF">
 <input type="hidden" name="source" value="OFF">
 <input type="hidden" name="service" value="NULL">
 <input type="hidden" name="hold" value="0">
@@ -219,13 +221,25 @@ function servicepopup()
 	$result=mysql_query("SELECT * FROM service where tab_index='$servicetab' and enabled=1 order by service asc", $connection);
 	while($row= mysql_fetch_array($result))
 	{
-		$currentsource="<font color=blue>(".$row[current_source].")</font>";
-		if ($currentsource == "<font color=blue>()</font>")
+		$sql = "SELECT event_time, service, source FROM event";
+		$sql .= " WHERE service = '".$row["service"]."'";
+		$sql .= " AND event_time < now() AND source IS NOT NULL ORDER BY event_time DESC LIMIT 1";
+		$r=mysql_query($sql, $connection);
+		$ev = mysql_fetch_array($r);
+		$currentsource=$ev["source"];
+		if ($currentsource == "")
 		{
-			$currentsource="<font color=blue>(OFF)</font>";
+			$currentsource="OFF";
 		}
 
-		print "\n<td height=40 width=10% id=\"service{$servicecount}\" class=\"raised\" onclick=\"toggleButton(this, /service/i);setservice('{$row[service]}');\"><b>{$row[service]}</b><br><i>{$currentsource}</i></td>";
+		$onclick = "toggleButton(this, /service/i);";
+		$onclick .= "setservice('{$row[service]}','$currentsource');";
+		print "\n<td height=40 width=10% id=\"service{$servicecount}\" class=\"raised\"";
+		print " onclick=\"$onclick\">";
+		print "<span class=\"servicelabel\">".$row["service"]."</span>";
+		print "<br>";
+		print "<span class=\"sourcelabel\">(".$currentsource.")</span>";
+		print "</td>";
 		$servicecount++;
 		if ($servicecount % 10 == 0)
 		{
