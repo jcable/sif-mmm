@@ -41,6 +41,7 @@ namespace SimplePublishSubscribe
     {
         public event MessageHandler MessageReceived;
         QueueingBasicConsumer consumer;
+		string queueName;
         
         public Listener(string exchangeName, string hostName, int portNumber, string key, string queueName)
             : base(exchangeName, key, hostName, portNumber)
@@ -49,8 +50,14 @@ namespace SimplePublishSubscribe
             channel.QueueBind(queueName, exchangeName, routingKey, false, null);
             consumer = new QueueingBasicConsumer(channel);
             channel.BasicConsume(queueName, null, consumer);
+			this.queueName = queueName;
         }
 
+		public void alsoListenFor(string key)
+		{
+            channel.QueueBind(queueName, exchangeName, routingKey, false, null);
+		}
+		
         public void listen()
         {
             while (true)
