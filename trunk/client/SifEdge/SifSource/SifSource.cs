@@ -15,10 +15,10 @@ publishes a dns-sd service for itself (not really needed)
 controls a vlc instance
 */
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Net;
-using System.Diagnostics;
 using SimplePublishSubscribe;
 
 namespace SifSource
@@ -38,16 +38,15 @@ namespace SifSource
 
     class MediaEventSchedule
     {
-        public MediaEvent[] schedule;
+        public List<MediaEvent> schedule;
 
         public MediaEventSchedule(XmlDocument xd)
         {
             XmlNodeList xn = xd.GetElementsByTagName("row");
-            schedule = new MediaEvent[xn.Count];
-            int i = 0;
+            schedule = new List<MediaEvent>(xn.Count);
             foreach (XmlNode n in xn)
             {
-                schedule[i++] = new MediaEvent(n);
+                schedule.Add(new MediaEvent(n));
             }
         }
     }
@@ -120,16 +119,15 @@ namespace SifSource
 
     class RecordBasedSchedule
 	{
-        ScheduleRecord[] schedule;
+        List<ScheduleRecord> schedule;
 
 		public RecordBasedSchedule(XmlDocument xd)
 		{
             XmlNodeList xn = xd.GetElementsByTagName("row");
-            schedule = new ScheduleRecord[xn.Count];
-            int i=0;
+            schedule = new List<ScheduleRecord>(xn.Count);
             foreach (XmlNode n in xn)
             {
-                schedule[i++] = new ScheduleRecord(n);
+                schedule.Add(new ScheduleRecord(n));
             }
 		}
 
@@ -137,19 +135,17 @@ namespace SifSource
 
     class EventBasedSchedule
     {
-        public ScheduleRecord[] schedule;
+        public List<ScheduleRecord> schedule;
 
         public EventBasedSchedule(XmlDocument xd)
         {
             XmlNodeList xn = xd.GetElementsByTagName("row");
-            schedule = new ScheduleRecord[xn.Count];
-            int i = 0;
+            schedule = new List<ScheduleRecord>(xn.Count);
             foreach (XmlNode n in xn)
             {
-                schedule[i++] = new ScheduleRecord(n);
+                schedule.Add(new ScheduleRecord(n));
             }
         }
-
     }
 
 	class Source
@@ -161,7 +157,6 @@ namespace SifSource
 		private RecordBasedSchedule rsched;
         private EventBasedSchedule esched;
         private MediaEventSchedule msched;
-        private Process vlc;
         private SifVLM vlm;
 		              
 		public Source(string url, string id, string device, string pcm, bool active)
@@ -175,7 +170,9 @@ namespace SifSource
 				setactive();
 			else
 				setinactive();
-            runEncoder();
+            //runEncoder();
+            vlm = new SifVLM();
+            vlm.cmd("new "+id+" broadcast");
             subscribe();
         }
 
@@ -232,18 +229,6 @@ namespace SifSource
                 fetchParams(current.service);
             }
         }
-
-		private void runEncoder()
-		{
-            vlc = new Process();
-            vlc.StartInfo.FileName = "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe";
-            vlc.StartInfo.Arguments = "--intf http";
-            vlc.StartInfo.UseShellExecute = false;
-            vlc.StartInfo.RedirectStandardOutput = false;
-            vlc.Start();
-            vlm = new SifVLM();
-            vlm.cmd("new sif broadcast");
-		}
 
         private void subscribe()
 		{
