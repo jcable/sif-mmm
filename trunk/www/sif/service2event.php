@@ -21,12 +21,15 @@ $stmt = $dbh->prepare($sql);
 $stmt->bindParam(1, $daysmask);
 $stmt->execute();
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-$sql = "INSERT INTO service_event (event_time, event_id) VALUES(?,?)";
+$sql = "INSERT INTO service_event (event_time, service_event_id) VALUES(?,?)";
 $ins_stmt = $dbh->prepare($sql);
+$count=0;
 foreach ($rows as $rs)
 {
 	$ins_stmt->bindParam(1, $rs["start_datetime"]);
 	$ins_stmt->bindParam(2, $rs["service_event_id"]);
 	$ins_stmt->execute();
+	$count++;
 }
+print "added $count events";
 ?>
