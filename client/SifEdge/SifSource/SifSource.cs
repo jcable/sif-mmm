@@ -10,7 +10,7 @@ fetches a schedule from the server and translates to VLC/VLM syntax
 listens for update messages
 go active/standby
 re-read schedule
-publishes a dns-sd service for itself
+publishes a dns-sd service for itself (not really needed)
 
 controls a vlc instance
 */
@@ -18,6 +18,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Net;
+using System.Diagnostics;
 using SimplePublishSubscribe;
 
 namespace SifSource
@@ -160,6 +161,8 @@ namespace SifSource
 		private RecordBasedSchedule rsched;
         private EventBasedSchedule esched;
         private MediaEventSchedule msched;
+        private Process vlc;
+        private SifVLM vlm;
 		              
 		public Source(string url, string id, string device, string pcm, bool active)
 		{
@@ -168,18 +171,18 @@ namespace SifSource
             this.device = device;
             this.pcm = pcm;
             refresh();
-			subscribe();
 			if(active)
 				setactive();
 			else
 				setinactive();
-		}
+            runEncoder();
+            subscribe();
+        }
 
         private void refresh()
         {
             fetchSchedule();
             writeSchedule();
-            runEncoder();
         }
 
         private XmlDocument fetch(string url)
@@ -229,14 +232,24 @@ namespace SifSource
                 fetchParams(current.service);
             }
         }
+
 		private void runEncoder()
 		{
+            vlc = new Process();
+            vlc.StartInfo.FileName = "C:\\Program Files\\VideoLAN\\VLC\\vlc.exe";
+            vlc.StartInfo.Arguments = "--intf http";
+            vlc.StartInfo.UseShellExecute = false;
+            vlc.StartInfo.RedirectStandardOutput = false;
+            vlc.Start();
+            vlm = new SifVLM();
+            vlm.cmd("new sif broadcast");
 		}
 
         private void subscribe()
 		{
-			// TODO get MQ host from zeroconf or web server
-            string hostName = "dev.rabbitmq.com";
+            string config_item = "message_bus_host";
+            XmlDocument doc = fetch(url + "/getconfig.php?key=" + config_item);
+            string hostName = doc.GetElementsByTagName(config_item)[0].InnerText;
             int portNumber = 5672;
             string exchangeName = "sif";
             string routingKey = id;
@@ -245,16 +258,21 @@ namespace SifSource
             listener.MessageReceived += new MessageHandler(DoMessage);
             listener.listen();
 		}
+
 		private void setactive()
 		{
 			active=true;
+            vlm.cmd("setup sif enabled");
             Console.WriteLine("active");
         }
-		private void setinactive()
+
+        private void setinactive()
 		{
 			active=false;
+            vlm.cmd("setup sif disabled");
             Console.WriteLine("inactive");
         }
+
         private void PrintMessage(object sender, byte[] message)
         {
             Console.WriteLine(System.Text.Encoding.UTF8.GetString(message));
