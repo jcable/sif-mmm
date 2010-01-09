@@ -224,6 +224,7 @@ function servicepopup()
 		$sql = "SELECT event_time, service, source FROM service_events";
 		$sql .= " WHERE service = '".$row["service"]."'";
 		$sql .= " AND event_time < now() AND source IS NOT NULL ORDER BY event_time DESC LIMIT 1";
+print $sql;
 		$r=mysql_query($sql, $connection);
 		$ev = mysql_fetch_array($r);
 		$currentsource=$ev["source"];
