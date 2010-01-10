@@ -1,7 +1,15 @@
 <?php
 require_once "sif.inc";
 $dbh = connect();
-$events = active_schedule_records($dbh);
+if(isset($_REQUEST["service"]))
+{
+	$service = $_REQUEST["service"];
+}
+else
+{
+	$service = "%";
+}
+$events = active_schedule_records($dbh,$service);
 $dom = new DOMDocument('1.0', 'utf-8');
 $root = $dom->appendChild(new DOMElement('sif'));
 foreach ($events as $rs)

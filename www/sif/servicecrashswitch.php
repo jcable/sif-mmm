@@ -1,7 +1,9 @@
 <?php
 	require_once("header.php");
+	require_once("sif.inc");
 	$page = "Crash Services";
 	sif_header($page, "crashswitch.css");
+	$dbh = connect();
 ?>
 <SCRIPT TYPE="text/javascript">
 <!--
@@ -125,8 +127,9 @@ function servicepopup()
 	print "\n<input type=\"hidden\" name=\"sourcetab\" value=\"{$sourcetab}\">";
 	print "\n<input type=\"hidden\" name=\"servicetab\" value=\"{$servicetab}\">";
 	$sourcetabcount=0;
-	$result=mysql_query("SELECT * FROM source_tabs where enabled=1 order by tab_index asc", $connection);
-	while($row= mysql_fetch_array($result))
+	$stmt = $dbh->prepare("SELECT * FROM source_tabs where enabled=1 order by tab_index asc");
+	$stmt->execute();
+	while($row = $stmt->fetch(PDO::FETCH_ASSOC))
 	{
 		if ($sourcetab==$row[tab_index])
 		{
@@ -155,8 +158,9 @@ function servicepopup()
 	print "</tr><tr>";
 	$sourcecount=0;
 
-	$result=mysql_query("SELECT * FROM source where tab_index='$sourcetab' and enabled=1 order by id asc", $connection);
-	while($row= mysql_fetch_array($result))
+	$stmt = $dbh->prepare("SELECT * FROM source where tab_index='$sourcetab' and enabled=1 order by id asc");
+	$stmt->execute();
+	while($row = $stmt->fetch(PDO::FETCH_ASSOC))
 	{
 		$id = $row["id"];
 		print "\n<td height=40 width=10% id=\"source{$sourcecount}\" class=\"raised\" onclick=\"toggleButton(this, /source/i);setsource('{$id}');\"><b>{$id}</b></td>";
@@ -189,8 +193,9 @@ function servicepopup()
 <tr>
 <?php
 	$servicetabcount=0;
-	$result=mysql_query("SELECT * FROM services_tabs where enabled=1 order by tab_index asc", $connection);
-	while($row= mysql_fetch_array($result))
+	$stmt = $dbh->prepare("SELECT * FROM services_tabs where enabled=1 order by tab_index asc");
+	$stmt->execute();
+	while($row = $stmt->fetch(PDO::FETCH_ASSOC))
 	{
 		if ($servicetab==$row[tab_index])
 		{
@@ -217,27 +222,24 @@ function servicepopup()
 		}
 	}
 	print "</tr><tr>";
+	$events = active_schedule_records($dbh,"%");
 	$servicecount=0;
-	$result=mysql_query("SELECT * FROM service where tab_index='$servicetab' and enabled=1 order by service asc", $connection);
-	while($row= mysql_fetch_array($result))
+	$stmt = $dbh->prepare("SELECT * FROM service where tab_index='$servicetab' and enabled=1 order by service asc");
+	$stmt->execute();
+	while($row = $stmt->fetch(PDO::FETCH_ASSOC))
 	{
-		$sql = "SELECT event_time, service, source FROM service_events";
-		$sql .= " WHERE service = '".$row["service"]."'";
-		$sql .= " AND event_time < now() AND source IS NOT NULL ORDER BY event_time DESC LIMIT 1";
-print $sql;
-		$r=mysql_query($sql, $connection);
-		$ev = mysql_fetch_array($r);
-		$currentsource=$ev["source"];
+		$service = $row["service"];
+		$currentsource=$events[$service]["source"];
 		if ($currentsource == "")
 		{
 			$currentsource="OFF";
 		}
 
 		$onclick = "toggleButton(this, /service/i);";
-		$onclick .= "setservice('{$row[service]}','$currentsource');";
+		$onclick .= "setservice('$service','$currentsource');";
 		print "\n<td height=40 width=10% id=\"service{$servicecount}\" class=\"raised\"";
 		print " onclick=\"$onclick\">";
-		print "<span class=\"servicelabel\">".$row["service"]."</span>";
+		print "<span class=\"servicelabel\">$service</span>";
 		print "<br>";
 		print "<span class=\"sourcelabel\">(".$currentsource.")</span>";
 		print "</td>";
