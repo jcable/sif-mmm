@@ -25,9 +25,10 @@ function setsource(source) {
 	document.crashservice.source.value = source;
 }
 // set service variable
-function setservice(service,currentsource) {
+function setservice(service,currentsource,sed) {
 	document.crashservice.service.value = service;
 	document.crashservice.previous_source.value = currentsource;
+	document.crashservice.sed.value = sed;
 }
 // toggles hold button and variable
 function togglehold(elementObj)
@@ -115,6 +116,7 @@ function servicepopup()
 ?>
 <form method="post" action="crashservice.php" name="crashservice">
 <input type="hidden" name="previous_source" value="OFF">
+<input type="hidden" name="sed" value="">
 <input type="hidden" name="source" value="OFF">
 <input type="hidden" name="service" value="NULL">
 <input type="hidden" name="hold" value="0">
@@ -229,19 +231,26 @@ function servicepopup()
 	while($row = $stmt->fetch(PDO::FETCH_ASSOC))
 	{
 		$service = $row["service"];
-		$currentsource=$events[$service]["source"];
-		if ($currentsource == "")
+		if(isset($events[$service]))
+		{
+			$event = $events[$service];
+			$currentsource=$event["source"];
+			$sed = $event["service_event_id"];
+		}
+		else
 		{
 			$currentsource="OFF";
+			$sed="";
 		}
 
 		$onclick = "toggleButton(this, /service/i);";
-		$onclick .= "setservice('$service','$currentsource');";
+		$onclick .= "setservice('$service','$currentsource','$sed');";
 		print "\n<td height=40 width=10% id=\"service{$servicecount}\" class=\"raised\"";
 		print " onclick=\"$onclick\">";
 		print "<span class=\"servicelabel\">$service</span>";
 		print "<br>";
 		print "<span class=\"sourcelabel\">(".$currentsource.")</span>";
+		//print_r($event);
 		print "</td>";
 		$servicecount++;
 		if ($servicecount % 10 == 0)
