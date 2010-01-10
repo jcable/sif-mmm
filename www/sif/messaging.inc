@@ -8,16 +8,15 @@ class Sender
 	public $ch;
 	public $exchange;
 
-	public function __construct()
+	public function __construct($host)
 	{
-		$BROKER_HOST   = 'dev.rabbitmq.com';
 		$BROKER_PORT   = 5672;
 		$USER     ='guest';
 		$PASSWORD ='guest';
 
 		$this->exchange = "sif";
 
-    		$this->conn = new AMQPConnection($BROKER_HOST, $BROKER_PORT, $USER, $PASSWORD);
+    		$this->conn = new AMQPConnection($host, $BROKER_PORT, $USER, $PASSWORD);
     		$this->ch = $this->conn->channel();
     		$this->ch->access_request('/', false, false, true, true);
    	 
