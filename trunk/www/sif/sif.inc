@@ -38,7 +38,7 @@ function buildnow($start, $dow, $sched, $e, $ref)
 	return $events;
 }
 
-function active_schedule_records($dbh)
+function active_schedule_records($dbh, $service)
 {
 	$dayflags = array( "S______", "_M______", "__T____", "___W___", "____T__", "_____F_", "______S");
 	$dow = intval(strftime("%w"));
@@ -63,15 +63,6 @@ function active_schedule_records($dbh)
 	$sql .= " AND (days IS NULL OR days LIKE ?)";
 	$sql .= " AND service LIKE ?";
 	$sql .= " ORDER BY service, start_time DESC";
-	//print $sql;
-	if(isset($_REQUEST["service"]))
-	{
-		$service = $_REQUEST["service"];
-	}
-	else
-	{
-		$service = "%";
-	}
 	$stmt = $dbh->prepare($sql);
 	$stmt->bindParam(1, $daysmask);
 	$stmt->bindParam(2, $service);

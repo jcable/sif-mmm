@@ -1,10 +1,10 @@
 <html>
 <head>
 <?php
-require 'connect.php';
+require_once("sif.inc");
 $source=$_REQUEST["source"];
 
-print "\n<title>{$source}</title>";
+print "\n<title>$source</title>";
 ?>
 </head>
 <link rel="stylesheet" type="text/css" href="main.css" media="screen,print">
@@ -13,15 +13,18 @@ print "\n<title>{$source}</title>";
 
 
 
-<?
-$result=mysql_query("SELECT * FROM service where current_source='$source' order by service asc", $connection);
-$numRows = mysql_num_rows($result);
-
-if ($source=="OFF")
+<?php
+$dbh = connect();
+$events = active_schedule_records($dbh,"%");
+$numRows =  0;
+$services = array();
+foreach($events as $service => $event)
 {
-	// also count services with no source defined - this is the same as OFF
-	$offresult=mysql_query("SELECT * FROM service where current_source='' or current_source is NULL order by service asc", $connection);
-	$numRows = $numRows+mysql_num_rows($offresult);
+	if (($source==$event["source"]) || ($source=="OFF"))
+	{
+		$numRows++;
+		$services[] = $service;
+	}
 }
 if($numRows==0)
 {
@@ -31,18 +34,9 @@ else
 {
 	print "\nSource '{$source}' is currently routed to:";
 	print "\n<ul>";
-	while($row= mysql_fetch_array($result))
+	foreach($services as $service)
 	{
-		print "\n<li>{$row[service]}";
-	}
-	if ($source=="OFF")
-	{
-		// also list services with no source defined - this is the same as OFF
-		$result=mysql_query("SELECT * FROM service where current_source='' or current_source is NULL order by service asc", $connection);
-		while($row= mysql_fetch_array($result))
-		{
-			print "\n<li>{$row[service]}";
-		}
+		print "\n<li>$service";
 	}
 	print "\n</ul>";
 }
