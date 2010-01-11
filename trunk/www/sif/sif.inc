@@ -82,4 +82,148 @@ function active_schedule_records($dbh, $service)
 
 	return $events;
 }
+
+function gettimes($dbh)
+{
+	$sql = "SELECT"
+		." TIME_TO_SEC(TIME(NOW())) AS seconds,"
+		." DATE(NOW()) AS today,"
+		." TIME(NOW()) AS start,"
+		." DATE_SUB(DATE(NOW()), INTERVAL 1 DAY) AS yesterday,"
+		." DATE_ADD(DATE(NOW()), INTERVAL 1 DAY) AS tomorrow,"
+		." DATE_SUB(DATE(NOW()), INTERVAL 1 DAY) AS yesterday";
+	$stmt = $dbh->prepare($sql);
+	$stmt->execute();
+	return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+function break_schedule($dbh, $service, $new_source, $sed, $times)
+{
+	if($sed=="")
+	{
+		$stmt = $dbh->prepare("INSERT INTO service_active_schedule"
+				." (service,source,first_date,last_date,days,start_time,duration)"
+				." VALUES(?,?,?,?,?,?,SEC_TO_TIME(?))"
+			);
+		$stmt->bindValue(1, $service);
+		$stmt->bindValue(2, $new_source);
+		$stmt->bindValue(3, $times["today"]);
+		$stmt->bindValue(4, $times["today"]);
+		$stmt->bindValue(5, "SMTWTFS");
+		$stmt->bindValue(6, $times["start"]);
+		$stmt->bindValue(7, 86400 - $times["seconds"]);
+		$stmt->execute();
+	}
+	else
+	{
+		$stmt = $dbh->prepare("SELECT s.*,"
+				." TIME_TO_SEC(duration) AS duration_seconds,"
+				." TIME_TO_SEC(start_time) AS start_seconds"
+				." FROM service_active_schedule AS s WHERE service_event_id=?"
+				);
+		$stmt->bindParam(1, $sed);
+		$stmt->execute();
+		$prev = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		try {
+			$source = $prev["source"];
+			$first_date = $prev["first_date"];
+			$last_date = $prev["last_date"];
+			$days = $prev["days"];
+			$start_time = $prev["start_time"];
+			$duration_seconds = $prev["duration_seconds"];
+
+			$dbh->beginTransaction();
+
+			$stmt = $dbh->prepare("UPDATE service_active_schedule"
+				." SET first_date=?,"
+				." last_date=?,"
+				." duration=SEC_TO_TIME(?)"
+				." WHERE service_event_id=?"
+				);	
+			$stmt->bindValue(1, $times["today"]);
+			$stmt->bindValue(2, $times["today"]);
+			$stmt->bindValue(3, $times["seconds"]-$prev["start_seconds"]);
+			$stmt->bindValue(4, $sed);
+			$stmt->execute();
+			unset($stmt);
+			
+			$stmt = $dbh->prepare("INSERT INTO service_active_schedule"
+					." (service,source,first_date,last_date,days,start_time,duration,"
+					."start_mode,name,material_id,rot,ptt,ptt_time,owner)"
+					." VALUES(?,?,?,?,?,?,SEC_TO_TIME(?),"
+					."?,?,?,?,?,?,?)"
+				);	
+			$stmt->bindValue(1, $service);
+			$stmt->bindParam(2, $source);
+			$stmt->bindParam(3, $first_date);
+			$stmt->bindParam(4, $last_date);
+			$stmt->bindParam(5, $days);
+			$stmt->bindParam(6, $start_time);
+			$stmt->bindParam(7, $duration_seconds);
+			$stmt->bindValue(8, $prev["start_mode"]);
+			$stmt->bindValue(9, $prev["name"]);
+			$stmt->bindValue(10, $prev["material_id"]);
+			$stmt->bindValue(11, $prev["rot"]);
+			$stmt->bindValue(12, $prev["ptt"]);
+			$stmt->bindValue(13, $prev["ptt_time"]);
+			$stmt->bindValue(14, $prev["owner"]);
+
+			if($prev["first_date"] != $times["today"])
+			{
+				$last_date = $times["yesterday"];
+				$stmt->execute();
+			}
+
+			if($prev["last_date"] != $times["today"])
+			{
+				$first_date = $times["tomorrow"];
+				$last_date = $prev["last_date"];
+				$stmt->execute();
+			}
+
+			$source = $new_source;
+			$first_date = $times["today"];
+			$last_date = $times["today"];
+			$start_time = $times["start"];
+			$duration_seconds = $prev["start_seconds"]+$prev["duration_seconds"]-$times["seconds"];
+			$stmt->execute();
+
+			$dbh->commit();
+
+		} catch (Exception $e) {
+
+			$dbh->rollBack();
+			echo "Failed: " . $e->getMessage();
+
+		}
+	}
+}
+
+function register_event_as_run($dbh, $device, $input, $output, $eventtype)
+{
+	$stmt = $dbh->prepare("INSERT INTO as_run (device, input, output, event_type) VALUES(?,?,?,?)");	
+	$stmt->bindValue(1, $device);
+	$stmt->bindValue(2, $input);
+	$stmt->bindValue(3, $output);
+	$stmt->bindValue(4, $eventtype);
+	$stmt->execute();
+}
+
+function active_events_as_run($dbh)
+{
+	$stmt = $dbh->prepare(
+	"SELECT service,event_time,device,ifnull(input,'OFF') AS input,output FROM service s LEFT JOIN (SELECT m.event_time, r.device, r.input, r.output"
+."	FROM ("
+."		SELECT max( event_time ) AS event_time, output"
+."		FROM as_run"
+."		GROUP BY output"
+."		) AS m"
+."	JOIN as_run r"
+."	USING ( event_time, output )) e ON s.service=e.output"
+);
+	$stmt->execute();
+	return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 ?>

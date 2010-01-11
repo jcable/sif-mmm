@@ -1,7 +1,8 @@
 <html>
 <head>
 <?php
-require 'connect.php';
+require 'sif.inc';
+$dbh = connect();
 $service=$_REQUEST["service"];
 
 print "\n<title>{$service}</title>";
@@ -13,21 +14,20 @@ print "\n<title>{$service}</title>";
 
 
 
-<?
-$result=mysql_query("SELECT * FROM service where service='$service' order by service asc", $connection);
-while($row= mysql_fetch_array($result))
+<?php
+$events = active_events_as_run($dbh);
+$source = "OFF";
+foreach($events as $event)
 {
-	$source=$row[current_source];
-	if ($source=="")
-	{
-		$source="OFF";
-	}
-	print "\nThe source for '{$service}' is '{$source}'";
+	if($event["service"]==$service)
+		$source = $event["source"];
 }
+print "\nThe source for '{$service}' is '{$source}'";
 print "\n<p>";
-$result=mysql_query("SELECT * FROM listener where current_service='$service' order by id asc", $connection);
-$numRows = mysql_num_rows($result);
-if($numRows==0)
+$stmt=$dbh->prepare("SELECT * FROM listener where current_service=? order by id asc");
+$stmt->bindValue(1, $service);
+$sched = $stmt->fetchAll(PDO::FETCH_ASSOC);
+if(count($sched)==0)
 {
 	print "\nService '{$service}' is currently not routed";
 }
@@ -35,7 +35,7 @@ else
 {
 	print "\nService '{$service}' is currently routed to:";
 	print "\n<ul>";
-	while($row=mysql_fetch_array($result))
+	foreach($sched as $row)
 	{
 		print "\n<li>{".$row["id"]."}";
 	}
@@ -47,3 +47,5 @@ else
 <input height=50 type="button" value="Close"
 onclick="window.close()">
 </form>
+</body>
+</html>

@@ -15,15 +15,17 @@ print "\n<title>$source</title>";
 
 <?php
 $dbh = connect();
-$events = active_schedule_records($dbh,"%");
+//$events = active_schedule_records($dbh,"%");
+$events = active_events_as_run($dbh);
+//print_r($events);
 $numRows =  0;
 $services = array();
-foreach($events as $service => $event)
+foreach($events as $event)
 {
-	if (($source==$event["source"]) || ($source=="OFF"))
+	if (($source==$event["input"]) || ($source=="OFF"))
 	{
 		$numRows++;
-		$services[] = $service;
+		$services[] = $event["output"];
 	}
 }
 if($numRows==0)

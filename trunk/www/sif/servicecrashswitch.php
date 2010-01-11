@@ -224,7 +224,13 @@ function servicepopup()
 		}
 	}
 	print "</tr><tr>";
-	$events = active_schedule_records($dbh,"%");
+	//$events = active_schedule_records($dbh,"%");
+	$rows = active_events_as_run($dbh);
+	$events = array();
+	foreach($rows as $event)
+	{
+		$events[$event["service"]] = $event;
+	}
 	$servicecount=0;
 	$stmt = $dbh->prepare("SELECT * FROM service where tab_index='$servicetab' and enabled=1 order by service asc");
 	$stmt->execute();
@@ -234,14 +240,15 @@ function servicepopup()
 		if(isset($events[$service]))
 		{
 			$event = $events[$service];
-			$currentsource=$event["source"];
-			$sed = $event["service_event_id"];
+			$currentsource=$event["input"];
+			//$sed = $event["service_event_id"];
 		}
 		else
 		{
 			$currentsource="OFF";
-			$sed="";
+			//$sed="";
 		}
+		$sed=""; // not used now ?
 
 		$onclick = "toggleButton(this, /service/i);";
 		$onclick .= "setservice('$service','$currentsource','$sed');";

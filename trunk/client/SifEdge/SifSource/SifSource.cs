@@ -278,7 +278,7 @@ namespace SifSource
                     if (kv[1] == device)
                         setinactive();
                     break;
-                case "refresh":
+                case "oi":
                     refresh();
                     break;
             }
