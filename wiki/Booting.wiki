@@ -62,3 +62,33 @@ LABEL www
 The timeout parameter in the pxelinux can be edited so a keyboard is not needed. This is in 10ths of a second and is in the prompt.cfg file.
 
 It should be possible to sync the cow bit to get persistance.
+
+== Building the file system ==
+
+debootstrap will create a simple system but a little more work is needed to make it usable. The debian-live live-helper scripts are useful but not essential.
+
+To make a minimal debian unstable:
+{{{
+mkdir fs
+debootstrap --arch=i386 sid fs
+}}}
+Then, to make it useful:
+{{{
+cp /etc/resolv.conf fs/etc
+cp /etc/hosts fs/etc
+cp /etc/fstab fs/etc
+cp -a /etc/apt fs/etc
+mount proc fs/proc -t proc
+chroot fs
+# do stuff in the chroot jail
+umount fs/proc
+mksquashfs fs /var/www/filesystem.squashfs -noappend
+}}}
+The stuff to do in the chrooted fs includes editing the /etc/hosts file and /etc/fstab
+for what you want, and the following:
+{{{
+apt-get update
+apt-get install ssh mono-runtime libmono-zeroconf1.0-cil vlc-nox
+dpkg-reconfigure console-setup
+locale-gen en_GB.UTF-8
+}}}
