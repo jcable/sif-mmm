@@ -18,9 +18,21 @@ dhcp-boot=pxelinux.0
 
 == tftp ==
 
-using the tftp server in dnsmasq
+=== using the tftp server in dnsmasq ===
 
 copy the contents of the tftpboot directory created by lh_build to /var/ftpd.
+
+=== using tftp-hpa ===
+
+(as root or prefixed by sudo)
+apt-get install tftpd-hpa
+vi /etc/default/tftpd-hpa # and enable the server
+cp /usr/lib/syslinux/pxelinux.0 /var/lib/tftpboot/
+cd /var/lib/tftpboot/
+mkdir pxelinux.cfg
+/etc/init.d/tftpd-hpa start
+chmod o+r /var/lib/tftpboot/pxelinux.0 
+
 
 = root partitions =
 
