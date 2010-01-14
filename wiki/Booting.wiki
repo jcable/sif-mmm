@@ -84,7 +84,7 @@ chroot fs
 umount fs/proc
 mksquashfs fs /var/www/filesystem.squashfs -noappend
 }}}
-The stuff to do in the chrooted fs includes editing the /etc/hosts file and /etc/fstab
+The stuff to do in the chrooted fs includes editing the /etc/hostname, /etc/hosts file and /etc/fstab
 for what you want, and the following:
 {{{
 apt-get update
@@ -92,3 +92,4 @@ apt-get install ssh mono-runtime libmono-zeroconf1.0-cil vlc-nox
 dpkg-reconfigure console-setup
 locale-gen en_GB.UTF-8
 }}}
+TODO - install AMQP .Net client, ...
