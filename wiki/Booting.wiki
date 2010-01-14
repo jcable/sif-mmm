@@ -25,6 +25,8 @@ copy the contents of the tftpboot directory created by lh_build to /var/ftpd.
 === using tftp-hpa ===
 
 (as root or prefixed by sudo)
+
+{{{
 apt-get install tftpd-hpa
 vi /etc/default/tftpd-hpa # and enable the server
 cp /usr/lib/syslinux/pxelinux.0 /var/lib/tftpboot/
@@ -32,7 +34,7 @@ cd /var/lib/tftpboot/
 mkdir pxelinux.cfg
 /etc/init.d/tftpd-hpa start
 chmod o+r /var/lib/tftpboot/pxelinux.0 
-
+}}}
 
 = root partitions =
 
@@ -51,12 +53,12 @@ some experience on gentoo that one can make a normal file system as a cpio and u
 Got this to work really well using the Debian live-helper. Live-helper will make all the files needed for USB, CD or netboot live CDs. Netboot expects to mount the root file system over NFS but its possible to edit the pxelinux.cfg file and get the root file system fetched from a web server and copied. this gives us a completely stand alone cow (copy on write) system where copies don't survive reboots.
 
 Here is the pxelinux stanza:
-
+{{{
 LABEL www
         MENU LABEL Start Debian Live using webserver
         kernel debian-live/i386/vmlinuz-2.6.26-1-486
         append initrd=debian-live/i386/initrd.img-2.6.26-1-486 boot=live locale=en_GB.UTF-8 keyb=uk union=aufs fetch=http://192.168.11.1/filesystem.squashfs
-
+}}}
 The timeout parameter in the pxelinux can be edited so a keyboard is not needed. This is in 10ths of a second and is in the prompt.cfg file.
 
 It should be possible to sync the cow bit to get persistance.
