@@ -9,6 +9,10 @@ if (isset($_REQUEST["service"]))
 	{
 		header("location: servicecrashswitch.php?sourcetab=".$_REQUEST["sourcetab"]."&servicetab=".$_REQUEST["servicetab"]);
 	}
+	else
+	{
+		$verbose=1;
+	}
 
 /*
 take the current event and divide it into 4:
@@ -29,10 +33,15 @@ take the current event and divide it into 4:
 	$stmt->execute();
 	$config = $stmt->fetch(PDO::FETCH_ASSOC);
 	$sender = new Sender($config["value"]);
-	$sender->send($service, "oi");
+	$sender->send($service, "oi=OFF");
 	//$sender->send($previous_source, "oi");
-	$sender->send($source, "oi");
+	$sender->send($new_source, "oi=$service");
 	$sender->close();
+	if(isset($verbose))
+	{
+		print $config["value"]."<br>$new_source";
+		print_r($sender);
+	}
 
 	//register_event_as_run($dbh, "ANY", $prev_source, $service, "OFF");
 	//register_event_as_run($dbh, "ANY", $new_source, $service, "ON");
