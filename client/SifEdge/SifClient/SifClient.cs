@@ -1,5 +1,6 @@
 
 using System;
+using System.Threading;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -10,6 +11,7 @@ using System.Net.NetworkInformation;
 using System.Web.Services;
 using System.IO;
 using Mono.Zeroconf;
+using RabbitMQ.Client;
 
 namespace SifClient
 {
@@ -19,17 +21,24 @@ namespace SifClient
         private bool done = false;
         private Process vlc;
         private List<Process> edge;
+        private List<Thread> local_edge;
         private string url, device;
 
         public SifClient()
         {
             string type = "_http._tcp";
 
-            ServiceBrowser browser = new ServiceBrowser();
-            browser.ServiceAdded += OnServiceAdded;
-            browser.ServiceRemoved += OnServiceRemoved;
-            browser.Browse(type, "local");
-
+            try {
+	            ServiceBrowser browser = new ServiceBrowser();
+	            browser.ServiceAdded += OnServiceAdded;
+	            browser.ServiceRemoved += OnServiceRemoved;
+	            browser.Browse(type, "local");
+	
+            } catch(Exception e)
+            {
+            	url = "http://localhost/sif";
+            	register();
+            }
             while (!done)
             {
                 System.Threading.Thread.Sleep(1000);
@@ -70,9 +79,13 @@ namespace SifClient
                     }
                 }
             }
-
             url = "http://" + service.HostEntry.AddressList[0] + ":" + service.Port+"/"+path;
 
+            register();
+        }
+        
+        private void register()
+        {
             NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
             if (nics == null || nics.Length < 1)
             {
@@ -86,51 +99,70 @@ namespace SifClient
                 if (adapter.Description.CompareTo("eth0") == 0)
                     address = adapter.GetPhysicalAddress();
             }
-            HttpWebRequest request = WebRequest.Create(url+"/register.php") as HttpWebRequest;
-            request.Method = "POST";
-            string parameter = "mac=" + address.ToString();
-            byte[] byteArray = Encoding.UTF8.GetBytes(parameter);
-
-            request.ContentType = "application/x-www-form-urlencoded";
-            request.ContentLength = byteArray.Length;
-            Stream dataStream = request.GetRequestStream();
-            dataStream.Write(byteArray, 0, byteArray.Length);
-            dataStream.Close();
-
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-            StreamReader reader = new StreamReader(response.GetResponseStream());
-            string r = reader.ReadToEnd();
-
-            Console.WriteLine(r);
-
-            XmlDocument xd = new XmlDocument();
-            xd.LoadXml(r);
-            parseRegisterResponse(xd);
-            done = true;
+            
+            try {
+	            HttpWebRequest request = WebRequest.Create(url+"/register.php") as HttpWebRequest;
+	            request.Method = "POST";
+	            string parameter = "mac=" + address.ToString();
+	            byte[] byteArray = Encoding.UTF8.GetBytes(parameter);
+	
+	            request.ContentType = "application/x-www-form-urlencoded";
+	            request.ContentLength = byteArray.Length;
+	            Stream dataStream = request.GetRequestStream();
+	            dataStream.Write(byteArray, 0, byteArray.Length);
+	            dataStream.Close();
+	
+	            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+	
+	            StreamReader reader = new StreamReader(response.GetResponseStream());
+	            string r = reader.ReadToEnd();
+	            XmlDocument xd = new XmlDocument();
+	            xd.LoadXml(r);
+	            parseRegisterResponse(xd);
+            } catch(Exception e)
+            {
+            	Console.WriteLine(e.Message);
+	            done = true;
+            }
         }
 
         private void parseRegisterResponse(XmlDocument xd)
         {
             XmlNodeList xn = xd.GetElementsByTagName("response");
-
             string result = xn[0].InnerText;
             Console.WriteLine(result);
-            xn = null;
+            xn = xd.GetElementsByTagName("message_bus_host");
+			string message_bus_host = xn[0].InnerText;
+            ConnectionFactory factory = new ConnectionFactory();
+            IConnection conn = factory.CreateConnection(
+            	Protocols.FromEnvironment(), message_bus_host, 5672
+            );
 
-            xn = xd.GetElementsByTagName("edge");
-            foreach (XmlNode node in xn)
+            xn = xd.GetElementsByTagName("id");
+            if(xn.Count>0)
             {
-                createEdge(node);
+            	device = xn[0].InnerText;
+            	edge = new List<Process>();
+            	local_edge = new List<Thread>();
+	            xn = xd.GetElementsByTagName("source");
+	            foreach (XmlNode node in xn)
+	            {
+	                createSource(node, conn);
+	            }
+	            xn = xd.GetElementsByTagName("listener");
+	            foreach (XmlNode node in xn)
+	            {
+	                createListener(node);
+	            }
             }
             xn = null;
         }
 
-        private void createEdge(XmlNode node)
+        private void createSource(XmlNode node, IConnection conn)
         {
             XmlNodeList childNodes = node.ChildNodes;
 
-            string type="", id="", pcm="";
+            string id="", pcm="";
             bool active=false;
 
             //And walk through them
@@ -140,9 +172,6 @@ namespace SifClient
                 {
                     case "id":
                         id = child.InnerText;
-                        break;
-                    case "type":
-                        type = child.InnerText;
                         break;
                     case "pcm":
                         pcm = child.InnerText;
@@ -156,10 +185,18 @@ namespace SifClient
                 }
             }
             childNodes = null;
-            if(type=="SOURCE")
-            {
-            }
+
+            SifSource.Source s = new SifSource.Source(url, id, device, pcm, active, conn);
+		    Thread oThread = new Thread(new ThreadStart(s.run));
+			oThread.Start();
+			local_edge.Add(oThread);
        }
+
+        private void createListener(XmlNode node)
+        {
+        	
+        }
+        
         private void runEncoder()
         {
             vlc = new Process();

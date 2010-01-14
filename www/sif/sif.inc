@@ -203,11 +203,11 @@ function break_schedule($dbh, $service, $new_source, $sed, $times)
 function register_event_as_run($dbh, $device, $input, $output, $eventtype)
 {
 	$stmt = $dbh->prepare("INSERT INTO as_run (device, input, output, event_type) VALUES(?,?,?,?)");	
-	$stmt->bindValue(1, $device);
-	$stmt->bindValue(2, $input);
-	$stmt->bindValue(3, $output);
-	$stmt->bindValue(4, $eventtype);
-	$stmt->execute();
+	$r = $stmt->execute(array($device, $input, $output, $eventtype));
+	if($r)
+		return true;
+	else
+		return $stmt->errorInfo();
 }
 
 function active_events_as_run($dbh)

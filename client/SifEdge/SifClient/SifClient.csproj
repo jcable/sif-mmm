@@ -35,6 +35,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\mono-zeroconf-0.9.0-binary\bin\Mono.Zeroconf.dll</HintPath>
     </Reference>
+    <Reference Include="RabbitMQ.Client" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -53,6 +54,12 @@
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SifClient.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SifSource\SifSource.csproj">
+      <Project>{20AB1975-D48A-4C52-BAAD-8D2F6C65C9CE}</Project>
+      <Name>SifSource</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

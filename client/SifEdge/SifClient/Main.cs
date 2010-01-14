@@ -7,6 +7,7 @@ namespace SifClient
         public static int Main(string [] args)
         {
             SifClient client = new SifClient();
+            Console.ReadKey();
             return 0;
         }
     }

@@ -22,10 +22,24 @@ namespace SimplePublishSubscribe
             channel.ExchangeDeclare(exchangeName, ExchangeType.Direct);
             routingKey = key;
         }
+        
+        public Client(string eName, string key, IConnection conn)
+        {
+        	this.conn = conn;
+            channel = conn.CreateModel();
+            exchangeName = eName;
+            channel.ExchangeDeclare(exchangeName, ExchangeType.Direct);
+            routingKey = key;
+        }
     }
 
     class Sender : Client
     {
+        public Sender(string exchangeName, string key, IConnection conn)
+            :             base(exchangeName, key, conn)
+        {
+        }
+
         public Sender(string exchangeName, string hostName, int portNumber, string key)
             :             base(exchangeName, key, hostName, portNumber)
         {
@@ -43,6 +57,16 @@ namespace SimplePublishSubscribe
         QueueingBasicConsumer consumer;
 		string queueName;
         
+        public Listener(string exchangeName, string key, string queueName, IConnection conn)
+            : base(exchangeName, key, conn)
+        {
+            channel.QueueDeclare(queueName);
+            channel.QueueBind(queueName, exchangeName, routingKey, false, null);
+            consumer = new QueueingBasicConsumer(channel);
+            channel.BasicConsume(queueName, null, consumer);
+			this.queueName = queueName;
+        }
+
         public Listener(string exchangeName, string hostName, int portNumber, string key, string queueName)
             : base(exchangeName, key, hostName, portNumber)
         {

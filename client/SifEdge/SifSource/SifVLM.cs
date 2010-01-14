@@ -57,6 +57,8 @@ namespace SifSource
         public VLMBroadcast()
         {
             output = new VLMOutput();
+            loop = false;
+            mux = "";
         }
         public void play()
         {
@@ -75,10 +77,19 @@ namespace SifSource
     class VLMSchedule
     {
         public bool enabled;
-        public string[] command;
+        public List<string> command;
         public DateTime date;
         public TimeSpan period;
         public uint repeat;
+        
+        public VLMSchedule()
+        {
+        	enabled=false;
+        	command=new List<string>();
+        	date=new DateTime();
+        	period = new TimeSpan();
+        	repeat = 0;
+        }
     }
 
 	class SifVLM

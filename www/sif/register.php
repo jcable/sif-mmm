@@ -1,19 +1,25 @@
 <?php
+require_once("sif.inc");
 if(isset($_REQUEST["mac"]))
 	$mac = $_REQUEST["mac"];
 else
 	$mac = "002481351AB1";
 $addr = $_SERVER["REMOTE_ADDR"];
-$dbh = new PDO(
-    'mysql:host=localhost;dbname=sif', 'sif', 'sif',
-    array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
-); 
-print "<x>";
+$dbh = connect(); 
+$dom = new DOMDocument('1.0', 'utf-8');
+$root = $dom->appendChild(new DOMElement('sif'));
+$stmt = $dbh->prepare("SELECT * FROM configuration WHERE `key`='message_bus_host'");
+$stmt->execute();
+$config = $stmt->fetchAll(PDO::FETCH_ASSOC);
+foreach ($config as $rs)
+{
+	$root->appendChild(new DOMElement($rs["key"], $rs["value"]));
+}
+$root->appendChild(new DOMElement('physical'));
 $stmt = $dbh->prepare("SELECT id,location,type FROM physicaldevices WHERE macaddress=?");
-
-	$stmt->bindParam(1, $mac);
-        $stmt->execute();
-       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$stmt->bindParam(1, $mac);
+$stmt->execute();
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if(count($rows)==0)
 {
 unset($stmt);
@@ -24,40 +30,47 @@ $stmt = $dbh->prepare("INSERT INTO physicaldevices (macaddress,id) VALUES(?,?)")
 }
 else
 {
-print "<physical>";
-       foreach ($rows as $rs)
+	$physical = $root->appendChild(new DOMElement('physical'));
+    foreach ($rows as $rs)
     {
-       foreach ($rs as $k => $v) { print "<$k>$v</$k>\n"; }
-	$id = $rs["id"];
-         }
-print "</physical>";
-}
-$stmt = $dbh->prepare("SELECT * FROM source2device WHERE device=?");
+		foreach ($rs as $key => $value)
+	    {
+			$physical->appendChild(new DOMElement($key, $value));
+		}
+		$id = $rs["id"];
+	}
+	$stmt = $dbh->prepare("SELECT * FROM source2device WHERE device=?");
 	$stmt->bindParam(1, $id);
-        $stmt->execute();
-       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-if(count($rows)>0)
-{
-print "<source>";
-       foreach ($rows as $rs)
-    {
-       foreach ($rs as $k => $v) { print "<$k>$v</$k>\n"; }
-         }
-print "</source>";
-}
-$stmt = $dbh->prepare("SELECT * FROM listener2device WHERE device=?");
+    $stmt->execute();
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	if(count($rows)>0)
+	{
+		foreach ($rows as $rs)
+		{
+			$source = $root->appendChild(new DOMElement('source'));
+			foreach ($rs as $key => $value)
+			{
+				$source->appendChild(new DOMElement($key, $value));
+			}
+		}
+	}
+	$stmt = $dbh->prepare("SELECT * FROM listener2device WHERE device=?");
 	$stmt->bindParam(1, $id);
-        $stmt->execute();
-       $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-if(count($rows)>0)
-{
-print "<listener>";
-       foreach ($rows as $rs)
-    {
-       foreach ($rs as $k => $v) { print "<$k>$v</$k>\n"; }
-         }
-print "</listener>";
+    $stmt->execute();
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	if(count($rows)>0)
+	{
+		foreach ($rows as $rs)
+		{
+			$listener = $root->appendChild(new DOMElement('listener'));
+			foreach ($rs as $key => $value)
+			{
+				$listener->appendChild(new DOMElement($key, $value));
+			}
+		}
+	}
 }
-print "<response>OK + $mac</response>";
-print "</x>";
+$root->appendChild(new DOMElement('response', "OK + $mac"));
+header('Content-type: text/xml');
+echo $dom->saveXML();
 ?>

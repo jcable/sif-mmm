@@ -25,10 +25,9 @@ function setsource(source) {
 	document.crashservice.source.value = source;
 }
 // set service variable
-function setservice(service,currentsource,sed) {
+function setservice(service,currentsource) {
 	document.crashservice.service.value = service;
 	document.crashservice.previous_source.value = currentsource;
-	document.crashservice.sed.value = sed;
 }
 // toggles hold button and variable
 function togglehold(elementObj)
@@ -112,11 +111,9 @@ function servicepopup()
 		$servicetab=$_REQUEST["servicetab"];
 	else
 		$servicetab=1;
-	require 'connect.php';
 ?>
 <form method="post" action="crashservice.php" name="crashservice">
 <input type="hidden" name="previous_source" value="OFF">
-<input type="hidden" name="sed" value="">
 <input type="hidden" name="source" value="OFF">
 <input type="hidden" name="service" value="NULL">
 <input type="hidden" name="hold" value="0">
@@ -232,8 +229,8 @@ function servicepopup()
 		$events[$event["service"]] = $event;
 	}
 	$servicecount=0;
-	$stmt = $dbh->prepare("SELECT * FROM service where tab_index='$servicetab' and enabled=1 order by service asc");
-	$stmt->execute();
+	$stmt = $dbh->prepare("SELECT * FROM service where tab_index=? and enabled=1 order by service asc");
+	$stmt->execute(array($servicetab));
 	while($row = $stmt->fetch(PDO::FETCH_ASSOC))
 	{
 		$service = $row["service"];
@@ -241,17 +238,14 @@ function servicepopup()
 		{
 			$event = $events[$service];
 			$currentsource=$event["input"];
-			//$sed = $event["service_event_id"];
 		}
 		else
 		{
 			$currentsource="OFF";
-			//$sed="";
 		}
-		$sed=""; // not used now ?
 
 		$onclick = "toggleButton(this, /service/i);";
-		$onclick .= "setservice('$service','$currentsource','$sed');";
+		$onclick .= "setservice('$service','$currentsource');";
 		print "\n<td height=40 width=10% id=\"service{$servicecount}\" class=\"raised\"";
 		print " onclick=\"$onclick\">";
 		print "<span class=\"servicelabel\">$service</span>";
@@ -282,10 +276,7 @@ function servicepopup()
 <div id="takebuttons">
 <table width=100%>
 <tr>
-<?php
-	$sourcecount++;
-	print "<td align=center height=40 width=10% id=\"source{$sourcecount}\" class=\"depressed\" onclick=\"toggleButton(this, /source/i);setsource('OFF');\"><b>OFF</b></td>";
-?>
+<td id="sourceOFF" align=center height=40 width=10% class="depressed" onclick="toggleButton(this, /source/i);setsource('OFF');"><b>OFF</b></td>
 <th width=10%>&nbsp;</th>
 <th class="raised" id="holdbutton" height=40 width=10% onclick="toggleprime(this);">Prime</th>
 <th class="unprimed" id="take" height=40 width=10% onclick="crashswitch();">Take</th>
