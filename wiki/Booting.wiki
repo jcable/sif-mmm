@@ -93,3 +93,7 @@ dpkg-reconfigure console-setup
 locale-gen en_GB.UTF-8
 }}}
 TODO - install AMQP .Net client, ...
+
+You will need some kernel modules, e.g. for the soundcard. These can be added to initrd maybe, but thats not in the spirit of things, or a kernel can be apt-getted in the chroot or you can copy /lib/modules/<x> from the dev system.
+
+I tried adding it in in the mksquashfs but got a corrupted file system :)
