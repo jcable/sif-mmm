@@ -13,6 +13,40 @@ re-read schedule
 publishes a dns-sd service for itself (not really needed)
 
 controls a vlc instance
+
+NB because a source can have multiple destinations and #duplicate doesn't do what we want
+we need to name broadcast elements in vlm so we can have a one-many relation between
+sif sources (or edges) and broadcast elements. and we will need a dictionary or something
+to keep this straight.
+
+
+source X is currently routed to services A and B
+
+If we crash A to Y then X must stop A but not B
+If we crash C to X then this is an additional output.
+
+So the OFF oi needs to indicate the service thats going off!
+
+but it does, coz its sent to the service!!! 
+
+How do we handle multiple bit-rates/encodings ?
+
+currently the encoding is part of the service definition which doesn't work - its kind
+of part of the listener definition.
+
+One possibility is for listeners to signal via the message bus that they want a particular
+encoding. If we do this on separate ports in the group then all listeners will get all encodings
+so we need separate groups for each one. How do we manage these groups ?
+
+How do we manage source specific encodings like:
+
+1) fill on SMDS should be lower bit-rate than other content
+2) Music on DRM should be stereo, everything else mono
+
+These can be considered source specific or schedule event specific.
+
+TODO use as_run on startup to recover existing events
+
 */
 using System;
 using System.Collections.Generic;
@@ -153,34 +187,30 @@ namespace SifSource
 	public class Source
 	{
 		private string url;
-		private string id, vlm_id;
-		private string device, pcm;
-		private bool active;
+		private string id, input;
+		private Dictionary<string,VLMBroadcast> instance;
+		private string device;
 		private RecordBasedSchedule rsched;
         private EventBasedSchedule esched;
         private MediaEventSchedule msched;
         private SifVLM vlm;
         private IConnection conn;
-		              
-		public Source(string url, string id, string device, string pcm, bool active, IConnection conn)
+	    private Listener listener;
+
+		public Source(string url, string id, string input, string device, IConnection conn)
 		{
 			this.url = url;
 			this.id = id;
-			this.vlm_id = id.Replace(' ','_');
+			this.input = input;
             this.device = device;
-            this.pcm = pcm;
             this.conn = conn;
+            instance = new Dictionary<string,VLMBroadcast>();
 		}
 		
 		public void run()
 		{
             vlm = new SifVLM();
             refresh();
-			if(active)
-				setactive();
-			else
-				setinactive();
-            vlm.cmd("new "+vlm_id+" broadcast");
             subscribe();
         }
 
@@ -270,8 +300,9 @@ namespace SifSource
             string routingKey = id;
 			string queueName = System.Guid.NewGuid().ToString();
 			try {
-	            Listener listener = new Listener(exchangeName, routingKey, queueName, conn);
+	            listener = new Listener(exchangeName, queueName, conn);
 	            listener.MessageReceived += new MessageHandler(DoMessage);
+	            listener.listenFor(routingKey);
 	            Console.WriteLine("listening on queue "+queueName+" for "+id);
 	            listener.listen();
 			}catch(Exception e)
@@ -280,54 +311,50 @@ namespace SifSource
 			}
 		}
 
-		private void setactive()
-		{
-			active=true;
-            vlm.cmd("setup "+vlm_id+" enabled");
-            Console.WriteLine("active");
-        }
-
-        private void setinactive()
-		{
-			active=false;
-            vlm.cmd("setup "+vlm_id+" disabled");
-            Console.WriteLine("inactive");
-        }
-
-        private void PrintMessage(object sender, byte[] message)
+        private void PrintMessage(object sender, string key, byte[] message)
         {
-            Console.WriteLine(System.Text.Encoding.UTF8.GetString(message));
+            Console.WriteLine(System.Text.Encoding.UTF8.GetString(message)+" for "+key);
         }
 
-        private void DoMessage(object sender, byte[] message)
+        private void DoMessage(object sender, string key, byte[] message)
         {
-            PrintMessage(sender, message);
+            PrintMessage(sender, key, message);
             string s = System.Text.Encoding.UTF8.GetString(message);
             string[] kv = s.Split('=');
-            switch (kv[0])
+            if(key==id) // its a message for us as a source
             {
-                case "activate":
-                    if (kv[1] == device)
-                        setactive();
-                    break;
-                case "deactivate":
-                    if (kv[1] == device)
-                        setinactive();
-                    break;
-                case "oi":
-                    switch(kv[1])
-                    {
-                    	case "OFF":
-							register_event_as_run(device, id, "", "OFF");
-                    		break;
-                    	case "":
-		                    refresh();
-                    		break;
-                    	default:
-                    		register_event_as_run(device, id, kv[1], "ON");
-                    		break;
-                    }
-                    break;
+	            switch (kv[0])
+	            {
+	                case "oi":
+	            		add_instance(kv[1]);
+	            		instance[kv[1]].play();
+
+                		register_event_as_run(device, id, kv[1], "ON");
+                		listener.listenFor(kv[1]);
+	                    break;
+	            }            	
+            }
+            else // assume its a message for a service we are sourcing
+            {
+	            switch (kv[0])
+	            {
+	                case "oi":
+	                    switch(kv[1])
+	                    {
+	                    	case "OFF":
+	                    		// TODO turn off this output
+								register_event_as_run(device, id, "", "OFF");
+								listener.ignore(key);
+	                    		break;
+	                    	case "":
+			                    refresh();
+	                    		break;
+	                    	default:
+	                    		break;
+	                    }
+	                    break;
+	            }
+            	
             }
         }
 									
@@ -340,6 +367,23 @@ namespace SifSource
         	args.Add("action", action);
         	post(url+"/register_event_as_run.php", args);
         }
-
+        
+		// add a source with input and output and enable it
+	    private void add_instance(string service)
+	    {
+	    	string instance_id = id+"_"+service;
+	    	XmlDocument xd = fetch(url+"/getoutputs.php?id="+service);
+	    	XmlNodeList xn = xd.GetElementsByTagName("output");
+            foreach (XmlNode n in xn)
+            {
+            	VLMBroadcast bc = new VLMBroadcast(instance_id,vlm);
+            	bc.addinput(input);
+            	bc.output = n.InnerText;
+            	bc.enabled=true;
+            	instance.Add(service, bc);
+            }
+            xn=null;
+            xd=null;
+	    }
 	}
 }

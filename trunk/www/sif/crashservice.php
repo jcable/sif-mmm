@@ -22,29 +22,34 @@ take the current event and divide it into 4:
 	4) insert a new event for the crashed to source, starting now, for today only ending when the current event ends
 */
 	$service = $_REQUEST["service"];
-	//$previous_source = $_REQUEST["previous_source"];
 	$new_source = $_REQUEST["source"];
-	//$sed = $_REQUEST["sed"];
 	
-	//$times = gettimes($dbh);
-	//break_schedule($dbh, $service, $new_source, $sed, $times);
-	
-	$stmt = $dbh->prepare("SELECT value FROM configuration WHERE `key`='message_bus_host'");	
-	$stmt->execute();
-	$config = $stmt->fetch(PDO::FETCH_ASSOC);
-	$sender = new Sender($config["value"]);
-	$sender->send($service, "oi=OFF");
-	//$sender->send($previous_source, "oi");
-	$sender->send($new_source, "oi=$service");
-	$sender->close();
+	if(isset($_REQUEST["sed"]))
+	{
+		$times = gettimes($dbh);
+		break_schedule($dbh, $service, $new_source, $_REQUEST["sed"], $times);
+	}
+
+	if(isset($_REQUEST["emulate"]))
+	{
+		register_event_as_run($dbh, "ANY", $_REQUEST["previous_source"], $service, "OFF");
+		register_event_as_run($dbh, "ANY", $new_source, $service, "ON");
+	}
+	else
+	{
+		$stmt = $dbh->query("SELECT value FROM configuration WHERE `key`='message_bus_host'",  PDO::FETCH_COLUMN, 0);	
+		$config = $stmt->fetch();
+		$sender = new Sender($config);
+		$sender->send($service, "oi=OFF");
+		$sender->send($new_source, "oi=$service");
+		$sender->close();
+	}
+
 	if(isset($verbose))
 	{
 		print $config["value"]."<br>$new_source";
 		print_r($sender);
 	}
-
-	//register_event_as_run($dbh, "ANY", $prev_source, $service, "OFF");
-	//register_event_as_run($dbh, "ANY", $new_source, $service, "ON");
 }
 else
 {

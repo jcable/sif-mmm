@@ -162,7 +162,7 @@ namespace SifClient
         {
             XmlNodeList childNodes = node.ChildNodes;
 
-            string id="", pcm="";
+            string id="", input="";
             bool active=false;
 
             //And walk through them
@@ -173,8 +173,8 @@ namespace SifClient
                     case "id":
                         id = child.InnerText;
                         break;
-                    case "pcm":
-                        pcm = child.InnerText;
+                    case "input":
+                        input = child.InnerText;
                         break;
                     case "active":
                         if (child.InnerText == "true" || child.InnerText == "1")
@@ -186,7 +186,7 @@ namespace SifClient
             }
             childNodes = null;
 
-            SifSource.Source s = new SifSource.Source(url, id, device, pcm, active, conn);
+            SifSource.Source s = new SifSource.Source(url, id, input, device, conn);
 		    Thread oThread = new Thread(new ThreadStart(s.run));
 			oThread.Start();
 			local_edge.Add(oThread);
