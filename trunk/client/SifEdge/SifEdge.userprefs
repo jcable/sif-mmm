@@ -3,17 +3,16 @@
   <MonoDevelop.Ide.DebuggingService>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService>
-  <MonoDevelop.Ide.Workbench ActiveDocument="SifSource/SifSource.cs" ctype="Workbench">
+  <MonoDevelop.Ide.Workbench ActiveDocument="SifClient/SifClient.cs" ctype="Workbench">
     <Files>
-      <File FileName="SifSource/SifSource.cs" Line="81" Column="1" />
-      <File FileName="SifSource/Main.cs" Line="2" Column="1" />
+      <File FileName="SifClient/Main.cs" Line="9" Column="27" />
+      <File FileName="SifClient/SifClient.cs" Line="51" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
-          <Node name="SifSource" expanded="True">
-            <Node name="References" expanded="True" selected="True" />
-            <Node name="ExternalFiles" expanded="True" />
+          <Node name="SifClient" expanded="True">
+            <Node name="SifClient.cs" selected="True" />
           </Node>
         </State>
       </Pad>

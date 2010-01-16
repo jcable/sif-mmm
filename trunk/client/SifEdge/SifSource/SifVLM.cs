@@ -105,8 +105,8 @@ namespace SifSource
         public VLMBroadcast(string id, SifVLM vlm):base(id,vlm)
         {
 			vlm.cmd("new "+this.id+" broadcast");
-            output = "";
-            loop = false;
+            output_f = "";
+            loop_f = false;
             mux = "";
         }
 
@@ -202,8 +202,9 @@ namespace SifSource
         }
         public void cmd(string cmd)
         {
-        	Console.WriteLine(cmd);
-            XmlDocument resp = fetch(url + "vlm_cmd.xml?command="+HttpUtility.UrlPathEncode(cmd));
+            string args = HttpUtility.UrlEncode(cmd).Replace("+","%20");
+	    Console.WriteLine(args);
+            XmlDocument resp = fetch(url + "vlm_cmd.xml?command="+args);
             string err = resp.GetElementsByTagName("error")[0].InnerText;
             if (err != "")
                 Console.WriteLine(err);

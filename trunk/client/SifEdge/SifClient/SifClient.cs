@@ -45,7 +45,17 @@ namespace SifClient
             }
         }
 
-        private void OnServiceAdded(object o, ServiceBrowseEventArgs args)
+        public SifClient(string url)
+        {
+			this.url = url;
+        	register();
+            while (!done)
+            {
+                System.Threading.Thread.Sleep(1000);
+            }
+        }
+
+		private void OnServiceAdded(object o, ServiceBrowseEventArgs args)
         {
             if (args.Service.AddressProtocol == AddressProtocol.IPv4 && args.Service.Name.CompareTo("SIF Management") == 0)
             {
