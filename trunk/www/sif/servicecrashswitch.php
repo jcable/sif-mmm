@@ -226,7 +226,7 @@ function servicepopup()
 	$events = array();
 	foreach($rows as $event)
 	{
-		$events[$event["service"]] = $event;
+		$events[$event["output"]] = $event;
 	}
 	$servicecount=0;
 	$stmt = $dbh->prepare("SELECT * FROM service where tab_index=? and enabled=1 order by service asc");

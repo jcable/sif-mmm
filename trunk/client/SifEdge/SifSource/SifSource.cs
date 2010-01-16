@@ -59,6 +59,46 @@ using RabbitMQ.Client;
 
 namespace SifSource
 {
+	public class Web {
+	    public static XmlDocument fetch(string url)
+	    {
+	        WebClient myClient = new WebClient();
+	        Stream response = myClient.OpenRead(url);
+	        StreamReader reader = new StreamReader(response);
+	        string r = reader.ReadToEnd();
+	        XmlDocument xd = new XmlDocument();
+	        xd.LoadXml(r);
+	        response.Close();
+	        return xd;
+	    }
+	
+	    public static XmlDocument post(string url, Dictionary<string, string> args)
+	    {
+	        HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
+	        request.Method = "POST";
+	        string parameters = "";
+	        foreach(string key in args.Keys)
+	        {
+	        	parameters += "&" + key + "=" + args[key];
+	        }
+	        byte[] byteArray = Encoding.UTF8.GetBytes(parameters.Substring(1));
+	
+	        request.ContentType = "application/x-www-form-urlencoded";
+	        request.ContentLength = byteArray.Length;
+	        Stream dataStream = request.GetRequestStream();
+	        dataStream.Write(byteArray, 0, byteArray.Length);
+	        dataStream.Close();
+	
+	        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+	
+	        StreamReader reader = new StreamReader(response.GetResponseStream());
+	        string r = reader.ReadToEnd();
+	        XmlDocument xd = new XmlDocument();
+	        xd.LoadXml(r);
+	        return xd;
+		}
+	}
+    
     class MediaEvent
     {
         public MediaEvent(XmlNode node)
@@ -184,11 +224,58 @@ namespace SifSource
         }
     }
 
+    class ServiceInstance
+    {
+    	public VLMBroadcast[] destination;
+
+    	public ServiceInstance(string id, string input, bool loop,
+    	                   string service, SifVLM vlm, XmlNodeList xn)
+    	{
+	    	destination = new VLMBroadcast[xn.Count];
+            for(int i=0; i<destination.Length; i++)
+            {
+		    	string instance_id = id+"_"+service+"_"+i;
+            	VLMBroadcast bc = new VLMBroadcast(instance_id,vlm);
+            	bc.addinput(input);
+            	string o = xn[i].InnerText;
+            	bc.output = o;
+            	bc.enabled=true;
+            	bc.loop = loop;
+            	destination[i] = bc;
+            }
+    	}
+
+    	public void playAll()
+    	{
+    		foreach(VLMBroadcast bc in destination)
+    		{
+    			bc.play();
+    		}
+    	}
+
+    	public void stopAll()
+    	{
+    		foreach(VLMBroadcast bc in destination)
+    		{
+    			bc.stop();
+    		}
+    	}
+
+    	public void delete()
+    	{
+    		foreach(VLMBroadcast bc in destination)
+    		{
+    			bc.delete();
+    		}
+    	}
+    }
+    
 	public class Source
 	{
 		private string url;
 		private string id, input;
-		private Dictionary<string,VLMBroadcast> instance;
+		private bool loop, active;
+		private Dictionary<string, ServiceInstance> service;
 		private string device;
 		private RecordBasedSchedule rsched;
         private EventBasedSchedule esched;
@@ -197,15 +284,41 @@ namespace SifSource
         private IConnection conn;
 	    private Listener listener;
 
-		public Source(string url, string id, string input, string device, IConnection conn)
+		public Source(string url, IConnection conn, string device, XmlNode node)
 		{
 			this.url = url;
-			this.id = id;
-			this.input = input;
-            this.device = device;
-            this.conn = conn;
-            instance = new Dictionary<string,VLMBroadcast>();
-		}
+			this.conn = conn;
+			this.device = device;
+
+			id=""; input=""; active=false; loop=false;
+			
+            service = new Dictionary<string,ServiceInstance>();
+
+            foreach (XmlNode child in node.ChildNodes)
+            {
+                switch (child.Name)
+                {
+                    case "id":
+                        id = child.InnerText;
+                        break;
+                    case "input":
+                        input = child.InnerText;
+                        break;
+                    case "active":
+                        if (child.InnerText == "true" || child.InnerText == "1")
+                            active = true;
+                        else
+                            active = false;
+                        break;
+                    case "loop":
+                        if (child.InnerText == "true" || child.InnerText == "1")
+                            loop = true;
+                        else
+                            loop = false;
+                        break;
+                }
+            }
+ 		}
 		
 		public void run()
 		{
@@ -220,60 +333,22 @@ namespace SifSource
             writeSchedule();
         }
 
-        private XmlDocument fetch(string url)
-        {
-            WebClient myClient = new WebClient();
-            Stream response = myClient.OpenRead(url);
-            StreamReader reader = new StreamReader(response);
-            string r = reader.ReadToEnd();
-            XmlDocument xd = new XmlDocument();
-            xd.LoadXml(r);
-            response.Close();
-            return xd;
-        }
-
-        private XmlDocument post(string url, Dictionary<string, string> args)
-        {
-            HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
-            request.Method = "POST";
-            string parameters = "";
-            foreach(string key in args.Keys)
-            {
-            	parameters += "&" + key + "=" + args[key];
-            }
-            byte[] byteArray = Encoding.UTF8.GetBytes(parameters.Substring(1));
-
-            request.ContentType = "application/x-www-form-urlencoded";
-            request.ContentLength = byteArray.Length;
-            Stream dataStream = request.GetRequestStream();
-            dataStream.Write(byteArray, 0, byteArray.Length);
-            dataStream.Close();
-
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-            StreamReader reader = new StreamReader(response.GetResponseStream());
-            string r = reader.ReadToEnd();
-            XmlDocument xd = new XmlDocument();
-            xd.LoadXml(r);
-            return xd;
-		}
-
 		private void fetchSchedule()
         {
             Console.WriteLine("fetching schedule");
-            esched = new EventBasedSchedule(fetch(url + "/serviceeventschedule.php?source=" + id));
+            esched = new EventBasedSchedule(Web.fetch(url + "/serviceeventschedule.php?source=" + id));
         }
 
         private void fetchParams(string service)
         {
             Console.WriteLine("fetching params for "+service);
-            msched = new MediaEventSchedule(fetch(url + "/serviceparams.php?service=" + service));
+            msched = new MediaEventSchedule(Web.fetch(url + "/serviceparams.php?service=" + service));
         }
 
         private void fetchRSchedule()
 		{
             Console.WriteLine("fetching schedule");
-            rsched = new RecordBasedSchedule(fetch(url + "/serviceschedule.php?source=" + id));
+            rsched = new RecordBasedSchedule(Web.fetch(url + "/serviceschedule.php?source=" + id));
 		}
 
         private void writeSchedule()
@@ -327,8 +402,7 @@ namespace SifSource
 	            {
 	                case "oi":
 	            		add_instance(kv[1]);
-	            		instance[kv[1]].play();
-
+	            		service[kv[1]].playAll();
                 		register_event_as_run(device, id, kv[1], "ON");
                 		listener.listenFor(kv[1]);
 	                    break;
@@ -342,8 +416,10 @@ namespace SifSource
 	                    switch(kv[1])
 	                    {
 	                    	case "OFF":
-	                    		// TODO turn off this output
-								register_event_as_run(device, id, "", "OFF");
+			            		service[key].stopAll();
+			            		service[key].delete();
+			            		service.Remove(key);
+								register_event_as_run(device, id, key, "OFF");
 								listener.ignore(key);
 	                    		break;
 	                    	case "":
@@ -365,26 +441,15 @@ namespace SifSource
         	args.Add("input", input);
         	args.Add("output", output);
         	args.Add("action", action);
-        	post(url+"/register_event_as_run.php", args);
+        	Web.post(url+"/register_event_as_run.php", args);
         }
         
 		// add a source with input and output and enable it
 	    private void add_instance(string service)
 	    {
-	    	string instance_id = id+"_"+service;
-	    	XmlDocument xd = fetch(url+"/getoutputs.php?id="+service);
-	    	XmlNodeList xn = xd.GetElementsByTagName("output");
-            foreach (XmlNode n in xn)
-            {
-            	VLMBroadcast bc = new VLMBroadcast(instance_id,vlm);
-            	bc.addinput(input);
-            	string o = n.InnerText;
-            	bc.output = o;
-            	bc.enabled=true;
-            	instance.Add(service, bc);
-            }
-            xn=null;
-            xd=null;
+	    	XmlDocument xd = Web.fetch(url+"/getoutputs.php?id="+service);
+	    	XmlNodeList outputs = xd.GetElementsByTagName("output");
+	    	this.service.Add(service, new ServiceInstance(id, input, loop, service, vlm, outputs));
 	    }
 	}
 }

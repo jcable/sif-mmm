@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 3.2.4deb1
+-- version 3.2.0.1
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jan 11, 2010 at 01:15 PM
--- Server version: 5.1.41
--- PHP Version: 5.2.11-2
+-- Generation Time: Jan 16, 2010 at 09:42 PM
+-- Server version: 5.1.37
+-- PHP Version: 5.3.0
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
@@ -51,6 +51,23 @@ CREATE TABLE IF NOT EXISTS `adminqueue` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `as_run`
+--
+
+CREATE TABLE IF NOT EXISTS `as_run` (
+  `event_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `event_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `device` varchar(15) NOT NULL,
+  `input` varchar(11) NOT NULL,
+  `output` varchar(11) NOT NULL,
+  `event_type` varchar(6) NOT NULL,
+  PRIMARY KEY (`event_id`),
+  KEY `event_type` (`event_type`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=37 ;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `configuration`
 --
 
@@ -58,6 +75,59 @@ CREATE TABLE IF NOT EXISTS `configuration` (
   `key` varchar(100) NOT NULL,
   `value` varchar(100) NOT NULL,
   PRIMARY KEY (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `edge`
+--
+
+CREATE TABLE IF NOT EXISTS `edge` (
+  `id` varchar(24) NOT NULL COMMENT 'source or listener id',
+  `input` varchar(128) NOT NULL COMMENT 'vlc input spec',
+  `loop` tinyint(1) NOT NULL DEFAULT '0',
+  `kind` varchar(11) NOT NULL,
+  `tab_index` smallint(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `input` (`input`),
+  KEY `kind` (`kind`,`tab_index`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='unified sources, listeners, etc';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `edge_kind`
+--
+
+CREATE TABLE IF NOT EXISTS `edge_kind` (
+  `id` varchar(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `edge_output`
+--
+
+CREATE TABLE IF NOT EXISTS `edge_output` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `edge` varchar(24) NOT NULL,
+  `output` varchar(128) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `edge` (`edge`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=64 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `event_types`
+--
+
+CREATE TABLE IF NOT EXISTS `event_types` (
+  `event_type` varchar(6) NOT NULL,
+  PRIMARY KEY (`event_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -134,30 +204,6 @@ CREATE TABLE IF NOT EXISTS `listener_active_schedule` (
   KEY `listener` (`listener`),
   KEY `service` (`service`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `listener_event`
---
-
-CREATE TABLE IF NOT EXISTS `listener_event` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `event_time` datetime NOT NULL,
-  `event_id` bigint(20) NOT NULL,
-  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `time` (`event_time`),
-  KEY `event_id` (`event_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='event schedule' AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `listener_events`
---
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`sif`@`%` SQL SECURITY DEFINER VIEW `sif`.`listener_events` AS select `sif`.`listener_event`.`id` AS `id`,`sif`.`listener_event`.`event_time` AS `event_time`,`sif`.`listener_event`.`event_id` AS `event_id`,`sif`.`listener_event`.`updated` AS `updated`,`sif`.`listener_active_schedule`.`listener_event_id` AS `listener_event_id`,`sif`.`listener_active_schedule`.`listener` AS `listener`,`sif`.`listener_active_schedule`.`service` AS `service`,`sif`.`listener_active_schedule`.`first_date` AS `first_date`,`sif`.`listener_active_schedule`.`last_date` AS `last_date`,`sif`.`listener_active_schedule`.`days` AS `days`,`sif`.`listener_active_schedule`.`start_time` AS `start_time`,`sif`.`listener_active_schedule`.`duration` AS `duration`,`sif`.`listener_active_schedule`.`start_mode` AS `start_mode`,`sif`.`listener_active_schedule`.`name` AS `name`,`sif`.`listener_active_schedule`.`owner` AS `owner` from (`sif`.`listener_event` join `sif`.`listener_active_schedule` on((`sif`.`listener_event`.`event_id` = `sif`.`listener_active_schedule`.`listener_event_id`)));
 
 -- --------------------------------------------------------
 
@@ -293,62 +339,20 @@ CREATE TABLE IF NOT EXISTS `services_tabs` (
 
 CREATE TABLE IF NOT EXISTS `service_active_schedule` (
   `service_event_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `service` varchar(10) DEFAULT NULL,
-  `source` varchar(10) DEFAULT NULL,
+  `output` varchar(24) DEFAULT NULL,
+  `input` varchar(24) DEFAULT NULL,
   `first_date` date DEFAULT NULL,
   `last_date` date DEFAULT NULL,
   `days` varchar(7) DEFAULT NULL,
   `start_time` time DEFAULT NULL,
   `duration` time DEFAULT NULL,
-  `start_mode` varchar(1) DEFAULT NULL,
-  `name` text,
-  `material_id` varchar(20) DEFAULT NULL,
-  `rot` tinyint(1) DEFAULT NULL,
-  `ptt` varchar(1) DEFAULT NULL,
-  `ptt_time` int(11) DEFAULT NULL,
   `owner` varchar(64) DEFAULT NULL,
+  `input_param` varchar(24) NOT NULL,
+  `output_param` varchar(24) NOT NULL,
   PRIMARY KEY (`service_event_id`),
-  KEY `i_service` (`service`),
-  KEY `i_source` (`source`),
-  KEY `i_material` (`material_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=156 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `service_components`
---
-
-CREATE TABLE IF NOT EXISTS `service_components` (
-  `service` varchar(10) NOT NULL,
-  `type` varchar(64) NOT NULL,
-  `port` smallint(6) NOT NULL,
-  PRIMARY KEY (`service`,`type`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='service components and their udp port numbers';
-
--- --------------------------------------------------------
-
---
--- Table structure for table `service_event`
---
-
-CREATE TABLE IF NOT EXISTS `service_event` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `event_time` datetime NOT NULL,
-  `event_id` bigint(20) NOT NULL,
-  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `time` (`event_time`),
-  KEY `event_id` (`event_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='event schedule' AUTO_INCREMENT=72 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `service_events`
---
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`sif`@`%` SQL SECURITY DEFINER VIEW `sif`.`service_events` AS select `sif`.`service_event`.`id` AS `id`,`sif`.`service_event`.`event_time` AS `event_time`,`sif`.`service_event`.`event_id` AS `event_id`,`sif`.`service_event`.`updated` AS `updated`,`sif`.`service_active_schedule`.`service_event_id` AS `service_event_id`,`sif`.`service_active_schedule`.`service` AS `service`,`sif`.`service_active_schedule`.`source` AS `source`,`sif`.`service_active_schedule`.`first_date` AS `first_date`,`sif`.`service_active_schedule`.`last_date` AS `last_date`,`sif`.`service_active_schedule`.`days` AS `days`,`sif`.`service_active_schedule`.`start_time` AS `start_time`,`sif`.`service_active_schedule`.`duration` AS `duration`,`sif`.`service_active_schedule`.`start_mode` AS `start_mode`,`sif`.`service_active_schedule`.`name` AS `name`,`sif`.`service_active_schedule`.`material_id` AS `material_id`,`sif`.`service_active_schedule`.`rot` AS `rot`,`sif`.`service_active_schedule`.`ptt` AS `ptt`,`sif`.`service_active_schedule`.`ptt_time` AS `ptt_time`,`sif`.`service_active_schedule`.`owner` AS `owner` from (`sif`.`service_event` join `sif`.`service_active_schedule` on((`sif`.`service_event`.`event_id` = `sif`.`service_active_schedule`.`service_event_id`)));
+  KEY `i_service` (`output`),
+  KEY `i_source` (`input`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=162 ;
 
 -- --------------------------------------------------------
 
@@ -373,7 +377,7 @@ CREATE TABLE IF NOT EXISTS `service_planning_schedule` (
   `ptt_time` int(11) DEFAULT NULL,
   `owner` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`service_event_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=15 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=156 ;
 
 -- --------------------------------------------------------
 
@@ -417,7 +421,6 @@ CREATE TABLE IF NOT EXISTS `source2device` (
   `idx` tinyint(1) NOT NULL DEFAULT '1',
   `active` tinyint(1) NOT NULL DEFAULT '1',
   `device` varchar(64) NOT NULL COMMENT 'reference to the physical device',
-  `pcm` varchar(64) NOT NULL COMMENT 'alsa pcm on the physical device',
   `tab_index` int(11) NOT NULL,
   PRIMARY KEY (`id`,`idx`),
   KEY `device` (`device`)
@@ -454,6 +457,12 @@ CREATE TABLE IF NOT EXISTS `source_tabs` (
 --
 
 --
+-- Constraints for table `as_run`
+--
+ALTER TABLE `as_run`
+  ADD CONSTRAINT `as_run_ibfk_1` FOREIGN KEY (`event_type`) REFERENCES `event_types` (`event_type`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `listener`
 --
 ALTER TABLE `listener`
@@ -470,34 +479,14 @@ ALTER TABLE `listener2device`
 -- Constraints for table `listener_active_schedule`
 --
 ALTER TABLE `listener_active_schedule`
-  ADD CONSTRAINT `listener_active_schedule_ibfk_2` FOREIGN KEY (`listener`) REFERENCES `listener` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `listener_active_schedule_ibfk_1` FOREIGN KEY (`service`) REFERENCES `service` (`service`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `listener_event`
---
-ALTER TABLE `listener_event`
-  ADD CONSTRAINT `listener_event_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `listener_active_schedule` (`listener_event_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `listener_active_schedule_ibfk_1` FOREIGN KEY (`service`) REFERENCES `service` (`service`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `listener_active_schedule_ibfk_2` FOREIGN KEY (`listener`) REFERENCES `listener` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `service`
 --
 ALTER TABLE `service`
   ADD CONSTRAINT `service_ibfk_1` FOREIGN KEY (`tab_index`) REFERENCES `services_tabs` (`tab_index`);
-
---
--- Constraints for table `service_active_schedule`
---
-ALTER TABLE `service_active_schedule`
-  ADD CONSTRAINT `service_active_schedule_ibfk_3` FOREIGN KEY (`material_id`) REFERENCES `material` (`material_id`),
-  ADD CONSTRAINT `service_active_schedule_ibfk_4` FOREIGN KEY (`source`) REFERENCES `source` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `service_active_schedule_ibfk_5` FOREIGN KEY (`service`) REFERENCES `service` (`service`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `service_event`
---
-ALTER TABLE `service_event`
-  ADD CONSTRAINT `service_event_ibfk_1` FOREIGN KEY (`id`) REFERENCES `service_active_schedule` (`service_event_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `source`
@@ -511,3 +500,7 @@ ALTER TABLE `source`
 ALTER TABLE `source2device`
   ADD CONSTRAINT `source2device_ibfk_1` FOREIGN KEY (`id`) REFERENCES `source` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `source2device_ibfk_2` FOREIGN KEY (`device`) REFERENCES `physicaldevices` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
