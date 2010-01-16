@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -31,11 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mono.Zeroconf, Version=4.0.0.90, Culture=neutral, PublicKeyToken=e60c4f4a95e1099e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\mono-zeroconf-0.9.0-binary\bin\Mono.Zeroconf.dll</HintPath>
-    </Reference>
-    <Reference Include="RabbitMQ.Client" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -49,6 +44,13 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Mono.Zeroconf, Version=4.0.0.90, Culture=neutral, PublicKeyToken=e60c4f4a95e1099e">
+      <Package>mono-zeroconf</Package>
+    </Reference>
+    <Reference Include="RabbitMQ.Client, Version=1.7.0.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\RabbitMQ.Client.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
