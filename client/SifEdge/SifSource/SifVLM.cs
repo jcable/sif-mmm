@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using System.Net;
+using System.Web;
 using System.IO;
 
 /* VLM example
@@ -202,7 +203,7 @@ namespace SifSource
         public void cmd(string cmd)
         {
         	Console.WriteLine(cmd);
-            XmlDocument resp = fetch(url + "vlm_cmd.xml?command="+cmd);
+            XmlDocument resp = fetch(url + "vlm_cmd.xml?command="+HttpUtility.UrlPathEncode(cmd));
             string err = resp.GetElementsByTagName("error")[0].InnerText;
             if (err != "")
                 Console.WriteLine(err);

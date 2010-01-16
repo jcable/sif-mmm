@@ -378,7 +378,8 @@ namespace SifSource
             {
             	VLMBroadcast bc = new VLMBroadcast(instance_id,vlm);
             	bc.addinput(input);
-            	bc.output = n.InnerText;
+            	string o = n.InnerText;
+            	bc.output = o;
             	bc.enabled=true;
             	instance.Add(service, bc);
             }
