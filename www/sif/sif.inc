@@ -212,17 +212,19 @@ function register_event_as_run($dbh, $device, $input, $output, $eventtype)
 
 function active_events_as_run($dbh)
 {
-	$stmt = $dbh->prepare(
-	"SELECT service,event_time,device,ifnull(input,'OFF') AS input,output FROM service s LEFT JOIN (SELECT m.event_time, r.device, r.input, r.output"
-."	FROM ("
-."		SELECT max( event_time ) AS event_time, output"
-."		FROM as_run"
-."		GROUP BY output"
-."		) AS m"
-."	JOIN as_run r"
-."	USING ( event_time, output )) e ON s.service=e.output"
-);
-	$stmt->execute();
+	$sql = <<<EOT
+SELECT output,if(event_type='OFF','OFF',ifnull(input,'OFF')) as input 
+FROM (select id AS output FROM edge WHERE kind='SERVICE') AS a
+LEFT JOIN
+(
+SELECT output,input,event_type
+FROM
+(SELECT max( event_time ) AS event_time, output FROM as_run GROUP BY output) AS m
+JOIN as_run AS r
+USING ( event_time, output )
+) AS b USING (output)
+EOT;
+	$stmt = $dbh->query($sql);
 	return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 

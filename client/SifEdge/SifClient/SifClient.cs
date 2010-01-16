@@ -170,33 +170,7 @@ namespace SifClient
 
         private void createSource(XmlNode node, IConnection conn)
         {
-            XmlNodeList childNodes = node.ChildNodes;
-
-            string id="", input="";
-            bool active=false;
-
-            //And walk through them
-            foreach (XmlNode child in childNodes)
-            {
-                switch (child.Name)
-                {
-                    case "id":
-                        id = child.InnerText;
-                        break;
-                    case "input":
-                        input = child.InnerText;
-                        break;
-                    case "active":
-                        if (child.InnerText == "true" || child.InnerText == "1")
-                            active = true;
-                        else
-                            active = false;
-                        break;
-                }
-            }
-            childNodes = null;
-
-            SifSource.Source s = new SifSource.Source(url, id, input, device, conn);
+            SifSource.Source s = new SifSource.Source(url, conn, device, node);
 		    Thread oThread = new Thread(new ThreadStart(s.run));
 			oThread.Start();
 			local_edge.Add(oThread);

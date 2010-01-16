@@ -54,19 +54,19 @@ namespace SifSource
 	        {
 	            enabled_f = value;
 	            if(enabled_f)
-        		    vlm.cmd("setup "+id+" enabled");
+        		    setup( "enabled");
 	            else
-		            vlm.cmd("setup "+id+" disabled");
+		            setup( "disabled");
 	        }
 	    }
 
-        public void addinput(string inp)
+		public void addinput(string inp)
 		{
         	string[] p = inp.Split('\n');
         	string mrl = p[0];
         	// TODO options
         	input.Add(mrl);
-        	vlm.cmd("setup "+id+" input \""+mrl+"\"");
+        	setup("input \""+mrl+"\"");
         	for(int i=1; i<p.Length; i++)
         	{
         		string[] kv = p[i].Split('=');
@@ -78,13 +78,18 @@ namespace SifSource
 		{
         	// TODO
         	int n=0;
-        	vlm.cmd("setup "+id+" inputdeln "+n);
+        	setup("inputdeln "+n);
         }
         
         public void option(string key, string val)
 		{
         	option_f[key] = val;
-        	vlm.cmd("setup "+id+" option "+key+"="+val);
+        	setup("option "+key+"="+val);
+        }
+
+        protected void setup(string prop)
+		{
+        	vlm.cmd("setup "+id+" "+prop);
         }
     }
 
@@ -110,10 +115,11 @@ namespace SifSource
             mux = "";
         }
 
-        public void play()	{ control("play");}
-        public void pause()	{ control("pause");}
-        public void stop()	{ control("stop");}
-        public void seek(int percent) { control("seek "+percent);}
+        public void play()	{control("play");}
+        public void pause()	{control("pause");}
+        public void stop()	{control("stop");}
+        public void seek(int percent) {control("seek "+percent);}
+        public void delete() {vlm.cmd("del "+id);}
 
 	    public string output
 	    {
@@ -126,7 +132,7 @@ namespace SifSource
 	            output_f = value;
 	        	string[] p = output_f.Split('\n');
 	        	string mrl = p[0];
-	        	vlm.cmd("setup "+id+" output "+mrl);
+        		setup("output "+mrl);
 	        	for(int i=1; i<p.Length; i++)
 	        	{
 	        		string[] kv = p[i].Split('=');
@@ -145,9 +151,9 @@ namespace SifSource
 	        {
 	            loop_f = value;
 	            if(loop_f)
-        		    vlm.cmd("setup "+id+" loop");
+        		    setup("loop");
 	            else
-		            vlm.cmd("setup "+id+" unloop");
+        		    setup("unloop");
 	        }
         }
 
@@ -202,8 +208,8 @@ namespace SifSource
         }
         public void cmd(string cmd)
         {
+		    Console.WriteLine(cmd);
             string args = HttpUtility.UrlEncode(cmd).Replace("+","%20");
-	    Console.WriteLine(args);
             XmlDocument resp = fetch(url + "vlm_cmd.xml?command="+args);
             string err = resp.GetElementsByTagName("error")[0].InnerText;
             if (err != "")
