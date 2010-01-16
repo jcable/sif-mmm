@@ -3,16 +3,15 @@ using RabbitMQ.Client;
 
 namespace SimplePublishSubscribe
 {
-    public delegate void MessageHandler(object sender, byte[] message);
+    public delegate void MessageHandler(object sender, string key, byte[] message);
 
     class Client
     {
         protected string exchangeName;
-        protected string routingKey;
         protected IConnection conn;
         protected IModel channel;
 
-        public Client(string eName, string key, string hostName, int portNumber)
+        public Client(string eName, string hostName, int portNumber)
         {
             ConnectionFactory factory = new ConnectionFactory();
             IProtocol protocol = Protocols.FromEnvironment();
@@ -20,29 +19,31 @@ namespace SimplePublishSubscribe
             channel = conn.CreateModel();
             exchangeName = eName;
             channel.ExchangeDeclare(exchangeName, ExchangeType.Direct);
-            routingKey = key;
         }
         
-        public Client(string eName, string key, IConnection conn)
+        public Client(string eName, IConnection conn)
         {
         	this.conn = conn;
             channel = conn.CreateModel();
             exchangeName = eName;
             channel.ExchangeDeclare(exchangeName, ExchangeType.Direct);
-            routingKey = key;
         }
     }
 
     class Sender : Client
     {
+        protected string routingKey;
+
         public Sender(string exchangeName, string key, IConnection conn)
-            :             base(exchangeName, key, conn)
+            :             base(exchangeName, conn)
         {
+        	routingKey = key;
         }
 
         public Sender(string exchangeName, string hostName, int portNumber, string key)
-            :             base(exchangeName, key, hostName, portNumber)
+            :             base(exchangeName, hostName, portNumber)
         {
+        	routingKey = key;
         }
 
         public void send(byte[] message)
@@ -57,29 +58,33 @@ namespace SimplePublishSubscribe
         QueueingBasicConsumer consumer;
 		string queueName;
         
-        public Listener(string exchangeName, string key, string queueName, IConnection conn)
-            : base(exchangeName, key, conn)
+        public Listener(string exchangeName, string queueName, IConnection conn)
+            : base(exchangeName, conn)
         {
             channel.QueueDeclare(queueName);
-            channel.QueueBind(queueName, exchangeName, routingKey, false, null);
             consumer = new QueueingBasicConsumer(channel);
             channel.BasicConsume(queueName, null, consumer);
 			this.queueName = queueName;
         }
 
-        public Listener(string exchangeName, string hostName, int portNumber, string key, string queueName)
-            : base(exchangeName, key, hostName, portNumber)
+        public Listener(string exchangeName, string hostName, int portNumber, string queueName)
+            : base(exchangeName, hostName, portNumber)
         {
             channel.QueueDeclare(queueName);
-            channel.QueueBind(queueName, exchangeName, routingKey, false, null);
             consumer = new QueueingBasicConsumer(channel);
             channel.BasicConsume(queueName, null, consumer);
 			this.queueName = queueName;
         }
 
-		public void alsoListenFor(string key)
+		public void listenFor(string key)
 		{
-            channel.QueueBind(queueName, exchangeName, routingKey, false, null);
+			Console.WriteLine("listening for "+key);
+            channel.QueueBind(queueName, exchangeName, key, false, null);
+		}
+
+		public void ignore(string key)
+		{
+            channel.QueueUnbind(queueName, exchangeName, key, null);
 		}
 		
         public void listen()
@@ -93,7 +98,7 @@ namespace SimplePublishSubscribe
                     consumer.Queue.Dequeue();
                     IBasicProperties props = e.BasicProperties;
                     // ... process the message
-                    MessageReceived(this, e.Body);
+                    MessageReceived(this, e.RoutingKey, e.Body);
                     channel.BasicAck(e.DeliveryTag, false);
                 }
                 catch (RabbitMQ.Client.Exceptions.OperationInterruptedException ex)

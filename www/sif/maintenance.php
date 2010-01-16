@@ -18,7 +18,7 @@
 <p>
 <li><a href="taskmanager.php">Task Manager</a>
 <p>
-<li><a href="/phpmyadmin" target="_new">MySQL Administration</a>
+<li><a href="/phpmyadmin?db=sif" target="_new">MySQL Administration</a>
 <li><a href="phpinfo.php" target="_new">PHP Server Info</a>
 </ul>
 <?php
