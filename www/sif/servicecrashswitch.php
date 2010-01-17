@@ -98,6 +98,12 @@ function servicepopup()
 		if (window.focus) {servicewindow.focus()}
 	}
 }
+
+function reload_panel(sourcetab, desttab)
+{
+	location.href='servicecrashswitch.php?servicetab='+desttab+'&sourcetab='+sourcetab;
+}
+
 //-->
 </SCRIPT>
 <?php
@@ -157,8 +163,8 @@ function servicepopup()
 	print "</tr><tr>";
 	$sourcecount=0;
 
-	$stmt = $dbh->prepare("SELECT * FROM source where tab_index='$sourcetab' and enabled=1 order by id asc");
-	$stmt->execute();
+	$stmt = $dbh->prepare("SELECT id FROM edge WHERE kind='SOURCE' AND tab_index=? ORDER BY id ASC");
+	$stmt->execute(array($sourcetab));
 	while($row = $stmt->fetch(PDO::FETCH_ASSOC))
 	{
 		$id = $row["id"];
@@ -184,94 +190,7 @@ function servicepopup()
 </td></tr></table>
 </div>
 <div id="destbuttons">
-<table width=100% height=240 border=0>
-<tr><td valign=top>
-<table border=1 cellspacing=0 cellpadding=2 width=100%>
-<table width=100% border=0><tr><th bgcolor="#CCCCFF" colspan=10>Services:</th></tr>
-
-<tr>
-<?php
-	$servicetabcount=0;
-	$stmt = $dbh->prepare("SELECT * FROM services_tabs where enabled=1 order by tab_index asc");
-	$stmt->execute();
-	while($row = $stmt->fetch(PDO::FETCH_ASSOC))
-	{
-		if ($servicetab==$row[tab_index])
-		{
-				print "\n<th height=40 width=20% class=\"depressed\" colspan=2>{$row[tab_text]}</th>";
-				}
-				else
-				{
-					print "\n<th height=40 width=20% class=\"raised\" colspan=2 onclick=\"location.href='servicecrashswitch.php?servicetab={$row[tab_index]}&sourcetab={$sourcetab}';\">{$row[tab_text]}</th>";
-				}
-				$servicetabcount++;
-				if ($servicetabcount % 5 == 0)
-						{
-							print "</tr><tr>";
-		}
-	}
-	$emptyslotsinrow=(5-($servicetabcount % 5));
-	// this will pad out any remaining slots so the table formats correctly
-	if ($emptyslotsinrow < 5)
-	{
-		while($emptyslotsinrow > 0)
-		{
-			print "<th width=20% class=\"unused\" colspan=2>&nbsp;</td>";
-			$emptyslotsinrow--;
-		}
-	}
-	print "</tr><tr>";
-	//$events = active_schedule_records($dbh,"%");
-	$rows = active_events_as_run($dbh);
-	$events = array();
-	foreach($rows as $event)
-	{
-		$events[$event["output"]] = $event;
-	}
-	$servicecount=0;
-	$stmt = $dbh->prepare("SELECT * FROM service where tab_index=? and enabled=1 order by service asc");
-	$stmt->execute(array($servicetab));
-	while($row = $stmt->fetch(PDO::FETCH_ASSOC))
-	{
-		$service = $row["service"];
-		if(isset($events[$service]))
-		{
-			$event = $events[$service];
-			$currentsource=$event["input"];
-		}
-		else
-		{
-			$currentsource="OFF";
-		}
-
-		$onclick = "toggleButton(this, /service/i);";
-		$onclick .= "setservice('$service','$currentsource');";
-		print "\n<td height=40 width=10% id=\"service{$servicecount}\" class=\"raised\"";
-		print " onclick=\"$onclick\">";
-		print "<span class=\"servicelabel\">$service</span>";
-		print "<br>";
-		print "<span class=\"sourcelabel\">(".$currentsource.")</span>";
-		//print_r($event);
-		print "</td>";
-		$servicecount++;
-		if ($servicecount % 10 == 0)
-		{
-			print "</tr><tr>";
-		}
-	}
-	$emptyslotsinrow=(10-($servicecount % 10));
-	// this will pad out any remaining slots so the table formats correctly
-	if ($emptyslotsinrow < 10)
-	{
-		while($emptyslotsinrow > 0)
-		{
-			print "<td height=40 width=10%>&nbsp;</td>";
-			$emptyslotsinrow--;
-		}
-	}
-?>
-</tr></table>
-</td></tr></table>
+<?php showservicebuttons($dbh, "dest", $servicetab, $sourcetab); ?>
 </div>
 <div id="takebuttons">
 <table width=100%>
