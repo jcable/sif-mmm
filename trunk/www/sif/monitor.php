@@ -1,4 +1,5 @@
 <?php
+	require_once("sif.inc");
 	require_once("header.php");
 	$page = "Monitoring";
 	sif_header($page, "crashswitch.css");
@@ -31,6 +32,12 @@ function crashswitchmon(mondest)
 	document.crashmon.mon.value = mondest;
 	document.crashmon.submit();
 }
+
+function reload_panel(sourcetab, desttab)
+{
+	location.href='monitor.php?servicetab='+desttab+'&sourcetab='+sourcetab;
+}
+
 //-->
 </SCRIPT>
 <?php
@@ -51,7 +58,7 @@ function crashswitchmon(mondest)
 	{
 		$servicetab=$_REQUEST["servicetab"];
 	}
-	require 'connect.php';
+	$dbh = connect();
 ?>
 <form method="post" action="crashmon.php" name="crashmon">
 <input type="hidden" name="monsource" value="OFF">
@@ -125,68 +132,7 @@ function crashswitchmon(mondest)
 </td></tr></table>
 </div>
 <div id="destbuttons">
-<table width=100% height=240 border=0>
-<tr><td valign=top>
-<table border=1 cellspacing=0 cellpadding=2 width=100%>
-<table width=100% border=0><tr><th bgcolor="#CCCCFF" colspan=10>Services:</th></tr>
-
-<tr>
-<?php
-	$servicetabcount=0;
-	$result=mysql_query("SELECT * FROM services_tabs where enabled=1 order by tab_index asc", $connection);
-	while($row= mysql_fetch_array($result))
-	{
-		if ($servicetab==$row[tab_index])
-		{
-			print "\n<th height=40 width=20% class=\"depressed\" colspan=2>{$row[tab_text]}</th>";
-		}
-		else
-		{
-			print "\n<th height=40 width=20% class=\"raised\" colspan=2 onclick=\"location.href='monitor.php?servicetab={$row[tab_index]}&sourcetab={$sourcetab}';\">{$row[tab_text]}</th>";
-		}
-		$servicetabcount++;
-		if ($servicetabcount % 5 == 0)
-		{
-			print "</tr><tr>";
-		}
-	}
-	$emptyslotsinrow=(5-($servicetabcount % 5));
-	// this will pad out any remaining slots so the table formats correctly
-	if ($emptyslotsinrow < 5)
-	{
-		while($emptyslotsinrow > 0)
-		{
-			print "<th height=40 width=20% class=\"unused\" colspan=2>&nbsp;</td>";
-			$emptyslotsinrow--;
-		}
-	}
-	print "</tr><tr>";
-	$servicecount=0;
-	$sourcecount++;
-	$result=mysql_query("SELECT * FROM service where tab_index='$servicetab' order by service asc", $connection);
-	while($row= mysql_fetch_array($result))
-	{
-		print "\n<td height=40 width=10% id=\"source{$sourcecount}\" class=\"raised\" onclick=\"toggleButton(this, /source/i);setmonsource('{$row[service]}');setsourcemon('no')\"><b>{$row[service]}</b></td>";
-		$servicecount++;
-		$sourcecount++;
-		if ($servicecount % 10 == 0)
-		{
-			print "</tr><tr>";
-		}
-	}
-	$emptyslotsinrow=(10-($servicecount % 10));
-	// this will pad out any remaining slots so the table formats correctly
-	if ($emptyslotsinrow < 10)
-	{
-		while($emptyslotsinrow > 0)
-		{
-			print "<td height=40 width=10%>&nbsp;</td>";
-			$emptyslotsinrow--;
-		}
-	}
-?>
-</tr></table>
-</td></tr></table>
+<?php showservicebuttons($dbh, "dest", $servicetab, $sourcetab); ?>
 </div>
 <div id="takebuttons">
 <table width=100%>

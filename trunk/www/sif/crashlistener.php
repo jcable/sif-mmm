@@ -1,37 +1,51 @@
 <?php
-	require_once("messaging.inc");
-	$dbh = new PDO(
-	    'mysql:host=localhost;dbname=sif', 'sif', 'sif',
-	    array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
-	); 
-
-if (isset($_REQUEST["listener"]))
+require_once("messaging.inc");
+require_once "sif.inc";
+$dbh = connect();
+$dbh->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
+if (isset($_REQUEST["service"]))
 {
-	header("location: listenercrashswitch.php?servicetab=".$_REQUEST["servicetab"]."&listenertab=".$_REQUEST["listenertab"]);
-	$stmt = $dbh->prepare("INSERT INTO listener_active_schedule (first_date,start_time,service,listener) VALUES(?,?,?,?)");
-	$d = strftime("%Y-%m-%d");
-	$t = strftime("%T");
-	$stmt->bindParam(1, $d);
-	$stmt->bindParam(2, $t);
-	$stmt->bindParam(3, $_REQUEST["service"]);
-	$stmt->bindParam(4, $_REQUEST["listener"]);
-	$stmt->execute();
-	$stmt = $dbh->prepare("INSERT INTO event (event_time,service,listener) VALUES(?,?,?)");
-	$dt = "$d $t";
-	$stmt->bindParam(1, $dt);
-	$stmt->bindParam(2, $_REQUEST["service"]);
-	$stmt->bindParam(3, $_REQUEST["listener"]);
-	$stmt->execute();
+	if(isset($_REQUEST["listenertab"]) && isset($_REQUEST["servicetab"]))
+	{
+		header("location: listenercrashswitch.php?listenertab=".$_REQUEST["listenertab"]."&servicetab=".$_REQUEST["servicetab"]);
+	}
+	else
+	{
+		$verbose=1;
+	}
 
-	$sender = new Sender();
-	$sender->send($_REQUEST["service"], "refresh");
-	$sender->send($_REQUEST["listener"], "refresh");
-	$sender->close();
+	$service = $_REQUEST["service"];
+	$listener = $_REQUEST["listener"];
+	
+	if(isset($_REQUEST["sed"]))
+	{
+		$times = gettimes($dbh);
+		break_schedule($dbh, $listener, $service, $_REQUEST["sed"], $times);
+	}
 
+	if(isset($_REQUEST["emulate"]))
+	{
+		register_event_as_run($dbh, "ANY", $_REQUEST["previous_service"], $listener, "OFF");
+		register_event_as_run($dbh, "ANY", $service, $listener, "ON");
+	}
+	else
+	{
+		$stmt = $dbh->query("SELECT value FROM configuration WHERE `key`='message_bus_host'",  PDO::FETCH_COLUMN, 0);	
+		$config = $stmt->fetch();
+		$sender = new Sender($config);
+		$sender->send($listener, "oi=$service");
+		$sender->close();
+	}
+
+	if(isset($verbose))
+	{
+		print $config["value"]."<br>$listener";
+		print_r($sender);
+	}
 }
 else
 {
-header("location: listenercrashswitch.php");
-echo "Error - no listener defined";
+	header("location: listenercrashswitch.php");
+	echo "Error - no listener defined";
 }
 ?>

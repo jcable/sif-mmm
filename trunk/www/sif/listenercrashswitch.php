@@ -1,4 +1,5 @@
 <?php
+	require_once("sif.inc");
 	require_once("header.php");
 	$page = "Crash Listeners";
 	sif_header($page, "crashswitch.css");
@@ -90,6 +91,12 @@ function servicepopup()
 		if (window.focus) {servicewindow.focus()}
 	}
 }
+
+function reload_panel(sourcetab, desttab)
+{
+	location.href='listenercrashswitch.php?servicetab='+sourcetab+'&listenertab='+desttab;
+}
+
 //-->
 </SCRIPT>
 <?php
@@ -104,7 +111,7 @@ function servicepopup()
 		$servicetab=1;
 		$listenertab=1;
 	}
-	require 'connect.php';
+	$dbh = connect();
 ?>
 <form method="post" action="crashlistener.php" name="crashlistener">
 <input type="hidden" name="service" value="OFF">
@@ -112,69 +119,7 @@ function servicepopup()
 <input type="hidden" name="hold" value="0">
 <input type="hidden" name="prime" value="0">
 <div id="sourcebuttons">
-<table width=100% height=240 border-0><tr><tr><td valign=top>
-
-<table width=100% border=0><tr><th bgcolor="#CCCCFF" colspan=10>Services:</th></tr>
-<tr>
-<?php
-	print "\n<input type=\"hidden\" name=\"servicetab\" value=\"{$servicetab}\">";
-	print "\n<input type=\"hidden\" name=\"listenertab\" value=\"{$listenertab}\">";
-	$servicetabcount=0;
-	$result=mysql_query("SELECT * FROM services_tabs where enabled=1 order by tab_index asc", $connection);
-	while($row= mysql_fetch_array($result))
-	{
-		if ($servicetab==$row[tab_index])
-		{
-			print "\n<th height=40 width=20% class=\"depressed\" colspan=2>{$row[tab_text]}</th>";
-		}
-		else
-		{
-			print "\n<th height=40 width=20% class=\"raised\" colspan=2 onclick=\"location.href='listenercrashswitch.php?servicetab={$row[tab_index]}&listenertab={$listenertab}';\">{$row[tab_text]}</th>";
-		}
-		$servicetabcount++;
-		if ($servicetabcount % 5 == 0)
-		{
-					print "</tr><tr>";
-		}
-	}
-	$emptyslotsinrow=(5-($servicetabcount % 5));
-	// this will pad out any remaining slots so the table formats correctly
-	if ($emptyslotsinrow < 5)
-	{
-		while($emptyslotsinrow > 0)
-		{
-			print "<th height=40 width=20%  class=\"unused\" colspan=2>&nbsp;</td>";
-			$emptyslotsinrow--;
-		}
-	}
-	print "</tr><tr>";
-	$servicecount=0;
-
-	$result=mysql_query("SELECT * FROM service where tab_index='$servicetab' and enabled=1 order by service asc", $connection);
-	while($row= mysql_fetch_array($result))
-	{
-		print "\n<td height=40 width=10% id=\"service{$servicecount}\" class=\"raised\" onclick=\"toggleButton(this, /service/i);setservice('{$row[service]}');\"><b>{$row[service]}</b></td>";
-		$servicecount++;
-		if ($servicecount % 10 == 0)
-		{
-			print "\n</tr><tr>";
-		}
-	}
-	$emptyslotsinrow=(10-($servicecount % 10));
-	// this will pad out any remaining slots so the table formats correctly
-	if ($emptyslotsinrow < 10)
-	{
-		while($emptyslotsinrow > 0)
-		{
-			print "\n<td height=40 width=10% class=\"unused\">&nbsp;</td>";
-			$emptyslotsinrow--;
-		}
-	}
-	$servicecount++;
-	print "</tr>";
-?>
-</table>
-</td></tr></table>
+<?php showservicebuttons($dbh, "source", $servicetab, $listenertab); ?>
 </div>
 <div id="destbuttons">
 <table width=100% height=240 border=0>
@@ -185,8 +130,8 @@ function servicepopup()
 <tr>
 <?php
 	$listenertabcount=0;
-	$result=mysql_query("SELECT * FROM listener_tabs where enabled=1 order by tab_index asc", $connection);
-	while($row= mysql_fetch_array($result))
+	$stmt=$dbh->query("SELECT * FROM listener_tabs where enabled=1 order by tab_index asc");
+	while($row=$stmt->fetch(PDO::FETCH_ASSOC))
 	{
 		if ($listenertab==$row[tab_index])
 		{
@@ -214,22 +159,33 @@ function servicepopup()
 	}
 	print "</tr><tr>";
 	$listenercount=0;
-	$result=mysql_query("SELECT * FROM listener where tab_index='$listenertab' and enabled=1 order by id asc", $connection);
-	while($row= mysql_fetch_array($result))
+
+	$rows = active_events_as_run($dbh, 'LISTENER');
+	$events = array();
+	foreach($rows as $event)
+	{
+		$events[$event["output"]] = $event;
+	}
+
+	$stmt=$dbh->prepare("SELECT id FROM edge WHERE kind='LISTENER' AND tab_index=? ORDER BY id ASC");
+	$stmt->execute(array($listenertab));
+	while($row=$stmt->fetch(PDO::FETCH_ASSOC))
 	{
 		$id = $row["id"];
-		$sql = "SELECT event_time, service, listener FROM listener_events";
-		$sql .= " WHERE listener = '$id'";
-		$sql .= " AND event_time < now() ORDER BY event_time DESC LIMIT 1";
-		$r=mysql_query($sql, $connection);
-		$ev = mysql_fetch_array($r);
-		$cs = $ev["service"];
-		if($cs == "")
-			$cs = "OFF";
+		if(isset($events[$service]))
+		{
+			$event = $events[$service];
+			$currentservice=$event["input"];
+		}
+		else
+		{
+			$currentservice="OFF";
+		}
+
 		print "\n<td height=40 width=10% id=\"listener{$listenercount}\" class=\"raised\" onclick=\"toggleButton(this, /listener/i);setlistener('$id');\">";
 		print "<span class=\"servicelabel\">$id</span>";
 		print "<br>";
-		print "<span class=\"sourcelabel\">($cs)</span>";
+		print "<span class=\"sourcelabel\">($currentservice)</span>";
 		print "</td>";
 		$listenercount++;
 		if ($listenercount % 10 == 0)
