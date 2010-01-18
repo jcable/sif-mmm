@@ -33,11 +33,11 @@ table {
 	table-layout: fixed;
 }
 
-.servicelabel {
+.buttonlabel {
 	font-weight: bold
 }
 
-.sourcelabel {
+.buttondetail {
 	color: blue;
 	font-style: italic
 }

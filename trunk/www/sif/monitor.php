@@ -65,71 +65,7 @@ function reload_panel(sourcetab, desttab)
 <input type="hidden" name="mon" value="NULL">
 <input type="hidden" name="sourcemon" value="yes">
 <div id="sourcebuttons">
-<table width="100%" height="240" border="0"><tr><tr><td valign=top">
-<table width="100%" border="0"><tr><th bgcolor="#CCCCFF" colspan="10">Sources:</th></tr>
-<tr>
-<?php
-	print "\n<input type=\"hidden\" name=\"sourcetab\" value=\"$sourcetab\">";
-	print "\n<input type=\"hidden\" name=\"servicetab\" value=\"$servicetab\">";
-	$sourcetabcount=0;
-	$result=mysql_query("SELECT * FROM source_tabs where enabled=1 order by tab_index asc", $connection);
-	while($row= mysql_fetch_array($result))
-	{
-		if ($sourcetab==$row[tab_index])
-		{
-			print "\n<th height=\"40\" width=\"20%\" class=\"depressed\" colspan=\"2\">".$row[tab_text]."</th>";
-		}
-		else
-		{
-			$url = "monitor.php?sourcetab=".$row[tab_index]."&servicetab=$servicetab";
-			print "\n<th height=\"40\" width=\"20%\" class=\"raised\" colspan=\"2\"";
-			print " onclick=\"location.href='$url';\">".$row[tab_text]."</th>";
-		}
-		$sourcetabcount++;
-		if ($sourcetabcount % 5 == 0)
-		{
-			print "</tr><tr>";
-		}
-	}
-	$emptyslotsinrow=(5-($sourcetabcount % 5));
-		// this will pad out any remaining slots so the table formats correctly
-		if ($emptyslotsinrow < 5)
-		{
-			while($emptyslotsinrow > 0)
-			{
-				print "<th height=40 width=20% class=\"unused\" colspan=2>&nbsp;</td>";
-				$emptyslotsinrow--;
-			}
-	}
-	print "</tr><tr>";
-	$sourcecount=0;
-
-	$result=mysql_query("SELECT * FROM source where tab_index='$sourcetab' order by id asc", $connection);
-	while($row= mysql_fetch_array($result))
-	{
-		$id = $row["id"];
-		print "\n<td height=40 width=10% id=\"source{$sourcecount}\" class=\"raised\" onclick=\"toggleButton(this, /source/i);setmonsource('{$id}');setsourcemon('yes');\"><b>{$id}</b></td>";
-		$sourcecount++;
-		if ($sourcecount % 10 == 0)
-		{
-			print "\n</tr><tr>";
-		}
-	}
-	$emptyslotsinrow=(10-($sourcecount % 10));
-	// this will pad out any remaining slots so the table formats correctly
-	if ($emptyslotsinrow < 10)
-	{
-		while($emptyslotsinrow > 0)
-		{
-			print "\n<td height=40 width=10% class=\"unused\">&nbsp;</td>";
-			$emptyslotsinrow--;
-		}
-	}
-	$sourcecount++;
-	print "</tr>";
-?>
-</table>
-</td></tr></table>
+<?php showsourcebuttons($dbh, "source", $sourcetab, $servicetab); ?>
 </div>
 <div id="destbuttons">
 <?php showservicebuttons($dbh, "dest", $servicetab, $sourcetab); ?>
@@ -137,22 +73,23 @@ function reload_panel(sourcetab, desttab)
 <div id="takebuttons">
 <table width=100%>
 <tr>
-<?
+<?php
 	print "<td align=center height=40 width=10% id=\"source{$sourcecount}\" class=\"depressed\" onclick=\"toggleButton(this, /source/i);setmonsource('{$row[source]}');\"><b>OFF</b></td><td colspan=2>&nbsp;</td>";
 	print "<td height=40 width=10% height=60>&nbsp;</td>";
 	$moncount=0;
-	$result=mysql_query("SELECT * FROM listener left join service on service.service=listener.id where role='MONITOR' order by listener.id asc", $connection);
-	while($row= mysql_fetch_array($result))
+	$stmt=$dbh->prepare("SELECT * FROM edge l LEFT JOIN edge s ON e.id=s.id WHERE l.kind='LISTENER' ORDER BY l.id asc");
+	$stmt->execute();
+	while($row= $stmt->fetch(PDO::FETCH_ASSOC))
 	{
 
 		if ($row[current_service]==$row[listener])
 		{
 			//monitoring its own autoservice, so show actual source to that service
-			$currentservice="<font color=blue>(".$row[current_source].")</font>";
+			$currentservice="<font color=blue>".$row["current_source"]."</font>";
 		}
 		else
 		{
-			$currentservice="<font color=blue>(".$row[current_service].")</font>";
+			$currentservice="<font color=blue>".$row["current_service"]."</font>";
 		}
 		if ($currentservice == "<font color=blue>()</font>")
 		{
