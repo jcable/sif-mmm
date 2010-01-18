@@ -64,12 +64,8 @@ function reload_panel(sourcetab, desttab)
 <input type="hidden" name="monsource" value="OFF">
 <input type="hidden" name="mon" value="NULL">
 <input type="hidden" name="sourcemon" value="yes">
-<div id="sourcebuttons">
-<?php showsourcebuttons($dbh, "source", $sourcetab, $servicetab); ?>
-</div>
-<div id="destbuttons">
-<?php showservicebuttons($dbh, "dest", $servicetab, $sourcetab); ?>
-</div>
+<div id="sourcebuttons"><?php showselectionpanel($dbh, "source", $sourcetab, $servicetab, "SOURCE"); ?></div>
+<div id="destbuttons"><?php showservicebuttons($dbh, "dest", $servicetab, $sourcetab); ?></div>
 <div id="takebuttons">
 <table width=100%>
 <tr>
@@ -77,27 +73,20 @@ function reload_panel(sourcetab, desttab)
 	print "<td align=center height=40 width=10% id=\"source{$sourcecount}\" class=\"depressed\" onclick=\"toggleButton(this, /source/i);setmonsource('{$row[source]}');\"><b>OFF</b></td><td colspan=2>&nbsp;</td>";
 	print "<td height=40 width=10% height=60>&nbsp;</td>";
 	$moncount=0;
-	$stmt=$dbh->prepare("SELECT * FROM edge l LEFT JOIN edge s ON e.id=s.id WHERE l.kind='LISTENER' ORDER BY l.id asc");
+	$stmt=$dbh->prepare("SELECT * FROM edge JOIN panel_tabs USING(kind,tab_index) WHERE kind='LISTENER' and hidden=1 ORDER BY id asc");
 	$stmt->execute();
 	while($row= $stmt->fetch(PDO::FETCH_ASSOC))
 	{
-
-		if ($row[current_service]==$row[listener])
+		$id=$row["id"];
+		$source="";
+		print "<td id=\"mon{$moncount}\" class=\"raised button\" onclick=\"crashswitchmon('{$row[listener]}');\">";
+		print "<span class=\"buttonlabel\">$id</span>";
+		if($source!="")
 		{
-			//monitoring its own autoservice, so show actual source to that service
-			$currentservice="<font color=blue>".$row["current_source"]."</font>";
+			print "<br>";
+			print "<span class=\"buttondetail\">(".$source.")</span>";
 		}
-		else
-		{
-			$currentservice="<font color=blue>".$row["current_service"]."</font>";
-		}
-		if ($currentservice == "<font color=blue>()</font>")
-		{
-			$currentservice="<font color=blue>(OFF)</font>";
-		}
-
-
-		print "\n<td height=40 width=10%  height=60 id=\"mon{$moncount}\" class=\"raised\" onclick=\"crashswitchmon('{$row[listener]}');\"><b>{$row[listener]}</b><br><i>{$currentservice}</i></td>";
+		print "</td>\n";
 		$moncount++;
 		if ($moncount % 10 == 0)
 		{

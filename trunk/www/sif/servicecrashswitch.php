@@ -124,23 +124,12 @@ function reload_panel(sourcetab, desttab)
 <input type="hidden" name="service" value="NULL">
 <input type="hidden" name="hold" value="0">
 <input type="hidden" name="prime" value="0">
-<div id="sourcebuttons"><?php showsourcebuttons($dbh, "source", $sourcetab, $servicetab); ?></div>
+<input type="hidden" name="sourcetab" value="<?php print $sourcetab;?>">
+<input type="hidden" name="servicetab" value="<?php print $servicetab;?>">
+<div id="sourcebuttons"><?php showselectionpanel($dbh, "source", $sourcetab, $servicetab, "SOURCE"); ?></div>
 <div id="destbuttons"><?php showservicebuttons($dbh, "dest", $servicetab, $sourcetab); ?></div>
-<div id="takebuttons">
-<table width=100%>
-<tr>
-<td id="sourceOFF" align=center height=40 width=10% class="depressed" onclick="toggleButton(this, /source/i);setsource('OFF');"><b>OFF</b></td>
-<th width=10%>&nbsp;</th>
-<th class="raised" id="holdbutton" height=40 width=10% onclick="toggleprime(this);">Prime</th>
-<th class="unprimed" id="take" height=40 width=10% onclick="crashswitch();">Take</th>
-<th class="raised" id="holdbutton" height=40 width=10% onclick="togglehold(this);">Hold</th>
-<th width=20%>&nbsp;</th>
-<th class="raised" height=40 width=10% onClick="sourcepopup();">Source Routing</th>
-<th class="raised" height=40 width=10% onClick="servicepopup();">Service Routing</th>
-<th class="raised" height=40 width=10% onClick="history.go();">Refresh</th>
-</tr></table>
+<div id="takebuttons"><?php takebuttons("source", "service");?></div>
 </form>
-</div>
 <?php
 	sif_footer();
 ?>

@@ -47,8 +47,9 @@ take the current event and divide it into 4:
 
 	if(isset($verbose))
 	{
-		print $config["value"]."<br>$new_source";
+		print $config["value"]."<br/>\n";
 		print_r($sender);
+		phpinfo();
 	}
 }
 else

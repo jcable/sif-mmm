@@ -229,11 +229,14 @@ EOT;
 	return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function showbuttons($dbh, $end, $selected_tab, $other_tab, $tabs, $events, $title, $kind)
+function showselectionpanel($dbh, $end, $selected_tab, $other_tab, $kind, $events=array())
 {
 	print "<table width=100% height=240 border=0><tr><td valign=top>\n";
-	print "<table width=100% border=0><tr><th bgcolor=\"#CCCCFF\" colspan=10>$title:</th></tr>\n";
+	print "<table width=100% border=0><tr><th bgcolor=\"#CCCCFF\" colspan=10>".ucwords(strtolower($kind))."s:</th></tr>\n";
 	print "<tr>\n";
+	$stmt = $dbh->prepare("SELECT * FROM panel_tabs WHERE kind=? AND hidden=0 ORDER BY tab_index asc");
+	$stmt->execute(array($kind));
+	$tabs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	$tabcount=0;
 	foreach($tabs as $row)
 	{
@@ -294,7 +297,7 @@ function showbuttons($dbh, $end, $selected_tab, $other_tab, $tabs, $events, $tit
 
 		$onclick = "toggleButton(this, /$kind/i);";
 		$onclick .= "set".strtolower($kind)."('$id','$currentbutton');";
-		print "\n<td height=40 width=10% id=\"{$kind}{$buttoncount}\" class=\"raised\"";
+		print "\n<td id=\"{$kind}{$buttoncount}\" class=\"raised button\"";
 		print " onclick=\"$onclick\">";
 		print "<span class=\"buttonlabel\">$id</span>";
 		if($currentbutton!="")
@@ -325,10 +328,6 @@ function showbuttons($dbh, $end, $selected_tab, $other_tab, $tabs, $events, $tit
 
 function showservicebuttons($dbh, $end, $selected_tab, $other_tab)
 {
-	$stmt = $dbh->prepare("SELECT * FROM services_tabs where enabled=1 ORDER BY tab_index asc");
-	$stmt->execute();
-	$tabs = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 	//$events = active_schedule_records($dbh,"%");
 	$rows = active_events_as_run($dbh, 'SERVICE');
 	$events = array();
@@ -337,15 +336,29 @@ function showservicebuttons($dbh, $end, $selected_tab, $other_tab)
 		$events[$event["output"]] = $event;
 	}
 
-	showbuttons($dbh, $end, $selected_tab, $other_tab, $tabs, $events, "Services", "SERVICE");
+	showselectionpanel($dbh, $end, $selected_tab, $other_tab, "SERVICE", $events);
 }
 
-function showsourcebuttons($dbh, $end, $selected_tab, $other_tab)
+function takebuttons($source, $dest)
 {
-	$stmt = $dbh->prepare("SELECT * FROM source_tabs where enabled=1 ORDER BY tab_index asc");
-	$stmt->execute();
-	$tabs = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	showbuttons($dbh, $end, $selected_tab, $other_tab, $tabs, array(), "Sources", "SOURCE");
+	$skind = strtoupper($source);
+	$sid = strtolower($source);
+	$dkind = strtoupper($dest);
+	$did = strtolower($dest);
+	$onclick = "toggleButton(this, /{$sid}/i);set{$sid}('OFF')";
+	print "<table width=100%>\n";
+	print "<tr>\n";
+	print "<td id=\"{$sid}OFF\" align=center height=40 width=10% class=\"depressed\" onclick=\"$onclick\"><b>OFF</b></td>\n";
+?>
+<th width=10%>&nbsp;</th>
+<th class="raised" id="holdbutton" height=40 width=10% onclick="toggleprime(this);">Prime</th>
+<th class="unprimed" id="take" height=40 width=10% onclick="crashswitch();">Take</th>
+<th class="raised" id="holdbutton" height=40 width=10% onclick="togglehold(this);">Hold</th>
+<th width=20%>&nbsp;</th>
+<th class="raised" height=40 width=10% onClick="<?php print $sid; ?>popup();"><?php print ucwords($sid);?> Routing</th>
+<th class="raised" height=40 width=10% onClick="<?php print $did; ?>popup();"><?php print ucwords(strtolower($did));?> Routing</th>
+<th class="raised" height=40 width=10% onClick="history.go();">Refresh</th>
+</tr></table>
+<?php
 }
-
 ?>
