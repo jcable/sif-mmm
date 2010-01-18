@@ -33,13 +33,18 @@ table {
 	table-layout: fixed;
 }
 
+.button {
+	height:40px;
+	width:10%;
+	text-align:center
+}
 .buttonlabel {
-	font-weight: bold
+	font-weight: bold;
 }
 
 .buttondetail {
 	color: blue;
-	font-style: italic
+	font-style: italic;
 }
 
 #sourcebuttons {
