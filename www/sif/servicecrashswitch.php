@@ -124,74 +124,8 @@ function reload_panel(sourcetab, desttab)
 <input type="hidden" name="service" value="NULL">
 <input type="hidden" name="hold" value="0">
 <input type="hidden" name="prime" value="0">
-<div id="sourcebuttons">
-<table width=100% height=240 border-0><tr><tr><td valign=top>
-<table width=100% border=0><tr><th bgcolor="#CCCCFF" colspan=10>Sources:</th></tr>
-<tr>
-<?php
-	print "\n<input type=\"hidden\" name=\"sourcetab\" value=\"{$sourcetab}\">";
-	print "\n<input type=\"hidden\" name=\"servicetab\" value=\"{$servicetab}\">";
-	$sourcetabcount=0;
-	$stmt = $dbh->prepare("SELECT * FROM source_tabs where enabled=1 order by tab_index asc");
-	$stmt->execute();
-	while($row = $stmt->fetch(PDO::FETCH_ASSOC))
-	{
-		if ($sourcetab==$row[tab_index])
-		{
-			print "\n<th height=40 width=20% class=\"depressed\" colspan=2>{$row[tab_text]}</th>";
-		}
-		else
-		{
-			print "\n<th height=40 width=20% class=\"raised\" colspan=2 onclick=\"location.href='servicecrashswitch.php?sourcetab={$row[tab_index]}&servicetab={$servicetab}';\">{$row[tab_text]}</th>";
-		}
-		$sourcetabcount++;
-		if ($sourcetabcount % 5 == 0)
-				{
-					print "</tr><tr>";
-		}
-	}
-	$emptyslotsinrow=(5-($sourcetabcount % 5));
-		// this will pad out any remaining slots so the table formats correctly
-		if ($emptyslotsinrow < 5)
-		{
-			while($emptyslotsinrow > 0)
-			{
-				print "<th height=40 width=20%  class=\"unused\" colspan=2>&nbsp;</td>";
-				$emptyslotsinrow--;
-			}
-	}
-	print "</tr><tr>";
-	$sourcecount=0;
-
-	$stmt = $dbh->prepare("SELECT id FROM edge WHERE kind='SOURCE' AND tab_index=? ORDER BY id ASC");
-	$stmt->execute(array($sourcetab));
-	while($row = $stmt->fetch(PDO::FETCH_ASSOC))
-	{
-		$id = $row["id"];
-		print "\n<td height=40 width=10% id=\"source{$sourcecount}\" class=\"raised\" onclick=\"toggleButton(this, /source/i);setsource('{$id}');\"><b>{$id}</b></td>";
-		$sourcecount++;
-		if ($sourcecount % 10 == 0)
-		{
-			print "\n</tr><tr>";
-		}
-	}
-	$emptyslotsinrow=(10-($sourcecount % 10));
-	// this will pad out any remaining slots so the table formats correctly
-	if ($emptyslotsinrow < 10)
-	{
-		while($emptyslotsinrow > 0)
-		{
-			print "\n<td height=40 width=10% class=\"unused\">&nbsp;</td>";
-			$emptyslotsinrow--;
-		}
-	}
-?>
-</table>
-</td></tr></table>
-</div>
-<div id="destbuttons">
-<?php showservicebuttons($dbh, "dest", $servicetab, $sourcetab); ?>
-</div>
+<div id="sourcebuttons"><?php showsourcebuttons($dbh, "source", $sourcetab, $servicetab); ?></div>
+<div id="destbuttons"><?php showservicebuttons($dbh, "dest", $servicetab, $sourcetab); ?></div>
 <div id="takebuttons">
 <table width=100%>
 <tr>
