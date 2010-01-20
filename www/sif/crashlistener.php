@@ -11,6 +11,7 @@ if (isset($_REQUEST["service"]))
 	}
 	else
 	{
+		header('Content-type: text/plain');
 		$verbose=1;
 	}
 
@@ -30,16 +31,21 @@ if (isset($_REQUEST["service"]))
 	}
 	else
 	{
+		$stmt = $dbh->prepare("SELECT dst FROM  `edge` e JOIN edge_output o ON e.input = o.encoding WHERE e.id = ? AND o.edge = ?");
+		$stmt->execute(array($listener,$service));
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$msg = json_encode(array("service"=>$service, "dst" => $rows[0]["dst"]));
+
 		$stmt = $dbh->query("SELECT value FROM configuration WHERE `key`='message_bus_host'",  PDO::FETCH_COLUMN, 0);	
 		$config = $stmt->fetch();
 		$sender = new Sender($config);
-		$sender->send($listener, "oi=$service");
+		$sender->send($listener, "oi=$msg");
 		$sender->close();
 	}
 
 	if(isset($verbose))
 	{
-		print $config["value"]."<br>$listener";
+		print $config."\n$listener\n";
 		print_r($sender);
 	}
 }

@@ -40,8 +40,7 @@ else
 		$id = $rs["id"];
 	}
 	$stmt = $dbh->prepare("SELECT d.id,d.active,e.input,e.loop FROM source2device d JOIN edge e USING(id) WHERE device=?");
-	$stmt->bindParam(1, $id);
-    $stmt->execute();
+    $stmt->execute(array($id));
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	if(count($rows)>0)
 	{
@@ -54,9 +53,8 @@ else
 			}
 		}
 	}
-	$stmt = $dbh->prepare("SELECT * FROM listener2device WHERE device=?");
-	$stmt->bindParam(1, $id);
-    $stmt->execute();
+	$stmt = $dbh->prepare("SELECT d.id,d.active,e.input,e.loop FROM listener2device d JOIN edge e USING(id) WHERE device=?");
+    $stmt->execute(array($id));
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	if(count($rows)>0)
 	{

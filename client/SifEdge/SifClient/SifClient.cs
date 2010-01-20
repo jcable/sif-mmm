@@ -162,7 +162,7 @@ namespace SifClient
 	            xn = xd.GetElementsByTagName("listener");
 	            foreach (XmlNode node in xn)
 	            {
-	                createListener(node);
+	                createListener(node, conn);
 	            }
             }
             xn = null;
@@ -170,15 +170,18 @@ namespace SifClient
 
         private void createSource(XmlNode node, IConnection conn)
         {
-            SifSource.Source s = new SifSource.Source(url, conn, device, node);
+            Sif.Source s = new Sif.Source(url, conn, device, node);
 		    Thread oThread = new Thread(new ThreadStart(s.run));
 			oThread.Start();
 			local_edge.Add(oThread);
        }
 
-        private void createListener(XmlNode node)
+        private void createListener(XmlNode node, IConnection conn)
         {
-        	
+            Sif.Listener s = new Sif.Listener(url, conn, device, node);
+		    Thread oThread = new Thread(new ThreadStart(s.run));
+			oThread.Start();
+			local_edge.Add(oThread);        	
         }
         
         private void runEncoder()

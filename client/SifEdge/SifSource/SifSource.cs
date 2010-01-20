@@ -10,6 +10,7 @@ fetches a schedule from the server and translates to VLC/VLM syntax
 listens for update messages
 go active/standby
 re-read schedule
+crash
 publishes a dns-sd service for itself (not really needed)
 
 controls a vlc instance
@@ -54,51 +55,10 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using System.Net;
-using SimplePublishSubscribe;
 using RabbitMQ.Client;
 
-namespace SifSource
-{
-	public class Web {
-	    public static XmlDocument fetch(string url)
-	    {
-	        WebClient myClient = new WebClient();
-	        Stream response = myClient.OpenRead(url);
-	        StreamReader reader = new StreamReader(response);
-	        string r = reader.ReadToEnd();
-	        XmlDocument xd = new XmlDocument();
-	        xd.LoadXml(r);
-	        response.Close();
-	        return xd;
-	    }
-	
-	    public static XmlDocument post(string url, Dictionary<string, string> args)
-	    {
-	        HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
-	        request.Method = "POST";
-	        string parameters = "";
-	        foreach(string key in args.Keys)
-	        {
-	        	parameters += "&" + key + "=" + args[key];
-	        }
-	        byte[] byteArray = Encoding.UTF8.GetBytes(parameters.Substring(1));
-	
-	        request.ContentType = "application/x-www-form-urlencoded";
-	        request.ContentLength = byteArray.Length;
-	        Stream dataStream = request.GetRequestStream();
-	        dataStream.Write(byteArray, 0, byteArray.Length);
-	        dataStream.Close();
-	
-	        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-	
-	        StreamReader reader = new StreamReader(response.GetResponseStream());
-	        string r = reader.ReadToEnd();
-	        XmlDocument xd = new XmlDocument();
-	        xd.LoadXml(r);
-	        return xd;
-		}
-	}
-    
+namespace Sif
+{    
     class MediaEvent
     {
         public MediaEvent(XmlNode node)
@@ -226,16 +186,16 @@ namespace SifSource
 
     class ServiceInstance
     {
-    	public VLMBroadcast[] destination;
+    	public VLM.Broadcast[] destination;
 
     	public ServiceInstance(string id, string input, bool loop,
-    	                   string service, SifVLM vlm, XmlNodeList xn)
+    	                   string service, VLM.VLM vlm, XmlNodeList xn)
     	{
-	    	destination = new VLMBroadcast[xn.Count];
+	    	destination = new VLM.Broadcast[xn.Count];
             for(int i=0; i<destination.Length; i++)
             {
 		    	string instance_id = id+"_"+service+"_"+i;
-            	VLMBroadcast bc = new VLMBroadcast(instance_id,vlm);
+            	VLM.Broadcast bc = new VLM.Broadcast(instance_id,vlm);
             	bc.addinput(input);
             	string o = xn[i].InnerText;
             	bc.output = o;
@@ -247,7 +207,7 @@ namespace SifSource
 
     	public void playAll()
     	{
-    		foreach(VLMBroadcast bc in destination)
+    		foreach(VLM.Broadcast bc in destination)
     		{
     			bc.play();
     		}
@@ -255,7 +215,7 @@ namespace SifSource
 
     	public void stopAll()
     	{
-    		foreach(VLMBroadcast bc in destination)
+    		foreach(VLM.Broadcast bc in destination)
     		{
     			bc.stop();
     		}
@@ -263,66 +223,29 @@ namespace SifSource
 
     	public void delete()
     	{
-    		foreach(VLMBroadcast bc in destination)
+    		foreach(VLM.Broadcast bc in destination)
     		{
     			bc.delete();
     		}
     	}
     }
     
-	public class Source
+    public class Source : Edge
 	{
-		private string url;
-		private string id, input;
-		private bool loop, active;
 		private Dictionary<string, ServiceInstance> service;
-		private string device;
 		private RecordBasedSchedule rsched;
         private EventBasedSchedule esched;
         private MediaEventSchedule msched;
-        private SifVLM vlm;
-        private IConnection conn;
-	    private Listener listener;
 
 		public Source(string url, IConnection conn, string device, XmlNode node)
+			:base(url, conn, device, node)
 		{
-			this.url = url;
-			this.conn = conn;
-			this.device = device;
-
-			id=""; input=""; active=false; loop=false;
-			
             service = new Dictionary<string,ServiceInstance>();
-
-            foreach (XmlNode child in node.ChildNodes)
-            {
-                switch (child.Name)
-                {
-                    case "id":
-                        id = child.InnerText;
-                        break;
-                    case "input":
-                        input = child.InnerText;
-                        break;
-                    case "active":
-                        if (child.InnerText == "true" || child.InnerText == "1")
-                            active = true;
-                        else
-                            active = false;
-                        break;
-                    case "loop":
-                        if (child.InnerText == "true" || child.InnerText == "1")
-                            loop = true;
-                        else
-                            loop = false;
-                        break;
-                }
-            }
  		}
 		
-		public void run()
+		public override void run()
 		{
-            vlm = new SifVLM();
+            vlm = new VLM.VLM();
             refresh();
             subscribe();
         }
@@ -369,29 +292,7 @@ namespace SifSource
             }
         }
 
-        private void subscribe()
-		{
-            string exchangeName = "sif";
-            string routingKey = id;
-			string queueName = System.Guid.NewGuid().ToString();
-			try {
-	            listener = new Listener(exchangeName, queueName, conn);
-	            listener.MessageReceived += new MessageHandler(DoMessage);
-	            listener.listenFor(routingKey);
-	            Console.WriteLine("listening on queue "+queueName+" for "+id);
-	            listener.listen();
-			}catch(Exception e)
-			{
-				Console.WriteLine(e.Message);
-			}
-		}
-
-        private void PrintMessage(object sender, string key, byte[] message)
-        {
-            Console.WriteLine(System.Text.Encoding.UTF8.GetString(message)+" for "+key);
-        }
-
-        private void DoMessage(object sender, string key, byte[] message)
+        protected override void DoMessage(object sender, string key, byte[] message)
         {
             PrintMessage(sender, key, message);
             string s = System.Text.Encoding.UTF8.GetString(message);

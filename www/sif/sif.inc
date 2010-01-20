@@ -351,7 +351,7 @@ function takebuttons($source, $dest)
 	print "<td id=\"{$sid}OFF\" align=center height=40 width=10% class=\"depressed\" onclick=\"$onclick\"><b>OFF</b></td>\n";
 ?>
 <th width=10%>&nbsp;</th>
-<th class="raised" id="holdbutton" height=40 width=10% onclick="toggleprime(this);">Prime</th>
+<th class="raised" id="primebutton" height=40 width=10% onclick="toggleprime(this);">Prime</th>
 <th class="unprimed" id="take" height=40 width=10% onclick="crashswitch();">Take</th>
 <th class="raised" id="holdbutton" height=40 width=10% onclick="togglehold(this);">Hold</th>
 <th width=20%>&nbsp;</th>

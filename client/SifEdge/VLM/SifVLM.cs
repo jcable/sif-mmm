@@ -27,7 +27,7 @@ setup my_sched append control my_media play
 
 namespace VLM
 {
-    class Media
+    public class Media
     {
         public List<string> input;
         public Dictionary<string, string> option_f;
@@ -93,7 +93,7 @@ namespace VLM
         }
     }
 
-    class VOD : Media
+    public class VOD : Media
     {
         public VOD(string id, VLM vlm):base(id,vlm)
         {
@@ -101,7 +101,7 @@ namespace VLM
         }
     }
 
-    class Broadcast : Media
+    public class Broadcast : Media
     {
         private string output_f;
         private bool loop_f;
@@ -163,7 +163,7 @@ namespace VLM
         }
     }
 
-    class Schedule
+    public class Schedule
     {
         public bool enabled;
         public List<string> command;
@@ -181,7 +181,7 @@ namespace VLM
         }
     }
 
-	class VLM
+	public class VLM
 	{
         private string url;
 

@@ -51,13 +51,16 @@ else
 	for($i=0; $i<$stmt->columnCount(); $i++)
 	{
 		$meta = $stmt->getColumnMeta($i);
-		print_r($meta);
+		if(($meta["pdo_type"]==PDO::PARAM_INT) && $meta["len"]==1)
+		{
+		}
+		//print_r($meta);
 	}
-		print "\n<input type=\"hidden\" name=\"type\" value=\"{$type}\">";
-		print "<table border=1 cellspacing=0 cellpadding=4>";
-		print "<tr><th>Index:</th><th>Tab Text:</th><th>Hidden:</th><th colspan=2>Action:</th><tr>";
-		print "<tr><td>&nbsp;</td><td><input type=\"text\" name=\"tabtext\" style=\"background-color:#ffdab9\" size=40 maxlength=20 onKeyPress=\"return submitenter(this,event)\"></td>";
-		print "\n<td><input type=\"checkbox\" name=\"hidden\" value=\"0\"></td>";
+	print "\n<input type=\"hidden\" name=\"type\" value=\"{$type}\">";
+	print "<table border=1 cellspacing=0 cellpadding=4>";
+	print "<tr><th>Index:</th><th>Tab Text:</th><th>Hidden:</th><th colspan=2>Action:</th><tr>";
+	print "<tr><td>&nbsp;</td><td><input type=\"text\" name=\"tabtext\" style=\"background-color:#ffdab9\" size=40 maxlength=20 onKeyPress=\"return submitenter(this,event)\"></td>";
+	print "\n<td><input type=\"checkbox\" name=\"hidden\" value=\"0\"></td>";
 	print "<td colspan=2><input type=\"Submit\" value=\"Add Tab\"></td></tr>";
 	print "</form>";
 	while($row=$stmt->fetch(PDO::FETCH_ASSOC))

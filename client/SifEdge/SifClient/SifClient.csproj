@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -58,6 +58,22 @@
     <Compile Include="SifClient.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SifEdge\SifEdge.csproj">
+      <Project>{8864E187-19C7-474D-8BEB-2C8CE463EB4A}</Project>
+      <Name>SifEdge</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SifListener\SifListener.csproj">
+      <Project>{ADBDF1A2-4D92-4D6E-911D-D6CCE632982F}</Project>
+      <Name>SifListener</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SifListener\SifListener.csproj">
+      <Project>{ADBDF1A2-4D92-4D6E-911D-D6CCE632982F}</Project>
+      <Name>SifListener</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SifSource\SifSource.csproj">
+      <Project>{20AB1975-D48A-4C52-BAAD-8D2F6C65C9CE}</Project>
+      <Name>SifSource</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SifSource\SifSource.csproj">
       <Project>{20AB1975-D48A-4C52-BAAD-8D2F6C65C9CE}</Project>
       <Name>SifSource</Name>
