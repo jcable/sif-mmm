@@ -46,7 +46,6 @@ function sif_header($titleword, $stylesheet)
 </head>
 <link rel="stylesheet" type="text/css" href="<?php print $stylesheet; ?>" media="screen,print">
 <link rel="stylesheet" type="text/css" href="table.css" media="all">
-<script type="text/javascript" src="crashswitch.js"></script>
 <script type="text/javascript" src="table.js"></script>
 <script type="text/javascript" src="findonpage.js"></script>
 <script LANGUAGE="JavaScript">

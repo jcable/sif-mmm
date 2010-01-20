@@ -5,7 +5,7 @@ namespace SimplePublishSubscribe
 {
     public delegate void MessageHandler(object sender, string key, byte[] message);
 
-    class Client
+    public class Client
     {
         protected string exchangeName;
         protected IConnection conn;
@@ -30,7 +30,7 @@ namespace SimplePublishSubscribe
         }
     }
 
-    class Sender : Client
+    public class Sender : Client
     {
         protected string routingKey;
 
@@ -52,7 +52,7 @@ namespace SimplePublishSubscribe
         }
     }
 
-    class Listener : Client
+    public class Listener : Client
     {
         public event MessageHandler MessageReceived;
         QueueingBasicConsumer consumer;

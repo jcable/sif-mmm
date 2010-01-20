@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -14,6 +14,8 @@
     </UpgradeBackupLocation>
     <OldToolsVersion>2.0</OldToolsVersion>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\cablej01\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <RootNamespace>Sif</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -45,8 +47,16 @@
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="SifSource.cs" />
-    <Compile Include="..\..\SimplePublishSubscribe.cs" />
-    <Compile Include="SifVLM.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SifEdge\SifEdge.csproj">
+      <Project>{8864E187-19C7-474D-8BEB-2C8CE463EB4A}</Project>
+      <Name>SifEdge</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VLM\VLM.csproj">
+      <Project>{AD63CFE8-2E97-4B4A-B012-1299F6A875AA}</Project>
+      <Name>VLM</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -6,9 +6,9 @@
 ?>
 <ul>
 <li><a href="managephysicaldevices.php">Manage Physical Devices</a>
-<li><a href="managesources.php">Manage Sources</a>
-<li><a href="manageservices.php">Manage Services</a>
-<li><a href="managelisteners.php">Manage Listeners</a>
+<li><a href="manageedges.php?kind=source">Manage Sources</a>
+<li><a href="manageedges.php?kind=service">Manage Services</a>
+<li><a href="manageedges.php?kind=listener">Manage Listeners</a>
 <li><a href="manageredundancy.php">Manage Logical to Physical Device Mapping &amp; Redundancy</a>
 <p>
 <li><a href="managetabs.php?type=source">Manage Source Tabs</a>

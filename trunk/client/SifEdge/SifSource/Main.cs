@@ -2,10 +2,10 @@ using System;
 using System.Xml;
 using RabbitMQ.Client;
 
-namespace SifSource
+namespace Sif
 {
 
-    class MainClass
+    class SourceMainClass
     {
         public static void Main(string[] args)
         {
