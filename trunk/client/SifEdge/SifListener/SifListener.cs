@@ -22,8 +22,7 @@ namespace Sif
 		private VLM.Broadcast media_device;
 
 		public Listener(string url, IConnection conn, string device, XmlNode node)
-			:base(url, co
-			      nn, device, node)
+			:base(url, conn, device, node)
 		{
 			media_device = new VLM.Broadcast(id, vlm);
 		}
