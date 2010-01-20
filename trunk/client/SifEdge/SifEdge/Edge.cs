@@ -90,6 +90,16 @@ namespace Sif
 			}
 		}
 
+        protected void register_event_as_run(string device, string input, string output, string action)
+        {
+        	Dictionary<string, string> args = new Dictionary<string, string>();
+        	args.Add("device", device);
+        	args.Add("input", input);
+        	args.Add("output", output);
+        	args.Add("action", action);
+        	Web.post(url+"/register_event_as_run.php", args);
+        }
+
         protected void PrintMessage(object sender, string key, byte[] message)
         {
             Console.WriteLine(System.Text.Encoding.UTF8.GetString(message)+" for "+key);
