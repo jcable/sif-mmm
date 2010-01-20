@@ -10,7 +10,10 @@ if(count($rows)>0)
 {
 	foreach ($rows as $rs)
 	{
-		$value = $rs["vlc"].":std{access=".$rs["access"].",mux=".$rs["mux"].",dst=".$rs["dst"]."}";
+		if($rs["dst"][0]=="#")
+			$value=$rs["dst"];
+		else
+			$value = $rs["vlc"].":std{access=".$rs["access"].",mux=".$rs["mux"].",dst=".$rs["dst"]."}";
 		$root->appendChild(new DOMElement("output", $value));
 	}
 }

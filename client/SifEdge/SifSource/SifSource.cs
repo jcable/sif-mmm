@@ -334,16 +334,6 @@ namespace Sif
             	
             }
         }
-									
-        private void register_event_as_run(string device, string input, string output, string action)
-        {
-        	Dictionary<string, string> args = new Dictionary<string, string>();
-        	args.Add("device", device);
-        	args.Add("input", input);
-        	args.Add("output", output);
-        	args.Add("action", action);
-        	Web.post(url+"/register_event_as_run.php", args);
-        }
         
 		// add a source with input and output and enable it
 	    private void add_instance(string service)
