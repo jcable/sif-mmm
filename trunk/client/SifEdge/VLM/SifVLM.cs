@@ -41,7 +41,7 @@ namespace VLM
         	this.vlm = vlm;
         	input = new List<string>();
             option_f = new Dictionary<string,string>();
-            enabled = false;            
+            enabled_f = false;            
         }
 
 	    public bool enabled
@@ -213,7 +213,7 @@ namespace VLM
             XmlDocument resp = fetch(url + "vlm_cmd.xml?command="+args);
             string err = resp.GetElementsByTagName("error")[0].InnerText;
             if (err != "")
-                Console.WriteLine(err);
+                Console.WriteLine("VLM Error: "+err);
         }
     }
 }
