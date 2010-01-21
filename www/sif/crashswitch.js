@@ -6,19 +6,19 @@ function toggleButton(elementObj, idRegex) {
 	{
 		if(arraySpans[i].id.match(idRegex))
 		{
-			arraySpans[i].className = 'raised';
+			arraySpans[i].className = 'raised button';
 		}
 	}
-	elementObj.className = 'depressed';
+	elementObj.className = 'depressed button';
 }
 
 // toggles prime button and variable
 function toggleprime(elementObj)
 {
 	var takestate='unprimed';
-	if(elementObj.className='raised')
+	if(elementObj.className='raised button')
 	{
-		elementObj.className='primedepressed';
+		elementObj.className='primedepressed button';
 		var arraySpans = document.body.getElementsByTagName("th");
 		takestate='raised';
 	}
@@ -31,14 +31,14 @@ function toggleprime(elementObj)
 	{
 		if(arraySpans[i].id.match('take'))
 		{
-			arraySpans[i].className = takestate;
+			arraySpans[i].className = takestate+" button";
 		}
 	}
 }
 // submit form to do crash switch
 function crashswitch()
 {
-	if(document.getElementById("primebutton").className=='primedepressed')
+	if(document.getElementById("primebutton").className=='primedepressed button')
 	{
   		document.crashpanel.submit();
   	}

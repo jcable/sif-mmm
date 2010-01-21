@@ -56,6 +56,7 @@ using System.Text;
 using System.Xml;
 using System.Net;
 using RabbitMQ.Client;
+using System.Runtime.Serialization.Json;
 
 namespace Sif
 {    
@@ -230,7 +231,13 @@ namespace Sif
     	}
     }
     
-    public class Source : Edge
+	[Serializable]
+	class SourceMessage
+	{
+		public string message="", service="", action="";
+	}
+
+	public class Source : Edge
 	{
 		private Dictionary<string, ServiceInstance> service;
 		private RecordBasedSchedule rsched;
@@ -295,26 +302,27 @@ namespace Sif
         protected override void DoMessage(object sender, string key, byte[] message)
         {
             PrintMessage(sender, key, message);
-            string s = System.Text.Encoding.UTF8.GetString(message);
-            string[] kv = s.Split('=');
+    		DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(SourceMessage));
+    		MemoryStream ms = new MemoryStream(message);
+    		SourceMessage data = ser.ReadObject(ms) as SourceMessage;
             if(key==id) // its a message for us as a source
             {
-	            switch (kv[0])
+	            switch (data.message)
 	            {
 	                case "oi":
-	            		add_instance(kv[1]);
-	            		service[kv[1]].playAll();
-                		register_event_as_run(device, id, kv[1], "ON");
-                		listener.listenFor(kv[1]);
+	            		add_instance(data.service);
+	            		service[data.service].playAll();
+                		register_event_as_run(device, id, data.service, "ON");
+                		listener.listenFor(data.service);
 	                    break;
 	            }            	
             }
             else // assume its a message for a service we are sourcing
             {
-	            switch (kv[0])
+	            switch (data.message)
 	            {
 	                case "oi":
-	                    switch(kv[1])
+	                    switch(data.action)
 	                    {
 	                    	case "OFF":
 			            		service[key].stopAll();

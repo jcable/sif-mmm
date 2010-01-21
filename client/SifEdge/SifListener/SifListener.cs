@@ -23,7 +23,7 @@ namespace Sif
 	[Serializable]
 	class ListenerMessage
 	{
-		public string message, service, access, dst;
+		public string message="", service="", access="", dst="";
 	}
 	
 	public class Listener : Edge

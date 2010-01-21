@@ -6,26 +6,7 @@
 ?>
 <SCRIPT TYPE="text/javascript">
 <!--
-// toggle a button to simulate radio type buttons
-function toggleButton(elementObj, idRegex) {
-	var arraySpans = document.body.getElementsByTagName("td");
 
-	for(var i = 0; i < arraySpans.length; i++)
-	{
-		if(arraySpans[i].id.match(idRegex))
-		{
-			arraySpans[i].className = 'raised';
-		}
-	}
-	elementObj.className = 'depressed';
-}
-// set monsource variable
-function setmonsource(source) {
-	document.crashmon.monsource.value = source;
-}
-function setsourcemon(yesno) {
-	document.crashmon.sourcemon.value = yesno;
-}
 // submit form to do crash monitor
 function crashswitchmon(mondest)
 {
@@ -42,36 +23,36 @@ function reload_panel(sourcetab, desttab)
 </SCRIPT>
 <?php
 	sif_buttons($page);
-	if (empty($_REQUEST["sourcetab"]))
-	{
-		$sourcetab=1;
-	}
-	else
+	if (isset($_REQUEST["sourcetab"]))
 	{
 		$sourcetab=$_REQUEST["sourcetab"];
 	}
-	if (empty($_REQUEST["servicetab"]))
+	else
 	{
-		$servicetab=1;
+		$sourcetab=1;
+	}
+	if (isset($_REQUEST["servicetab"]))
+	{
+		$servicetab=$_REQUEST["servicetab"];
 	}
 	else
 	{
-		$servicetab=$_REQUEST["servicetab"];
+		$servicetab=1;
 	}
 	$dbh = connect();
 ?>
 <form method="post" action="crashmon.php" name="crashmon">
-<input type="hidden" name="monsource" value="OFF">
+<input type="hidden" name="source" value="OFF">
+<input type="hidden" name="service" value="OFF">
 <input type="hidden" name="mon" value="NULL">
-<input type="hidden" name="sourcemon" value="yes">
 <div id="sourcebuttons"><?php showselectionpanel($dbh, "source", $sourcetab, $servicetab, "SOURCE"); ?></div>
 <div id="destbuttons"><?php showservicebuttons($dbh, "dest", $servicetab, $sourcetab); ?></div>
 <div id="takebuttons">
 <table width=100%>
 <tr>
+<td id="sourceOFF" class="depressed button" onclick="toggleButton(this, /source/i);setsource('OFF');"><b>OFF</b></td><td colspan=2>&nbsp;</td>
+<td height=40 width=10% height=60>&nbsp;</td>
 <?php
-	print "<td align=center height=40 width=10% id=\"source{$sourcecount}\" class=\"depressed\" onclick=\"toggleButton(this, /source/i);setmonsource('{$row[source]}');\"><b>OFF</b></td><td colspan=2>&nbsp;</td>";
-	print "<td height=40 width=10% height=60>&nbsp;</td>";
 	$moncount=0;
 	$stmt=$dbh->prepare("SELECT * FROM edge JOIN panel_tabs USING(kind,tab_index) WHERE kind='LISTENER' and hidden=1 ORDER BY id asc");
 	$stmt->execute();

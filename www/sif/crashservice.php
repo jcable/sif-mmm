@@ -40,8 +40,8 @@ take the current event and divide it into 4:
 		$stmt = $dbh->query("SELECT value FROM configuration WHERE `key`='message_bus_host'",  PDO::FETCH_COLUMN, 0);	
 		$config = $stmt->fetch();
 		$sender = new Sender($config);
-		$sender->send($service, "oi=OFF");
-		$sender->send($new_source, "oi=$service");
+		$sender->send($service, json_encode(array("message"=>"oi", "action"=>"OFF")));
+		$sender->send($new_source, json_encode(array("message"=>"oi", "action"=>"ON", "service"=>$service)));
 		$sender->close();
 	}
 
