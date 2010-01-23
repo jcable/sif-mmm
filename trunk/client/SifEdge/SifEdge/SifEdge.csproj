@@ -3,7 +3,7 @@
     <ProjectGuid>{8864E187-19C7-474D-8BEB-2C8CE463EB4A}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>Sif</RootNamespace>
     <AssemblyName>SifEdge</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
@@ -42,7 +42,6 @@
       <Link>SimplePublishSubscribe.cs</Link>
     </Compile>
     <Compile Include="Edge.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
