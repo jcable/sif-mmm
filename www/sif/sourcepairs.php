@@ -1,5 +1,6 @@
 <?php
 	require_once("header.php");
+	require_once("sif.inc");
 	$page = "Redundancy Switching";
 	sif_header($page, "crashswitch.css");
 ?>
@@ -40,7 +41,7 @@ function crashswitchmon(mondest)
 	{
 		$tab=1;
 	}
-	require 'connect.php';
+	$dbh = connect();
 ?>
 
 <table width=100% height=600 border-0><tr><tr><td valign=top>
@@ -48,10 +49,11 @@ function crashswitchmon(mondest)
 <tr>
 <?php
 	$sourcetabcount=0;
-	$result=mysql_query("SELECT DISTINCT tab_text, r.tab_index, id FROM source2device_tabs t left join source2device r on t.tab_index=r.tab_index where enabled=1 order by t.tab_index asc", $connection);
-	while($row= mysql_fetch_array($result))
+	$stmt = $dbh->query("SELECT DISTINCT tab_text, t.tab_index, count(id) as sources FROM source2device_tabs t left join source2device r on t.tab_index=r.tab_index where enabled=1 group by r.tab_index order by t.tab_index asc");
+	while($row=$stmt->fetch(PDO::FETCH_ASSOC))
 	{
 		print "\n<th width=20% ";
+print "title=\""; print_r($row); print "\" ";
 		if ($tab==$row[tab_index])
 		{
 			print "class=\"depressed\"";
@@ -59,7 +61,7 @@ function crashswitchmon(mondest)
 		else
 		{
 			print "class=\"raised\" ";
-			print "onclick=\"location.href='sourcepairs.php?tab=".$row["tab_index"]."\"";
+			print "onclick=\"location.href='sourcepairs.php?tab=".$row["tab_index"]."'\"";
 		}
 		print ">".$row["tab_text"]."</th>";
 		$pairtabcount++;
@@ -80,9 +82,10 @@ function crashswitchmon(mondest)
 	}
 	print "</tr>";
 	// now do the actual redundancy pairs
-	$result=mysql_query("SELECT * FROM source2device where tab_index='$tab' order by id asc", $connection);
+	$stmt=$dbh->prepare("SELECT * FROM source2device where tab_index=? order by id asc");
+	$stmt->execute(array($tab));
 	$sources = array();
-	while($row = mysql_fetch_array($result))
+	while($row=$stmt->fetch(PDO::FETCH_ASSOC))
 	{
 		$id = $row["id"];
 		if(!isset($sources[$id]))
