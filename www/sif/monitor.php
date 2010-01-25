@@ -4,14 +4,15 @@
 	$page = "Monitoring";
 	sif_header($page, "crashswitch.css");
 ?>
+<SCRIPT type="text/javascript" src="crashswitch.js"></SCRIPT>
 <SCRIPT TYPE="text/javascript">
 <!--
 
 // submit form to do crash monitor
 function crashswitchmon(mondest)
 {
-	document.crashmon.mon.value = mondest;
-	document.crashmon.submit();
+	document.crashpanel.mon.value = mondest;
+	document.crashpanel.submit();
 }
 
 function reload_panel(sourcetab, desttab)
@@ -41,7 +42,9 @@ function reload_panel(sourcetab, desttab)
 	}
 	$dbh = connect();
 ?>
-<form method="post" action="crashmon.php" name="crashmon">
+<form method="post" action="crashmon.php" name="crashpanel">
+<input type="hidden" name="sourcetab" value="<?php print $sourcetab; ?>">
+<input type="hidden" name="servicetab" value="<?php print $servicetab; ?>">
 <input type="hidden" name="source" value="OFF">
 <input type="hidden" name="service" value="OFF">
 <input type="hidden" name="mon" value="NULL">
@@ -60,7 +63,7 @@ function reload_panel(sourcetab, desttab)
 	{
 		$id=$row["id"];
 		$source="";
-		print "<td id=\"mon{$moncount}\" class=\"raised button\" onclick=\"crashswitchmon('{$row[listener]}');\">";
+		print "<td id=\"mon{$moncount}\" class=\"raised button\" onclick=\"crashswitchmon('{$row["id"]}');\">";
 		print "<span class=\"buttonlabel\">$id</span>";
 		if($source!="")
 		{
@@ -89,6 +92,24 @@ function reload_panel(sourcetab, desttab)
 </tr></table>
 </form>
 </div>
+  <div style='height: 100%; width: 100%; text-align: center;'>
+  <object type="application/x-shockwave-flash" data="http://flowplayer.sourceforge.net/video/FlowPlayer.swf" width="800px" height="600px" id="FlowPlayer" style="z-index: 0">
+	  <param name="allowScriptAccess" value="sameDomain" />
+	  <param name="movie" value="http://flowplayer.sourceforge.net/video/FlowPlayer.swf" />
+	  <param name="quality" value="high" />
+    <!--	  <param name="scale" value="noScale" />-->
+	  <param name="wmode" value="transparent" />
+	<!--  <param name="flashvars" value="config={ loop: false, initialScale: \'fit\', autoPlay: false, configInject: true}" />-->
+  <script type="text/javascript">
+// <![CDATA[
+  var host = document.location.toString().replace( /http:\/\//, '' ).replace( /[:/].*/, '' );
+  document.write( '' +
+'	  <param name="flashvars" value="config={ loop: false, initialScale: \'fit\', autoPlay: false, playList: [{ url: \'http://' + host + ':8081/stream.flv\', controlEnabled: true}] }" />' );
+// ]]>
+</script>
+  </object>
+  <p style="font-size: small;">Uses the <a href="http://flowplayer.sourceforge.net/">Flow Player</a> free flash video player for playback (client side).</p>
+  </div>
 <?php
 	sif_footer();
 ?>

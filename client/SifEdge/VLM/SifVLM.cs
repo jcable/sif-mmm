@@ -37,7 +37,8 @@ namespace VLM
 
         public Media(string id, VLM vlm)
         {
-			this.id = id.Replace(' ', '_');
+		this.id = id.Replace(' ', '_');
+		this.id = this.id.Replace('\'', '_');
         	this.vlm = vlm;
         	input = new List<string>();
             option_f = new Dictionary<string,string>();

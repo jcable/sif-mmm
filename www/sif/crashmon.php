@@ -16,7 +16,19 @@ $source=$_REQUEST["source"];
 $service=$_REQUEST["service"];
 $mon=$_REQUEST["mon"];
 
-if(isset($_REQUEST["emulate"]))
+if($_REQUEST["mon"]=="Monitor in Browser")
+{
+	if ($source=="OFF")
+	{
+	}
+	elseif($source=="")
+	{
+	}
+	else
+	{
+	}
+}
+elseif(isset($_REQUEST["emulate"]))
 {
 	if ($source=="OFF")
 	{

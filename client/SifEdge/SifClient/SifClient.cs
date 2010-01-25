@@ -18,6 +18,7 @@ namespace SifClient
 
     public class SifClient
     {
+        private bool registered = false;
         private bool done = false;
         private Process vlc;
         private List<Process> edge;
@@ -55,7 +56,7 @@ namespace SifClient
             }
         }
 
-		private void OnServiceAdded(object o, ServiceBrowseEventArgs args)
+	private void OnServiceAdded(object o, ServiceBrowseEventArgs args)
         {
             if (args.Service.AddressProtocol == AddressProtocol.IPv4 && args.Service.Name.CompareTo("SIF Management") == 0)
             {
@@ -90,12 +91,13 @@ namespace SifClient
                 }
             }
             url = "http://" + service.HostEntry.AddressList[0] + ":" + service.Port+"/"+path;
-
+	    Console.WriteLine("found "+url);
             register();
         }
         
         private void register()
         {
+	    if(registered) return; registered=true;
             NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
             if (nics == null || nics.Length < 1)
             {
@@ -126,6 +128,7 @@ namespace SifClient
 	
 	            StreamReader reader = new StreamReader(response.GetResponseStream());
 	            string r = reader.ReadToEnd();
+	    Console.WriteLine(r);
 	            XmlDocument xd = new XmlDocument();
 	            xd.LoadXml(r);
 	            parseRegisterResponse(xd);
