@@ -8,9 +8,12 @@ $stmt->execute(array($_REQUEST["device"],$_REQUEST["id"]));
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if(count($rows)>0)
 {
-	foreach ($rows as $key => $value)
+	foreach ($rows as $row)
 	{
-		$root->appendChild(new DOMElement($key, $value));
+		foreach ($row as $key => $value)
+		{
+			$root->appendChild(new DOMElement($key, $value));
+		}
 	}
 }
 header('Content-type: text/xml');

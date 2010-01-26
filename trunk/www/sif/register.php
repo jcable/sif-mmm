@@ -39,7 +39,7 @@ else
 		}
 		$id = $rs["id"];
 	}
-	$stmt = $dbh->prepare("SELECT d.id,d.active,e.input,e.loop FROM source2device d JOIN edge e USING(id) WHERE device=?");
+	$stmt = $dbh->prepare("SELECT d.id,d.active,d.input,e.loop FROM source2device d JOIN edge e USING(id) WHERE device=?");
     $stmt->execute(array($id));
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	if(count($rows)>0)

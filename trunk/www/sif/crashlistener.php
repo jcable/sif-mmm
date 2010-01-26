@@ -33,7 +33,7 @@ if (isset($_REQUEST["service"]))
 	{
 
 		$stmt = $dbh->prepare("SELECT access, dst FROM edge_output WHERE edge=?");
-		$stmt->execute(array($listener));
+		$stmt->execute(array($service));
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
 		$row["message"] = "oi";
 		$row["service"] = $service;
