@@ -33,7 +33,6 @@ namespace SifClient
 	            browser.ServiceAdded += OnServiceAdded;
 	            browser.ServiceRemoved += OnServiceRemoved;
 	            browser.Browse(type, "local");
-	
             } catch(Exception e)
             {
             	url = "http://localhost/sif";
@@ -90,7 +89,6 @@ namespace SifClient
                 }
             }
             url = "http://" + service.HostEntry.AddressList[0] + ":" + service.Port+"/"+path;
-	    Console.WriteLine("found "+url);
             register();
         }
         
@@ -127,7 +125,6 @@ namespace SifClient
 	
 	            StreamReader reader = new StreamReader(response.GetResponseStream());
 	            string r = reader.ReadToEnd();
-	    Console.WriteLine(r);
 	            XmlDocument xd = new XmlDocument();
 	            xd.LoadXml(r);
 	            parseRegisterResponse(xd);

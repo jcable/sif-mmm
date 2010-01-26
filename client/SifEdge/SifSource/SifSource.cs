@@ -59,131 +59,6 @@ using System.Runtime.Serialization.Json;
 
 namespace Sif
 {    
-    class MediaEvent
-    {
-        public MediaEvent(XmlNode node)
-        {
-            XmlNodeList childNodes = node.ChildNodes;
-            foreach (XmlNode child in childNodes)
-            {
-                Console.WriteLine(child.Name+" "+child.InnerXml);
-            }
-            childNodes = null;
-        }
-    }
-
-    class MediaEventSchedule
-    {
-        public List<MediaEvent> schedule;
-
-        public MediaEventSchedule(XmlDocument xd)
-        {
-            XmlNodeList xn = xd.GetElementsByTagName("row");
-            schedule = new List<MediaEvent>(xn.Count);
-            foreach (XmlNode n in xn)
-            {
-                schedule.Add(new MediaEvent(n));
-            }
-        }
-    }
-
-	class ScheduleRecord
-	{
-        public ScheduleRecord(XmlNode node)
-        {
-            XmlNodeList childNodes = node.ChildNodes;
-            foreach (XmlNode child in childNodes)
-            {
-        		switch(child.Name)
-        		{
-            		case "service":
-                        service = child.InnerXml;
-                        break;
-            		case "first_date":
-                        first_date = System.DateTime.Parse(child.InnerXml);
-                        break;
-                    case "last_date":
-                        last_date = System.DateTime.Parse(child.InnerXml);
-                        break;
-                    case "days":
-                        days = child.InnerXml;
-                        break;
-                    case "start":
-                        start = System.DateTime.Parse(child.InnerXml);
-                        break;
-                    case "duration":
-                        duration = System.TimeSpan.Parse(child.InnerXml);
-                        break;
-                    case "material_id":
-                        material_id = child.InnerXml;
-                        break;
-                    case "rot":
-                        rot = (child.InnerXml == "1") ? true : false;
-                        break;
-                }
-            }
-            childNodes = null;
-        }
-
-        public override string ToString()
-        {
-            DateTime d=new DateTime();
-            string s = "{ " + service;
-            if (first_date != d)
-                s += ", "+first_date.ToString();
-            if (last_date != d)
-                s += ", "+last_date.ToString();
-            if (days != "")
-                s += ", "+days;
-            s += ", "+start.ToString() + ", " + duration.ToString();
-            if (material_id != "")
-                s += ", "+material_id;
-            if(rot)
-                s += ", rot";
-            s+="}";
-            return s;
-        }
-
-        public string service;
-        private DateTime first_date, last_date;
-        private string days;
-        public DateTime start;
-        private TimeSpan duration;
-        public string material_id;
-        private bool rot;
-    }
-
-    class RecordBasedSchedule
-	{
-        List<ScheduleRecord> schedule;
-
-		public RecordBasedSchedule(XmlDocument xd)
-		{
-            XmlNodeList xn = xd.GetElementsByTagName("row");
-            schedule = new List<ScheduleRecord>(xn.Count);
-            foreach (XmlNode n in xn)
-            {
-                schedule.Add(new ScheduleRecord(n));
-            }
-		}
-
-	}
-
-    class EventBasedSchedule
-    {
-        public List<ScheduleRecord> schedule;
-
-        public EventBasedSchedule(XmlDocument xd)
-        {
-            XmlNodeList xn = xd.GetElementsByTagName("row");
-            schedule = new List<ScheduleRecord>(xn.Count);
-            foreach (XmlNode n in xn)
-            {
-                schedule.Add(new ScheduleRecord(n));
-            }
-        }
-    }
-
     class ServiceInstance
     {
     	public VLM.Broadcast[] destination;
@@ -233,15 +108,12 @@ namespace Sif
 	[Serializable]
 	class SourceMessage
 	{
-		public string message="", service="", action="";
+		public string message="", service="";
 	}
 
 	public class Source : Edge
 	{
 		private Dictionary<string, ServiceInstance> service;
-		private RecordBasedSchedule rsched;
-        private EventBasedSchedule esched;
-        private MediaEventSchedule msched;
 
 		public Source(string url, MessageConnection conn, string device, XmlNode node)
 			:base(url, conn, device, node)
@@ -258,44 +130,6 @@ namespace Sif
 
         private void refresh()
         {
-            fetchSchedule();
-            writeSchedule();
-        }
-
-		private void fetchSchedule()
-        {
-            Console.WriteLine("fetching schedule");
-            esched = new EventBasedSchedule(Web.fetch(url + "/serviceeventschedule.php?source=" + id));
-        }
-
-        private void fetchParams(string service)
-        {
-            Console.WriteLine("fetching params for "+service);
-            msched = new MediaEventSchedule(Web.fetch(url + "/serviceparams.php?service=" + service));
-        }
-
-        private void fetchRSchedule()
-		{
-            Console.WriteLine("fetching schedule");
-            rsched = new RecordBasedSchedule(Web.fetch(url + "/serviceschedule.php?source=" + id));
-		}
-
-        private void writeSchedule()
-		{
-            DateTime now = System.DateTime.Now;
-            ScheduleRecord current = null;
-            foreach (ScheduleRecord s in esched.schedule)
-            {
-                Console.WriteLine(s.ToString());
-                if(current==null)
-                    current = s;
-                if (s.start <= now && s.start > current.start)
-                    current = s;
-            }
-            if (current != null)
-            {
-                fetchParams(current.service);
-            }
         }
 
         protected override void DoMessage(object sender, string key, byte[] message)
@@ -321,20 +155,13 @@ namespace Sif
 	            switch (data.message)
 	            {
 	                case "oi":
-	                    switch(data.action)
+	                    if(data.service=="OFF")
 	                    {
-	                    	case "OFF":
-			            		service[key].stopAll();
-			            		service[key].delete();
-			            		service.Remove(key);
-								register_event_as_run(device, id, key, "OFF");
-								listener.ignore(key);
-	                    		break;
-	                    	case "":
-			                    refresh();
-	                    		break;
-	                    	default:
-	                    		break;
+		            		service[key].stopAll();
+		            		service[key].delete();
+		            		service.Remove(key);
+							register_event_as_run(device, id, key, "OFF");
+							listener.ignore(key);
 	                    }
 	                    break;
 	            }
