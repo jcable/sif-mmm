@@ -35,7 +35,7 @@ namespace Sif
 			if(vlm==null)
 				vlm = new VLM.VLM();
 			media_device = new VLM.Broadcast(id, vlm);
-			XmlDocument xd = Web.fetch(url+"/getoutputs.php?id="+id);
+			XmlDocument xd = Web.fetch(url+"/getedgeoutput.php?id="+id+"&device="+device);
 	    	XmlNodeList outputs = xd.GetElementsByTagName("output");
 	    	media_device.output=outputs[0].InnerText;
 		}
@@ -51,12 +51,17 @@ namespace Sif
 	            switch (data.message)
 	            {
 	                case "oi":
-	            		// JSON parse
-	            		media_device.addinput(data.access+"://@"+data.dst);
-	            		media_device.enabled=true;
-	            		media_device.play();
-                		//listener.listenFor(data.service); // maybe
-                		register_event_as_run(device, data.service, id, "ON");
+	            		if(data.service=="OFF")
+	            		{
+	                		register_event_as_run(device, "ANY", id, "OFF");
+	            		}
+	            		else
+	            		{
+		            		media_device.addinput(data.access+"://@"+data.dst);
+		            		media_device.enabled=true;
+		            		media_device.play();
+	                		register_event_as_run(device, data.service, id, "ON");
+	            		}
 	                    break;
 	            }            	
             }
