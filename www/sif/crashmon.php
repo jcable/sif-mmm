@@ -16,22 +16,11 @@ $source=$_REQUEST["source"];
 $service=$_REQUEST["service"];
 $mon=$_REQUEST["mon"];
 
-if($_REQUEST["mon"]=="Monitor in Browser")
+if(isset($_REQUEST["emulate"]))
 {
 	if ($source=="OFF")
 	{
-	}
-	elseif($source=="")
-	{
-	}
-	else
-	{
-	}
-}
-elseif(isset($_REQUEST["emulate"]))
-{
-	if ($source=="OFF")
-	{
+		register_event_as_run($dbh, "ANY", "$mon'", $mon, "OFF");
 		register_event_as_run($dbh, "ANY", "ANY", $mon, "OFF");
 	}
 	elseif($source=="")
@@ -45,13 +34,15 @@ elseif(isset($_REQUEST["emulate"]))
 }
 else
 {
+	// for every monitor listener there is a service with the same name suffixed by a single quote
 	$stmt = $dbh->query("SELECT value FROM configuration WHERE `key`='message_bus_host'",  PDO::FETCH_COLUMN, 0);	
 	$config = $stmt->fetch();
 	$sender = new Sender($config);
 	if ($source=="OFF")
 	{
-		// this sends the message to both the source and the listener since the source subscribes to service
-		// messages and the service and the listener have the same name
+		// send to service
+		$sender->send("$mon'", json_encode(array("message"=>"oi", "action"=>"OFF")));
+		// send to listener
 		$sender->send($mon, json_encode(array("message"=>"oi", "action"=>"OFF")));
 	}
 	elseif($source=="")
@@ -60,7 +51,7 @@ else
 	}
 	else
 	{
-		$sender->send($source, json_encode(array("message"=>"oi", "action"=>"ON", "service"=>$mon)));
+		$sender->send($source, json_encode(array("message"=>"oi", "action"=>"ON", "service"=>"$mon'")));
 		$sender->send($mon, json_encode(array("message"=>"oi", "service"=>$mon, "action"=>"ON")));
 	}
 	$sender->close();

@@ -31,17 +31,10 @@ if (isset($_REQUEST["service"]))
 	}
 	else
 	{
-		$stmt = $dbh->prepare("SELECT access,dst FROM edge e JOIN edge_output o ON e.input = o.encoding WHERE e.id = ? AND o.edge = ?");
-		$stmt->execute(array($listener,$service));
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		$row["message"] = "oi";
-		$row["service"] = $service;
-		$msg = json_encode($row);
-
 		$stmt = $dbh->query("SELECT value FROM configuration WHERE `key`='message_bus_host'",  PDO::FETCH_COLUMN, 0);	
 		$config = $stmt->fetch();
 		$sender = new Sender($config);
-		$sender->send($listener, $msg);
+		$sender->send($listener, json_encode(array("message" => "oi", "service" => $service)));
 		$sender->close();
 	}
 
