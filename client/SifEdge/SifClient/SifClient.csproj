@@ -47,10 +47,6 @@
     <Reference Include="Mono.Zeroconf, Version=4.0.0.90, Culture=neutral, PublicKeyToken=e60c4f4a95e1099e">
       <Package>mono-zeroconf</Package>
     </Reference>
-    <Reference Include="RabbitMQ.Client, Version=1.7.0.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin\RabbitMQ.Client.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />

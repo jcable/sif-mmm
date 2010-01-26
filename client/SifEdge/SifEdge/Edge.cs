@@ -21,6 +21,19 @@ namespace Sif
 	/// <summary>
 	/// Description of Edge.
 	/// </summary>
+	/// 
+	public class MessageConnection
+	{
+		public string exchangeName="sif";
+		public IConnection conn;
+		
+		public MessageConnection(string host)
+		{
+            ConnectionFactory factory = new ConnectionFactory();
+            conn = factory.CreateConnection( Protocols.FromEnvironment(), host, 5672);
+		}
+	}
+
 	public class Edge
 	{
 		protected string url;
@@ -28,10 +41,10 @@ namespace Sif
 		protected bool loop, active;
 		protected string device;
         protected VLM.VLM vlm;
-        protected IConnection conn;
+        protected MessageConnection conn;
 	    protected Listener listener;
 
-		public Edge(string url, IConnection conn, string device, XmlNode node)
+		public Edge(string url, MessageConnection conn, string device, XmlNode node)
 		{
 			this.url = url;
 			this.conn = conn;
@@ -75,11 +88,10 @@ namespace Sif
 
         protected void subscribe()
 		{
-            string exchangeName = "sif";
             string routingKey = id;
 			string queueName = System.Guid.NewGuid().ToString();
 			try {
-	            listener = new Listener(exchangeName, queueName, conn);
+	            listener = new Listener(conn.exchangeName, queueName, conn.conn);
 	            listener.MessageReceived += new MessageHandler(DoMessage);
 	            listener.listenFor(routingKey);
 	            Console.WriteLine("listening on queue "+queueName+" for "+id);

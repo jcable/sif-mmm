@@ -10,7 +10,6 @@ using System;
 using System.IO;
 using System.Text;
 using System.Xml;
-using RabbitMQ.Client;
 using System.Runtime.Serialization.Json;
 using System.Collections.Generic;
 
@@ -30,7 +29,7 @@ namespace Sif
 	{
 		private VLM.Broadcast media_device;
 
-		public Listener(string url, IConnection conn, string device, XmlNode node)
+		public Listener(string url, MessageConnection conn, string device, XmlNode node)
 			:base(url, conn, device, node)
 		{
 			if(vlm==null)
