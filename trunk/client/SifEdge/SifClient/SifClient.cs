@@ -11,7 +11,6 @@ using System.Net.NetworkInformation;
 using System.Web.Services;
 using System.IO;
 using Mono.Zeroconf;
-using RabbitMQ.Client;
 
 namespace SifClient
 {
@@ -145,11 +144,7 @@ namespace SifClient
             string result = xn[0].InnerText;
             Console.WriteLine(result);
             xn = xd.GetElementsByTagName("message_bus_host");
-			string message_bus_host = xn[0].InnerText;
-            ConnectionFactory factory = new ConnectionFactory();
-            IConnection conn = factory.CreateConnection(
-            	Protocols.FromEnvironment(), message_bus_host, 5672
-            );
+			Sif.MessageConnection conn = new Sif.MessageConnection(xn[0].InnerText);
 
             xn = xd.GetElementsByTagName("id");
             if(xn.Count>0)
@@ -171,7 +166,7 @@ namespace SifClient
             xn = null;
         }
 
-        private void createSource(XmlNode node, IConnection conn)
+        private void createSource(XmlNode node, Sif.MessageConnection conn)
         {
             Sif.Source s = new Sif.Source(url, conn, device, node);
 		    Thread oThread = new Thread(new ThreadStart(s.run));
@@ -179,7 +174,7 @@ namespace SifClient
 			local_edge.Add(oThread);
        }
 
-        private void createListener(XmlNode node, IConnection conn)
+        private void createListener(XmlNode node, Sif.MessageConnection conn)
         {
             Sif.Listener s = new Sif.Listener(url, conn, device, node);
 		    Thread oThread = new Thread(new ThreadStart(s.run));

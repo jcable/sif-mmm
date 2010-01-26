@@ -55,7 +55,6 @@ using System.IO;
 using System.Text;
 using System.Xml;
 using System.Net;
-using RabbitMQ.Client;
 using System.Runtime.Serialization.Json;
 
 namespace Sif
@@ -244,7 +243,7 @@ namespace Sif
         private EventBasedSchedule esched;
         private MediaEventSchedule msched;
 
-		public Source(string url, IConnection conn, string device, XmlNode node)
+		public Source(string url, MessageConnection conn, string device, XmlNode node)
 			:base(url, conn, device, node)
 		{
             service = new Dictionary<string,ServiceInstance>();
