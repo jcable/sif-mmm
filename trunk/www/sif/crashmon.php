@@ -43,16 +43,22 @@ else
 		// send to service
 		$sender->send("$mon'", json_encode(array("message"=>"oi", "action"=>"OFF")));
 		// send to listener
-		$sender->send($mon, json_encode(array("message"=>"oi", "action"=>"OFF")));
-	}
-	elseif($source=="")
-	{
-		$sender->send($mon, json_encode(array("message"=>"oi", "service"=>$service, "action"=>"ON")));
+		$sender->send("$mon", json_encode(array("access"=>"", "dst"=>"", "message"=>"oi", "service"=>"OFF")));
 	}
 	else
 	{
-		$sender->send($source, json_encode(array("message"=>"oi", "action"=>"ON", "service"=>"$mon'")));
-		$sender->send($mon, json_encode(array("message"=>"oi", "service"=>$mon, "action"=>"ON")));
+		if($service=="")
+		{
+			$service = "$mon'";
+			$sender->send($source, json_encode(array("message"=>"oi", "service"=>$service)));
+		}
+		$stmt = $dbh->prepare("SELECT access, dst FROM edge_output WHERE edge=?");
+		$stmt->execute(array($service));
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		$row["message"] = "oi";
+		$row["service"] = $service;
+
+		$sender->send($mon, json_encode($row));
 	}
 	$sender->close();
 }

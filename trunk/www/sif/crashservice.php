@@ -39,14 +39,17 @@ take the current event and divide it into 4:
 	{
 		$stmt = $dbh->query("SELECT value FROM configuration WHERE `key`='message_bus_host'",  PDO::FETCH_COLUMN, 0);	
 		$config = $stmt->fetch();
+		$t1 = microtime(true);
 		$sender = new Sender($config);
-		$sender->send($service, json_encode(array("message"=>"oi", "service"=>"OFF")));
+		$t2 = microtime(true);
 		$sender->send($new_source, json_encode(array("message"=>"oi", "service"=>$service)));
+		$sender->send($service, json_encode(array("message"=>"oi", "service"=>"OFF")));
 		$sender->close();
 	}
 
 	if(isset($verbose))
 	{
+		print ($t2 - $t1)."<br>\n";
 		print $config["value"]."<br/>\n";
 		print_r($sender);
 		phpinfo();
