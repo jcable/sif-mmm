@@ -33,9 +33,9 @@ function reload_panel(sourcetab, desttab)
 <input type="hidden" name="hold" value="0">
 <input type="hidden" name="sourcetab" value="<?php print $sourcetab;?>">
 <input type="hidden" name="servicetab" value="<?php print $servicetab;?>">
-<div id="sourcebuttons"><?php showselectionpanel($dbh, "source", $sourcetab, $servicetab, "SOURCE"); ?></div>
-<div id="destbuttons"><?php showservicebuttons($dbh, "dest", $servicetab, $sourcetab); ?></div>
-<div id="takebuttons"><?php takebuttons("source", "service");?></div>
+<div id="sourcebuttons"><?php showselectionpanel($dbh, "source", $sourcetab, $servicetab, 'SOURCE', 's'); ?></div>
+<div id="destbuttons"><?php showselectionpanel($dbh, 'dest', $servicetab, $sourcetab, 'SERVICE', 'v', active($dbh, 'SERVICE')); ?></div>
+<div id="takebuttons"><?php takebuttons('source', 'service', 's');?></div>
 </form>
 <?php
 	sif_footer();

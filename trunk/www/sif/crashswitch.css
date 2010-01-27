@@ -65,6 +65,15 @@ table {
 	margin:8; 
 }
 
+#servicebuttons {
+	position: absolute; 
+	overflow:auto; 
+	top:360px; 
+	left:0; 
+	right:0; 
+	margin:8; 
+}
+
 #takebuttons {
 	position: absolute; 
 	overflow:auto; 

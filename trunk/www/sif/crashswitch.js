@@ -44,6 +44,13 @@ function crashswitch()
   	}
 }
 
+function click_button(elementObj, re, field, newvalue)
+{
+	toggleButton(elementObj, re);
+	document.crashpanel['previous_'+field].value = document.crashpanel[field].value;
+	document.crashpanel[field].value = newvalue;
+}
+
 function sourcepopup()
 {
 	sourcepopurl='sourcepopup.php?source='+document.crashpanel.source.value
@@ -60,18 +67,4 @@ function servicepopup()
 		sourcewindow=window.open (servicepopurl, "servicepopup", "location=0,status=0,scrollbars=1,menubar=0,width=400,height=300");
 		if (window.focus) {servicewindow.focus()}
 	}
-}
-
-// set source variable
-function setsource(source) {
-	document.crashpanel.source.value = source;
-}
-// set service variable
-function setservice(service) {
-	document.crashpanel.service.value = service;
-}
-
-// set listener variable
-function setlistener(listener) {
-	document.crashpanel.listener.value = listener;
 }
