@@ -11,6 +11,25 @@
 // submit form to do crash monitor
 function crashswitchmon(mondest)
 {
+	// check if a service or a source
+	var v = document.getElementsByTagName("TD");
+	for(var i=0; i<v.length; i++)
+	{
+		if(v.item(i).className=="depressed button")
+		{
+			var id = v.item(i).id;
+			if (id.match(/source/)) {
+				document.crashpanel.service.value="";
+			}
+			if (id.match(/service/)) {
+				document.crashpanel.source.value="";
+			}
+			if (id.match(/OFF/)) {
+				document.crashpanel.service.value="OFF";
+				document.crashpanel.source.value="OFF";
+			}
+		}
+	}
 	document.crashpanel.mon.value = mondest;
 	document.crashpanel.submit();
 }

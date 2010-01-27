@@ -31,7 +31,6 @@ if (isset($_REQUEST["service"]))
 	}
 	else
 	{
-
 		$stmt = $dbh->prepare("SELECT access, dst FROM edge_output WHERE edge=?");
 		$stmt->execute(array($service));
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);

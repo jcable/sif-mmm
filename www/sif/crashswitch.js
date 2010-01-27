@@ -47,8 +47,11 @@ function crashswitch()
 function click_button(elementObj, re, field, newvalue)
 {
 	toggleButton(elementObj, re);
-	document.crashpanel['previous_'+field].value = document.crashpanel[field].value;
-	document.crashpanel[field].value = newvalue;
+	var f = document.crashpanel[field];
+	var p = document.crashpanel['previous_'+field];
+	if(p!=undefined)
+		p.value = f.value;
+	f.value = newvalue;
 }
 
 function sourcepopup()
