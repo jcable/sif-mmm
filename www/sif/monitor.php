@@ -47,13 +47,16 @@ function reload_panel(sourcetab, desttab)
 <input type="hidden" name="servicetab" value="<?php print $servicetab; ?>">
 <input type="hidden" name="source" value="OFF">
 <input type="hidden" name="service" value="OFF">
+<input type="hidden" name="previous_source" value="OFF">
+<input type="hidden" name="previous_service" value="OFF">
 <input type="hidden" name="mon" value="NULL">
-<div id="sourcebuttons"><?php showselectionpanel($dbh, "source", $sourcetab, $servicetab, "SOURCE"); ?></div>
-<div id="destbuttons"><?php showservicebuttons($dbh, "dest", $servicetab, $sourcetab); ?></div>
+</form>
+<div id="sourcebuttons"><?php showselectionpanel($dbh, 'source', $sourcetab, $servicetab, 'SOURCE', 's'); ?></div>
+<div id="servicebuttons"><?php showselectionpanel($dbh, 'source', $servicetab, $sourcetab, 'SERVICE', 's', active($dbh, 'SERVICE')); ?></div>
 <div id="takebuttons">
 <table width=100%>
 <tr>
-<td id="sourceOFF" class="depressed button" onclick="toggleButton(this, /source/i);setsource('OFF');"><b>OFF</b></td><td colspan=2>&nbsp;</td>
+<td id="s_OFF" class="depressed button" onclick="click_button(this, /^s_/i, 'source', 'OFF');"><b>OFF</b></td><td colspan=2>&nbsp;</td>
 <td height=40 width=10% height=60>&nbsp;</td>
 <?php
 	$moncount=0;
@@ -90,8 +93,6 @@ function reload_panel(sourcetab, desttab)
 ?>
 <th class="raised" width=10% onClick="history.go();">Refresh</th>
 </tr></table>
-</form>
-</div>
   <div style='height: 100%; width: 100%; text-align: center;'>
   <object type="application/x-shockwave-flash" data="http://flowplayer.sourceforge.net/video/FlowPlayer.swf" width="800px" height="600px" id="FlowPlayer" style="z-index: 0">
 	  <param name="allowScriptAccess" value="sameDomain" />
@@ -110,6 +111,7 @@ function reload_panel(sourcetab, desttab)
   </object>
   <p style="font-size: small;">Uses the <a href="http://flowplayer.sourceforge.net/">Flow Player</a> free flash video player for playback (client side).</p>
   </div>
+</div>
 <?php
 	sif_footer();
 ?>

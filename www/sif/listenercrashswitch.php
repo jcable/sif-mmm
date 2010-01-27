@@ -26,21 +26,16 @@ function reload_panel(sourcetab, desttab)
 		$listenertab=1;
 	}
 	$dbh = connect();
-	$rows = active_events_as_run($dbh, 'LISTENER');
-	$events = array();
-	foreach($rows as $event)
-	{
-		$events[$event["output"]] = $event;
-	}
 ?>
 <form method="post" action="crashlistener.php" name="crashpanel">
+<input type="hidden" name="previous_service" value="OFF">
 <input type="hidden" name="service" value="OFF">
 <input type="hidden" name="listener" value="NULL">
 <input type="hidden" name="hold" value="0">
 <input type="hidden" name="listenertab" value="<?php print $listenertab;?>">
 <input type="hidden" name="servicetab" value="<?php print $servicetab;?>">
-<div id="sourcebuttons"><?php showservicebuttons($dbh, "source", $servicetab, $listenertab); ?></div>
-<div id="destbuttons"><?php showselectionpanel($dbh, "dest", $listenertab, $servicetab, "LISTENER", $events); ?></div>
-<div id="takebuttons"><?php takebuttons("service", "listener");?></div>
+<div id="sourcebuttons"><?php showselectionpanel($dbh, 'source', $servicetab, $listenertab, 'SERVICE', 'v', active($dbh, 'SERVICE')); ?></div>
+<div id="destbuttons"><?php showselectionpanel($dbh, 'dest', $listenertab, $servicetab, 'LISTENER', 'l', active($dbh, 'LISTENER')); ?></div>
+<div id="takebuttons"><?php takebuttons('service', 'listener', 'v');?></div>
 </form>
 <?php sif_footer(); ?>

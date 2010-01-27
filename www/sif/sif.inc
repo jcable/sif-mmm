@@ -229,13 +229,25 @@ EOT;
 	return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function showselectionpanel($dbh, $end, $selected_tab, $other_tab, $kind, $events=array())
+function active($dbh, $kind)
 {
+	$rows = active_events_as_run($dbh, $kind);
+	$events = array();
+	foreach($rows as $event)
+	{
+		$events[$event["output"]] = $event;
+	}
+	return $events;
+}
+
+function showselectionpanel($dbh, $end, $selected_tab, $other_tab, $kind, $button_group, $events=array())
+{
+	$lckind = strtolower($kind);
 	print "<table width=100% height=240 border=0><tr><td valign=top>\n";
-	print "<table width=100% border=0><tr><th bgcolor=\"#CCCCFF\" colspan=10>".ucwords(strtolower($kind))."s:</th></tr>\n";
+	print "<table width=100% border=0><tr><th bgcolor=\"#CCCCFF\" colspan=10>".ucwords($lckind)."s:</th></tr>\n";
 	print "<tr>\n";
 	$stmt = $dbh->prepare("SELECT * FROM panel_tabs WHERE kind=? AND hidden=0 ORDER BY tab_index asc");
-	$stmt->execute(array($kind));
+	$stmt->execute(array(strtoupper($kind)));
 	$tabs = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	$tabcount=0;
 	foreach($tabs as $row)
@@ -278,7 +290,7 @@ function showselectionpanel($dbh, $end, $selected_tab, $other_tab, $kind, $event
 	print "</tr><tr>";
 	$buttoncount=0;
 	$stmt = $dbh->prepare("SELECT id FROM edge WHERE kind=? AND tab_index=? ORDER BY id ASC");
-	$stmt->execute(array($kind, $selected_tab));
+	$stmt->execute(array(strtoupper($kind), $selected_tab));
 	while($row = $stmt->fetch(PDO::FETCH_ASSOC))
 	{
 		$id = $row["id"];
@@ -295,9 +307,8 @@ function showselectionpanel($dbh, $end, $selected_tab, $other_tab, $kind, $event
 				$currentbutton="OFF";
 		}
 
-		$onclick = "toggleButton(this, /$kind/i);";
-		$onclick .= "set".strtolower($kind)."('$id','$currentbutton');";
-		print "\n<td id=\"{$kind}{$buttoncount}\" class=\"raised button\"";
+		$onclick = "click_button(this, /^{$button_group}_/i, '$lckind', '$id');";
+		print "\n<td id=\"{$button_group}_{$lckind}{$buttoncount}\" class=\"raised button\"";
 		print " onclick=\"$onclick\">";
 		print "<span class=\"buttonlabel\">$id</span>";
 		if($currentbutton!="")
@@ -326,29 +337,16 @@ function showselectionpanel($dbh, $end, $selected_tab, $other_tab, $kind, $event
 	print "</td></tr></table>\n";
 }
 
-function showservicebuttons($dbh, $end, $selected_tab, $other_tab)
-{
-	//$events = active_schedule_records($dbh,"%");
-	$rows = active_events_as_run($dbh, 'SERVICE');
-	$events = array();
-	foreach($rows as $event)
-	{
-		$events[$event["output"]] = $event;
-	}
-
-	showselectionpanel($dbh, $end, $selected_tab, $other_tab, "SERVICE", $events);
-}
-
-function takebuttons($source, $dest)
+function takebuttons($source, $dest, $buttongroup)
 {
 	$skind = strtoupper($source);
 	$sid = strtolower($source);
 	$dkind = strtoupper($dest);
 	$did = strtolower($dest);
-	$onclick = "toggleButton(this, /{$sid}/i);set{$sid}('OFF')";
+	$onclick = "click_button(this, /^{$buttongroup}_/i, '$sid', 'OFF');";
 	print "<table width=100%>\n";
 	print "<tr>\n";
-	print "<td id=\"{$sid}OFF\" align=center height=40 width=10% class=\"depressed\" onclick=\"$onclick\"><b>OFF</b></td>\n";
+	print "<td id=\"{$buttongroup}_OFF\" align=center height=40 width=10% class=\"depressed\" onclick=\"$onclick\"><b>OFF</b></td>\n";
 ?>
 <th width=10%>&nbsp;</th>
 <th class="raised" id="primebutton" height=40 width=10% onclick="toggleprime(this);">Prime</th>
