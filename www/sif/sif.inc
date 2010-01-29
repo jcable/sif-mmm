@@ -79,8 +79,8 @@ function takebuttons($source, $dest, $tbid)
 	<button class="sif-hold">Hold</button>	
 </span>
 <span class="ui-widget-header ui-corner-all sif-toolbar sif-button">
-	<button class="sif-sabutton"><?php print ucwords($source);?> Routing</button>	
-	<button class="sif-sabutton"><?php print ucwords($dest);?> Routing</button>	
+	<button class="sif-routing"><?php print ucwords($source);?> Routing</button>	
+	<button class="sif-routing"><?php print ucwords($dest);?> Routing</button>	
 </span>
 </div>
 <?php
