@@ -23,7 +23,6 @@
 			$("#mcs_2").tabs();
 			$("#mcs").button();
 			$(".sif-buttonset").buttonset();
-			$(".sif-sabutton").button();
 			$('.sif-prime').each(function (i) {
 				$(this).button();
 				$(this).bind('click', prime_event);
@@ -38,12 +37,17 @@
 				$(this).bind('click', monitor_event);
 			});
 
+			$(".sif-routing").button();
+			$(".sif-routing").bind('click',routingpopup);
+
 			setInterval ( 
 				function()
 				{
 					$.getJSON("active.php",update_sinks);
 				}
 			,2000 );
+
+			$("#routing").dialog({ autoOpen: false });
 		});
 		</script>
 </head>
@@ -83,7 +87,7 @@
 		<?php 
 			panel_tab($dbh, "scs_source", "source", true, false);
 			panel_tab($dbh, "scs_dest", "service", false);
-			takebuttons("service", "listener", "scs")
+			takebuttons("source", "service", "scs")
 		?>
 	</div>
 	<div id="listenercrashswitch">
@@ -103,5 +107,6 @@
 </div>
 <hr>
 <div id='footer'>&copy; 2008-2010, British Broadcasting Corporation</div>
+<div id='routing'></div>
 </body>
 </html>
