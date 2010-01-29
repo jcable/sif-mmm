@@ -29,7 +29,6 @@ namespace VLM
 {
     public class Media
     {
-        public List<string> input;
         public Dictionary<string, string> option_f;
         private bool enabled_f;
         protected string id;
@@ -40,7 +39,6 @@ namespace VLM
 		this.id = id.Replace(' ', '_');
 		this.id = this.id.Replace('\'', '_');
         	this.vlm = vlm;
-        	input = new List<string>();
             option_f = new Dictionary<string,string>();
             enabled_f = false;            
         }
@@ -66,7 +64,6 @@ namespace VLM
         	string[] p = inp.Split('\n');
         	string mrl = p[0];
         	// TODO options
-        	input.Add(mrl);
         	setup("input \""+mrl+"\"");
         	for(int i=1; i<p.Length; i++)
         	{
@@ -75,13 +72,29 @@ namespace VLM
         	}
         }
 
-        public void deleteinput(string i)
+        public void deleteinput(string inp)
 		{
-        	// TODO
-        	int n=0;
-        	setup("inputdeln "+n);
+        	XmlDocument state = vlm.get();
+        	XmlNodeList inputs = state.GetElementsByTagName("input");
+        	for(int i=1; i<=inputs.Length; i++)
+        	{
+        		if(inputs.Item(i).InnerText==inp)
+        		{
+		        	setup("inputdeln "+i);
+        		}	
+        	}
         }
-        
+
+        public void clearinputs()
+		{
+        	XmlDocument state = vlm.get();
+        	XmlNodeList inputs = state.GetElementsByTagName("input");
+        	for(int i=inputs.Length; i>0; i--)
+        	{
+		        setup("inputdeln "+i);
+        	}
+        }
+
         public void option(string key, string val)
 		{
         	option_f[key] = val;
@@ -207,6 +220,7 @@ namespace VLM
         {
             return fetch(url + "vlm.xml");
         }
+
         public void cmd(string cmd)
         {
 		    Console.WriteLine(cmd);
