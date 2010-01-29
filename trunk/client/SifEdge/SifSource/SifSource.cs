@@ -71,6 +71,7 @@ namespace Sif
             {
 		    	string instance_id = id+"_"+service+"_"+i;
             	VLM.Broadcast bc = new VLM.Broadcast(instance_id,vlm);
+            	bc.clearinputs(); // needed if crashing an existing service
             	bc.addinput(input);
             	string o = xn[i].InnerText;
             	bc.output = o;
