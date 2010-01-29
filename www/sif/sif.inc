@@ -1,5 +1,15 @@
 <?php
 
+function register_event_as_run($dbh, $device, $input, $output, $eventtype)
+{
+        $stmt = $dbh->prepare("INSERT INTO as_run (device, input, output, event_type) VALUES(?,?,?,?)");
+        $r = $stmt->execute(array($device, $input, $output, $eventtype));
+        if($r)
+                return true;
+        else
+                return $stmt->errorInfo();
+}
+
 function connect()
 {
 	return new PDO( 'mysql:host=localhost;dbname=sif', 'sif', 'sif',
