@@ -3,14 +3,6 @@ require_once("messaging.inc");
 require_once "sif.inc";
 $dbh = connect();
 $dbh->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
-if(isset($_REQUEST["sourcetab"]) && isset($_REQUEST["servicetab"]))
-{
-	header("location: monitor.php?servicetab=".$_REQUEST["servicetab"]."&sourcetab=".$_REQUEST["sourcetab"]);
-}
-else
-{
-	$verbose=1;
-}
 
 $source=$_REQUEST["source"];
 $service=$_REQUEST["service"];
@@ -61,12 +53,5 @@ else
 		$sender->send($mon, json_encode($row));
 	}
 	$sender->close();
-}
-
-if(isset($verbose))
-{
-	print $config["value"]."<br/>\n";
-	print_r($sender);
-	phpinfo();
 }
 ?>

@@ -85,4 +85,19 @@ function takebuttons($source, $dest, $tbid)
 </div>
 <?php
 }
+
+function monitorbuttons($dbh, $bid)
+{
+	print "<br/>\n<div width=\"100%\">\n";
+	$stmt=$dbh->prepare("SELECT id FROM edge JOIN panel_tabs USING(kind,tab_index) WHERE kind='LISTENER' and hidden=1 ORDER BY id asc");
+        $stmt->execute();
+        while($row= $stmt->fetch(PDO::FETCH_ASSOC))
+        {
+		print '<input id="'.$row["id"].'" class="sif-monbutton" type="radio"/><label for="'.$row["id"].'">';
+		print $row["id"];
+		print "<span><br/>(</span><span class=\"sif-current-source\">?</span>)";
+		print '</label>';
+        }
+	print "</div>\n";
+}
 ?>

@@ -24,6 +24,23 @@ function selected_button(panel_id)
 	return sb[0].firstChild.firstChild.textContent;
 }
 
+function prime_event(event, ui)
+{
+	  var me = event.target;
+	  var x = me.id.replace("prime","take");
+	  var l = me.nextSibling;
+	  if($(l).hasClass("ui-state-active"))
+	  {
+		$("#"+x).button('enable');
+		setTimeout(function(){ $("#"+x).button('disable'); $(l).removeClass("ui-state-active"); }, 10000);
+	  }
+	  else
+	  {
+		$("#"+x).button('disable');
+	  }
+	  return false;
+}
+
 function take_event(event, ui) {
 	var me = event.target;
 	var myid = me.id;
@@ -39,4 +56,15 @@ function take_event(event, ui) {
 		$.post('crashlistener.php', {'service':s,'listener':d});
 		break;
 	}
+	return false;
+}
+
+function monitor_event(event, ui) {
+	var me = event.target;
+	var myid = me.id;
+	var panel = myid.replace("take","");
+	var s1 = selected_button("mcs_1");
+	var s2 = selected_button("mcs_2");
+	$.post('crashmon.php', {'source':s1,'service':s2,'mon':myid});
+	return false;
 }
