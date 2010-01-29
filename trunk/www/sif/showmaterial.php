@@ -1,8 +1,10 @@
 <?php
 	require_once("header.php");
+	require_once("sif.inc");
 	$page = "Material Info";
 	sif_header($page, "main.css");
 	sif_buttons($page);
+	$dbh = connect();
 ?>
 <script type="text/javascript" src="table.js"></script>
 <script type="text/javascript" src="findonpage.js"></script>
@@ -43,10 +45,9 @@ document.write('<form><input type=button value="Refresh" onClick="history.go()">
 </tr>
 </thead>
 <?php
-require 'connect.php';
-$result=mysql_query("select * from material order by material_id asc", $connection);
+$stmt=$dbh->query("select * from material order by material_id asc");
 $count=0;
-while($row= mysql_fetch_array($result))
+while($row= $stmt->fetch(PDO::FETCH_ASSOC))
 {
 	$count=$count+1;
 	print "\n<tr>";
