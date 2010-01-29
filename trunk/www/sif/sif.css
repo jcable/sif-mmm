@@ -1,0 +1,40 @@
+html {
+	height:100%; 
+	max-height:100%;
+	padding:0; 
+	margin:0; 
+	border:0; 
+	background:#EEEEFF;
+	font-family:"calibri", "trebuchet ms", "trebuchet", "verdana", sans-serif;
+}
+
+body {
+	padding:0; 
+	margin:8; 
+	border:0;
+	min-width:800px;
+	font-size:9pt;
+	behavior: url("csshover3.htc");
+	
+}
+
+#footer {
+	position: absolute; 
+	overflow:auto; 
+	top:640px; 
+	left:0; 
+	right:0;
+	margin:8;
+	padding:0;
+	text-align:center;
+	font-size:8pt;
+}
+
+.sif-toolbar { padding: 10px 4px; width: 100%; margin: auto 10% auto 0%; }
+
+label { white-space: nowrap; }
+
+.sif-current-source {
+	color: yellow;
+	font-style: italic;
+}
