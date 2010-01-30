@@ -12,6 +12,7 @@
 		<script type="text/javascript" language="javascript" src="js/jquery-1.4.1.min.js"></script>
 		<script type="text/javascript" language="javascript" src="js/jquery-ui-1.8rc1.custom.min.js"></script>
 		<script type="text/javascript" language="javascript" src="sif.js"></script>
+		<script type="text/javascript" language="javascript" src="js/jquery.dataTables.js"></script>
 		<script type="text/javascript" language="javascript">
 		$(document).ready(function() {
 			$("#tabs").tabs();
@@ -48,6 +49,26 @@
 			,2000 );
 
 			$("#routing").dialog({ autoOpen: false });
+			$("#service_active_schedule").dataTable({
+				"bServerSide": true,
+				"sAjaxSource": "serviceschedule.php",
+				"bJQueryUI": true,
+				"bAutoWidth": false
+				});
+			$("#listener_active_schedule").dataTable({
+				"bServerSide": true,
+				"sAjaxSource": "listenerschedule.php",
+				"bJQueryUI": true,
+				"bAutoWidth": false
+				});
+			$("#material").dataTable({
+				"bServerSide": true,
+				"sAjaxSource": "material.php",
+				"bJQueryUI": true,
+				"bAutoWidth": false
+				});
+			//$("#service_active_schedule").dataTable({"bJQueryUI": true});
+			//$("#listener_active_schedule").dataTable({"bJQueryUI": true});
 		});
 		</script>
 </head>
@@ -56,9 +77,9 @@
     <ul>
         <li><a href="#intro"><span>Introduction</span></a></li>
         <li><a href="maintenance.html"><span>Maintenance</span></a></li>
-        <li><a href="showserviceschedule.php"><span>Service Schedules</span></a></li>
-        <li><a href="showlistenerschedule.php"><span>Listener Schedules</span></a></li>
-        <li><a href="#showmaterial"><span>Material Info</span></a></li>
+        <li><a href="#serviceschedule"><span>Service Schedules</span></a></li>
+        <li><a href="#listenerschedule"><span>Listener Schedules</span></a></li>
+        <li><a href="#materialinfo"><span>Material Info</span></a></li>
         <li><a href="#servicecrashswitch"><span>Crash Services</span></a></li>
         <li><a href="#listenercrashswitch"><span>Crash Listeners</span></a></li>
         <li><a href="#monitor"><span>Monitoring</span></a></li>
@@ -76,13 +97,21 @@
 	<a href="mailto:mark.patrick@bbc.co.uk">Mark Patrick</a> and
 	<a href="mailto:hild.myklebust@bbc.co.uk">Hild Myklebust</a>.	
 	<p/>
-	SIF was a Norwegian Goddess, some might say we have named the project after her as it stands for 'Spend Innovation Funds' but we couldn't possibly comment!
+	SIF was the wife of the Norse god Thor
 	<p/>
 	<img src="sif.jpg" alt="" border=2>
 	<p/>
 	<a href="http://code.google.com/p/sif-mmm/" target="_new">Project Documentation (Google Code Page)</a>
 	</div>
-	<div id="showmaterial"></div>
+	<div id="serviceschedule">
+	<?php markup_jquery_datatable($dbh, "service_active_schedule", "service_active_schedule", true); ?>
+	</div>
+	<div id="listenerschedule">
+	<?php markup_jquery_datatable($dbh, "listener_active_schedule", "listener_active_schedule", true); ?>
+	</div>
+	<div id="materialinfo">
+	<?php markup_jquery_datatable($dbh, "material", "material", true); ?>
+	</div>
 	<div id="servicecrashswitch">
 		<?php 
 			panel_tab($dbh, "scs_source", "source", true, false);

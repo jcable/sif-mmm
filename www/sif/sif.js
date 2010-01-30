@@ -14,6 +14,14 @@ function update_sinks(data){
 	});
 };
 
+// find the selected tab
+function selected_tab()
+{
+	var tabs = $("#tabs");
+	var selected = tabs.tabs('option', 'selected');
+	return $("#tabs li").get(selected);
+}
+
 // find the selected button in the selected tab of the requested panel
 function selected_button(panel_id)
 {
@@ -104,7 +112,7 @@ function routingpopup(event, ui)
 				if(json[i].input==s)
 					dests += "<li>"+json[i].output+"</li>";
 			}
-			if(dests = "")
+			if(dests == "")
 			{
 				text += "Source "+s+" is currently not routed.";
 			}
@@ -130,7 +138,7 @@ function routingpopup(event, ui)
 				if(json[i].input==s)
 					dests += "<li>"+json[i].output+"</li>";
 			}
-			if(dests = "")
+			if(dests == "")
 			{
 				text += "Service "+s+" is currently not routed.";
 			}
@@ -142,6 +150,27 @@ function routingpopup(event, ui)
 		}
 		if(title.match(/listener/i))
 		{
+			var s = selected_button(panel+"_dest");
+			var source = "?";
+			for(var i=0; i<json.length; i++)
+			{
+				if(json[i].output==s)
+					source = json[i].input;
+			}
+			if(source!="OFF")
+			{
+				text = "The source for "+s+" is "+source;
+				for(var i=0; i<json.length; i++)
+				{
+					if(json[i].output==source)
+						ssource = json[i].input;
+				}
+				text += "<p>The source for "+source+" is "+ssource;
+			}
+			else
+			{
+				text = s+" is OFF";
+			}
 		}
 		dlge.innerHTML = text;
 		dlg.dialog('open');
