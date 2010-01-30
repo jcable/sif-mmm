@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+using System.Xml.XPath;
 using System.Net;
 using System.Web;
 using System.IO;
@@ -29,7 +30,6 @@ namespace VLM
 {
     public class Media
     {
-        public Dictionary<string, string> option_f;
         private bool enabled_f;
         protected string id;
 		protected VLM vlm;
@@ -39,7 +39,6 @@ namespace VLM
 		this.id = id.Replace(' ', '_');
 		this.id = this.id.Replace('\'', '_');
         	this.vlm = vlm;
-            option_f = new Dictionary<string,string>();
             enabled_f = false;            
         }
 
@@ -63,7 +62,6 @@ namespace VLM
 		{
         	string[] p = inp.Split('\n');
         	string mrl = p[0];
-        	// TODO options
         	setup("input \""+mrl+"\"");
         	for(int i=1; i<p.Length; i++)
         	{
@@ -72,13 +70,26 @@ namespace VLM
         	}
         }
 
+		public string[] inputs()
+		{
+			XPathDocument state = vlm.get();
+			XPathNavigator navigator = state.CreateNavigator();
+			XPathNodeIterator iterator = navigator.Select("//broadcast[@name='"+id+"']/inputs/input");
+			string[] input = new string[iterator.Count];
+			int i=0;
+			while (iterator.MoveNext())
+			{
+			    input[i++] = iterator.Current.Value;
+			}
+			return input;
+        }
+
         public void deleteinput(string inp)
 		{
-        	XmlDocument state = vlm.get();
-        	XmlNodeList inputs = state.GetElementsByTagName("input");
-        	for(int i=1; i<=inputs.Length; i++)
+        	string[] input = inputs();
+        	for(int i=1; i<=input.Length; i++)
         	{
-        		if(inputs.Item(i).InnerText==inp)
+        		if(input[i]==inp)
         		{
 		        	setup("inputdeln "+i);
         		}	
@@ -87,9 +98,8 @@ namespace VLM
 
         public void clearinputs()
 		{
-        	XmlDocument state = vlm.get();
-        	XmlNodeList inputs = state.GetElementsByTagName("input");
-        	for(int i=inputs.Length; i>0; i--)
+        	string[] input = inputs();
+        	for(int i=input.Length; i>0; i--)
         	{
 		        setup("inputdeln "+i);
         	}
@@ -97,7 +107,6 @@ namespace VLM
 
         public void option(string key, string val)
 		{
-        	option_f[key] = val;
         	setup("option "+key+"="+val);
         }
 
@@ -216,9 +225,9 @@ namespace VLM
             return xd;
         }
 
-        public XmlDocument get()
+        public XPathDocument get()
         {
-            return fetch(url + "vlm.xml");
+			return new XPathDocument(url + "vlm.xml");
         }
 
         public void cmd(string cmd)
