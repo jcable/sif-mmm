@@ -20,8 +20,10 @@
 			$("#scs_dest").tabs();
 			$("#lcs_source").tabs();
 			$("#lcs_dest").tabs();
-			$("#mcs_1").tabs();
-			$("#mcs_2").tabs();
+
+			$("#mcs_src_").tabs();
+			$("#mcs_svc_").tabs();
+
 			$("#mcs").button();
 			$(".sif-buttonset").buttonset();
 			$('.sif-prime').each(function (i) {
@@ -32,6 +34,28 @@
 			$(".sif-take").button('disable');
 			$(".sif-take").bind('click', take_event);
 			$(".sif-hold").button();
+
+$(".sif-button").each(function (i) {
+if(this.id.match(/^mcs_src/))
+{
+	$(this).bind('click',
+		function(){
+$('label[for*=mcs_svc]').each(function(){
+	$(this).removeClass('ui-state-active');
+});
+});
+}
+if(this.id.match(/^mcs_svc/))
+{
+	$(this).bind('click',
+		function(){
+$('label[for*=mcs_src]').each(function(){
+	$(this).removeClass('ui-state-active');
+});
+		}
+	);
+}
+});
 
 			$(".sif-monbutton").each(function (i) {
 				$(this).button();
@@ -127,12 +151,9 @@
 		?>
 	</div>
 	<div id="monitor">
-		<div id="monsource">
-		<ul>
-		<li><?php panel_tab($dbh, "mcs_1", "source", true, false); ?></li>
-		<li><?php panel_tab($dbh, "mcs_2", "service", false); ?></li>
-		</ul>
 		<?php
+			panel_tab($dbh, "mcs_src_", "source", true, false);
+			panel_tab($dbh, "mcs_svc_", "service", true, false);
 			monitorbuttons($dbh, "mcs");
 		?>
 	</div>
