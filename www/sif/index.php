@@ -127,9 +127,12 @@
 		?>
 	</div>
 	<div id="monitor">
-		<?php 
-			panel_tab($dbh, "mcs_1", "source", true, false);
-			panel_tab($dbh, "mcs_2", "service", false);
+		<div id="monsource">
+		<ul>
+		<li><?php panel_tab($dbh, "mcs_1", "source", true, false); ?></li>
+		<li><?php panel_tab($dbh, "mcs_2", "service", false); ?></li>
+		</ul>
+		<?php
 			monitorbuttons($dbh, "mcs");
 		?>
 	</div>
