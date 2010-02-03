@@ -21,10 +21,6 @@
 			$("#lcs_source").tabs();
 			$("#lcs_dest").tabs();
 
-			$("#mcs_src_").tabs();
-			$("#mcs_svc_").tabs();
-
-			$("#mcs").button();
 			$(".sif-buttonset").buttonset();
 			$('.sif-prime').each(function (i) {
 				$(this).button();
@@ -35,35 +31,10 @@
 			$(".sif-take").bind('click', take_event);
 			$(".sif-hold").button();
 
-$(".sif-button").each(function (i) {
-if(this.id.match(/^mcs_src/))
-{
-	$(this).bind('click',
-		function(){
-$('label[for*=mcs_svc]').each(function(){
-	$(this).removeClass('ui-state-active');
-});
-});
-}
-if(this.id.match(/^mcs_svc/))
-{
-	$(this).bind('click',
-		function(){
-$('label[for*=mcs_src]').each(function(){
-	$(this).removeClass('ui-state-active');
-});
-		}
-	);
-}
-});
-
-			$(".sif-monbutton").each(function (i) {
-				$(this).button();
-				$(this).bind('click', monitor_event);
-			});
-
 			$(".sif-routing").button();
 			$(".sif-routing").bind('click',routingpopup);
+
+			initialise_monitor_crash_panel();
 
 			setInterval ( 
 				function()

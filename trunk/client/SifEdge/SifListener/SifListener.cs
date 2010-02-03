@@ -33,7 +33,7 @@ namespace Sif
 			:base(url, conn, device, node)
 		{
 			if(vlm==null)
-				vlm = new VLM.VLM();
+				vlm = new VLM.VLM_http();
 			media_device = new VLM.Broadcast(id, vlm);
 			XmlDocument xd = Web.fetch(url+"/getedgeoutput.php?id="+id+"&device="+device);
 	    	XmlNodeList outputs = xd.GetElementsByTagName("output");

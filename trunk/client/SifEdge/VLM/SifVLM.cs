@@ -6,6 +6,7 @@ using System.Xml.XPath;
 using System.Net;
 using System.Web;
 using System.IO;
+using System.Net.Sockets;
 
 /* VLM example
 new my_media broadcast enabled
@@ -32,9 +33,9 @@ namespace VLM
     {
         private bool enabled_f;
         protected string id;
-		protected VLM vlm;
+		protected IVLM vlm;
 
-        public Media(string id, VLM vlm)
+        public Media(string id, IVLM vlm)
         {
 		this.id = id.Replace(' ', '_');
 		this.id = this.id.Replace('\'', '_');
@@ -118,7 +119,7 @@ namespace VLM
 
     public class VOD : Media
     {
-        public VOD(string id, VLM vlm):base(id,vlm)
+        public VOD(string id, IVLM vlm):base(id,vlm)
         {
         	
         }
@@ -130,7 +131,7 @@ namespace VLM
         private bool loop_f;
         public string mux;
 
-        public Broadcast(string id, VLM vlm):base(id,vlm)
+        public Broadcast(string id, IVLM vlm):base(id,vlm)
         {
 			vlm.cmd("new "+this.id+" broadcast");
             output_f = "";
@@ -204,11 +205,39 @@ namespace VLM
         }
     }
 
-	public class VLM
+	public interface IVLM
+	{		
+        void cmd(string cmd);
+        XPathDocument get();
+	}
+
+	public class VLM_telnet : IVLM
+	{
+        Socket s;
+
+        public VLM_telnet()
+        {
+            s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            s.Connect("localhost", 4212);
+        }
+        
+        public void cmd(string cmd)
+        {
+        	//s.Send();
+        }
+
+        public XPathDocument get()
+        {
+        	cmd("show");
+        	return new XPathDocument("");
+        }
+	}
+	
+	public class VLM_http : IVLM
 	{
         private string url;
 
-        public VLM()
+        public VLM_http()
         {
             url = "http://localhost:8080/requests/";
         }

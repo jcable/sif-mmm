@@ -64,7 +64,7 @@ namespace Sif
     	public VLM.Broadcast[] destination;
 
     	public ServiceInstance(string id, string input, bool loop,
-    	                   string service, VLM.VLM vlm, XmlNodeList xn)
+    	                   string service, VLM.VLM_http vlm, XmlNodeList xn)
     	{
 	    	destination = new VLM.Broadcast[xn.Count];
             for(int i=0; i<destination.Length; i++)
@@ -124,7 +124,7 @@ namespace Sif
 		
 		public override void run()
 		{
-            vlm = new VLM.VLM();
+            vlm = new VLM.VLM_http();
             refresh();
             subscribe();
         }
