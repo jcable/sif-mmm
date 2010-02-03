@@ -32,7 +32,7 @@ function selected_button(panel_id)
 	if(sb.length>0)
 		return sb[0].firstChild.firstChild.textContent;
 	else
-		return "OFF";
+		return "";
 }
 
 function prime_event(event, ui)
@@ -72,14 +72,58 @@ function take_event(event, ui) {
 	return false;
 }
 
-function monitor_event(event, ui) {
-	var me = event.target;
-	var myid = me.id;
-	var panel = myid.replace("take","");
-	var s1 = selected_button("mcs_1");
-	var s2 = selected_button("mcs_2");
-	$.post('crashmon.php', {'source':s1,'service':s2,'mon':myid});
-	return false;
+function initialise_monitor_crash_panel()
+{
+
+	$("#mcs_src_").tabs();
+	$("#mcs_svc_").tabs();
+	$("#mcs").button();
+
+	$(".sif-button").each(function (i) {
+	if(this.id.match(/^mcs_src/))
+	{
+		$(this).bind('click',
+			function(){
+				$('label[for*=mcs_svc]').each(function(){
+					$(this).removeClass('ui-state-active');
+				});
+	});
+	}
+	if(this.id.match(/^mcs_svc/))
+	{
+		$(this).bind('click',
+			function(){
+				$('label[for*=mcs_src]').each(function(){
+					$(this).removeClass('ui-state-active');
+				});
+			}
+		);
+	}
+	});
+
+	// initialise with a service enabled and no source
+	$('label[for*=mcs_src]').each(function(){
+		$(this).removeClass('ui-state-active');
+	});
+
+	$(".sif-monbutton").each(function (i) {
+		$(this).button();
+		$(this).bind('click', 
+		function (event, ui) {
+			var me = event.target;
+			var myid = me.id;
+			var s1 = selected_button("mcs_src_");
+			var s2 = selected_button("mcs_svc_");
+			//$(me).effect('bounce');
+			var label = $('label[for='+myid+']');
+			$.post('crashmon.php', {'source':s1,'service':s2,'mon':myid},
+			function(data){
+					label.removeClass('ui-state-active');
+			});
+			return false;
+		});
+	});
+
 }
 
 function routingpopup(event, ui)

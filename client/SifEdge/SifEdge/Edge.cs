@@ -40,7 +40,7 @@ namespace Sif
 		protected string id, input;
 		protected bool loop, active;
 		protected string device;
-        protected VLM.VLM vlm;
+        protected VLM.VLM_http vlm;
         protected MessageConnection conn;
 	    protected Listener listener;
 
@@ -82,7 +82,7 @@ namespace Sif
 		
 		public virtual void run()
 		{
-            vlm = new VLM.VLM();
+            vlm = new VLM.VLM_http();
             subscribe();
         }
 
