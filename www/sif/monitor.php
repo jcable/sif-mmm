@@ -112,25 +112,9 @@ function reload_panel(sourcetab, desttab)
 ?>
 <th class="raised" width=10% onClick="history.go();">Refresh</th>
 </tr></table>
-  <div style='height: 100%; width: 100%; text-align: center;'>
-  <object type="application/x-shockwave-flash" data="http://flowplayer.sourceforge.net/video/FlowPlayer.swf" width="800px" height="600px" id="FlowPlayer" style="z-index: 0">
-	  <param name="allowScriptAccess" value="sameDomain" />
-	  <param name="movie" value="http://flowplayer.sourceforge.net/video/FlowPlayer.swf" />
-	  <param name="quality" value="high" />
-    <!--	  <param name="scale" value="noScale" />-->
-	  <param name="wmode" value="transparent" />
-	<!--  <param name="flashvars" value="config={ loop: false, initialScale: \'fit\', autoPlay: false, configInject: true}" />-->
-  <script type="text/javascript">
-// <![CDATA[
-  var host = document.location.toString().replace( /http:\/\//, '' ).replace( /[:/].*/, '' );
-  document.write( '' +
-'	  <param name="flashvars" value="config={ loop: false, initialScale: \'fit\', autoPlay: false, playList: [{ url: \'http://' + host + ':8081/stream.flv\', controlEnabled: true}] }" />' );
-// ]]>
-</script>
-  </object>
-  <p style="font-size: small;">Uses the <a href="http://flowplayer.sourceforge.net/">Flow Player</a> free flash video player for playback (client side).</p>
-  </div>
-</div>
+<audio src="http://localhost:8081/audio.ogg"  autoplay controls>  
+      Your browser does not support the <code>audio</code> element.  
+</audio> 
 <?php
 	sif_footer();
 ?>

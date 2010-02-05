@@ -54,9 +54,13 @@ namespace Sif
 	            		if(data.service=="OFF")
 	            		{
 	                		register_event_as_run(device, "ANY", id, "OFF");
+		            		media_device.stop();
+		            		media_device.clearinputs();
 	            		}
 	            		else
 	            		{
+		            		media_device.stop();
+		            		media_device.clearinputs();
 		            		media_device.addinput(data.access+"://@"+data.dst);
 		            		media_device.enabled=true;
 		            		media_device.play();
