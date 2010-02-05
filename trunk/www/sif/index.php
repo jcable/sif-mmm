@@ -127,6 +127,9 @@
 			panel_tab($dbh, "mcs_svc_", "service", true, false);
 			monitorbuttons($dbh, "mcs");
 		?>
+		<br/>
+		<div id="player" align="center" width="100%">
+		</div>
 	</div>
 </div>
 <hr>

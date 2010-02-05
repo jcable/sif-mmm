@@ -117,13 +117,23 @@ function initialise_monitor_crash_panel()
 			//$(me).effect('bounce');
 			var label = $('label[for='+myid+']');
 			$.post('crashmon.php', {'source':s1,'service':s2,'mon':myid},
-			function(data){
+				function(data){
 					label.removeClass('ui-state-active');
+					if(myid.match(/Browser/))
+					{
+						show_player(s1, s2);
+					}
 			});
 			return false;
 		});
 	});
 
+}
+
+function show_player(source, service)
+{
+	var player = $("#player");
+	player[0].innerHTML = '<audio autoplay controls src="http://sif.dyndns.ws:8081/audio.ogg">Your browser doesn\'t play audio</audio>';
 }
 
 function routingpopup(event, ui)
