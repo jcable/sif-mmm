@@ -1,9 +1,85 @@
 ﻿using System;
+using System.Threading;
+using System.Runtime.Serialization.Json;
+using System.IO;
 using RabbitMQ.Client;
 
 namespace SimplePublishSubscribe
 {
-    public delegate void MessageHandler(object sender, string key, byte[] message);
+
+	public class MessageConnection
+	{
+		public string exchangeName="sif";
+		public IConnection conn;
+		
+		public MessageConnection(string host)
+		{
+            ConnectionFactory factory = new ConnectionFactory();
+            conn = factory.CreateConnection( Protocols.FromEnvironment(), host, 5672);
+		}
+		public MessageConnection(IConnection conn)
+		{
+			this.conn = conn;
+		}
+	}
+
+	public class Subscription
+	{
+		private Listener listener;
+		public MessageConnection conn;
+		
+		public Subscription(MessageConnection conn, string key, MessageHandler msgh)
+		{
+			this.conn = conn;
+			string queueName = System.Guid.NewGuid().ToString();
+            listener = new Listener(conn.exchangeName, queueName, conn.conn);
+            listener.MessageReceived += new MessageHandler(msgh);
+            listener.listenFor(key);
+            Console.WriteLine("listening on queue "+queueName+" for "+key);
+		}
+		
+		public void listenFor(string key)
+		{
+			listener.listenFor(key);
+		}
+
+		public void listen()
+		{
+			listener.listen();
+		}
+
+		public void ignore(string key)
+		{
+			listener.ignore(key);
+		}
+		
+        public void send(string routingKey, byte[] message)
+        {
+        	listener.send(routingKey, message);
+        }
+
+        public void send(string routingKey, Object o)
+        {
+        	listener.send(routingKey, ToBytes(o));
+        }
+
+        public static void FromBytes(byte[] message, Object o)
+		{
+			DataContractJsonSerializer ser = new DataContractJsonSerializer(o.GetType());
+    		MemoryStream ms = new MemoryStream(message);
+    		o = ser.ReadObject(ms);
+		}
+
+		public static byte[] ToBytes(Object o)
+		{
+			MemoryStream ms = new MemoryStream();
+			DataContractJsonSerializer ser = new DataContractJsonSerializer(o.GetType());
+			ser.WriteObject(ms, o);
+			return ms.ToArray();
+		}
+	}
+	
+	public delegate void MessageHandler(object sender, string key, byte[] message);
 
     public class Client
     {
@@ -28,6 +104,11 @@ namespace SimplePublishSubscribe
             exchangeName = eName;
             channel.ExchangeDeclare(exchangeName, ExchangeType.Direct);
         }
+
+        public void send(string routingKey, byte[] message)
+        {
+            channel.BasicPublish(exchangeName, routingKey, null, message);
+        }
     }
 
     public class Sender : Client
@@ -48,7 +129,7 @@ namespace SimplePublishSubscribe
 
         public void send(byte[] message)
         {
-            channel.BasicPublish(exchangeName, routingKey, null, message);
+            send(routingKey, message);
         }
     }
 
@@ -93,6 +174,7 @@ namespace SimplePublishSubscribe
             {
                 try
                 {
+                	Thread.Sleep(0);
                     RabbitMQ.Client.Events.BasicDeliverEventArgs e =
                     (RabbitMQ.Client.Events.BasicDeliverEventArgs)
                     consumer.Queue.Dequeue();
