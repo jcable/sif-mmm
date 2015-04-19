@@ -1,0 +1,1 @@
+Manage multimedia streams from a central relational database.
